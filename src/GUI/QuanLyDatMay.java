@@ -35,7 +35,7 @@ public class QuanLyDatMay extends JFrame {
         lichSuPanel.add(new JLabel("Đây là panel lịch sử sử dụng"));
 
         cardPanel.add(new maytinh(), "TinhTrang");
-        cardPanel.add(lichSuPanel, "LichSu");
+        cardPanel.add(new SuDungMayGUI(), "LichSu");
 
         // Sự kiện chuyển panel khi bấm nút
         btnXemTinhTrang.addActionListener(e -> cardLayout.show(cardPanel, "TinhTrang"));

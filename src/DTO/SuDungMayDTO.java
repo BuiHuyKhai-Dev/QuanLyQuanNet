@@ -22,7 +22,7 @@ public class SuDungMayDTO {
     public SuDungMayDTO() {
     }
 
-    public SuDungMayDTO(int maSuDung, int maKhachHang, int maMay, Timestamp thoiGianBatDau, Timestamp thoiGianKetThuc, int tongThoiGian, double chiPhi, int maPhanMem, Timestamp thoiGianTao) {
+    public SuDungMayDTO(int maSuDung, int maKhachHang, int maMay, Timestamp thoiGianBatDau, Timestamp thoiGianKetThuc, int tongThoiGian, double chiPhi) {
         this.maSuDung = maSuDung;
         this.maKhachHang = maKhachHang;
         this.maMay = maMay;
@@ -30,8 +30,6 @@ public class SuDungMayDTO {
         this.thoiGianKetThuc = thoiGianKetThuc;
         this.tongThoiGian = tongThoiGian;
         this.chiPhi = chiPhi;
-        this.maPhanMem = maPhanMem;
-        this.thoiGianTao = thoiGianTao;
     }
 
     public int getMaSuDung() {

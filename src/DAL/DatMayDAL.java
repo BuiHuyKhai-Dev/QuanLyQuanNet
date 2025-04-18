@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class DatMayDAL {
    DBConnect db= new DBConnect();
    Connection conn= db.getConnection();
-    public ArrayList<MayTinhDTO> layDanhSachMay() {
+    public ArrayList<MayTinhDTO> selectAll() {
         ArrayList<MayTinhDTO> ds = new ArrayList<>();
         try {
             String sql = "SELECT MaMay, TenMay, TrangThai, ViTri, GiaThue FROM MayTinh";
@@ -40,4 +40,32 @@ public class DatMayDAL {
 
         return ds;
     }
+    
+
+    public double layGiaThue(int maMay) throws SQLException {
+        double giaThue = 0;
+
+        // Câu lệnh SQL để truy vấn giá thuê của máy tính
+        String sql = "SELECT GiaThue FROM maytinh WHERE MaMay = ?";
+
+        // Tạo PreparedStatement
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        stmt.setInt(1, maMay); // Thiết lập MaMay vào tham số câu lệnh SQL
+
+        // Thực thi câu lệnh SQL
+        ResultSet rs = stmt.executeQuery();
+
+        // Kiểm tra kết quả trả về từ câu lệnh SQL
+        if (rs.next()) {
+            giaThue = rs.getDouble("GiaThue"); // Lấy giá thuê từ cột GiaThue
+        }
+
+        // Đóng ResultSet và PreparedStatement
+        rs.close();
+        stmt.close();
+
+        // Trả về giá thuê
+        return giaThue;
+    }
+
 }

@@ -3,10 +3,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
-import java.text.SimpleDateFormat;
 import javax.swing.Timer;
 import DTO.MayTinhDTO;
 import DAL.DatMayDAL;
+import DAO.KhachHangDAO;
+import DAO.SuDungMayDAO;
+import DTO.SuDungMayDTO;
 
 public class maytinh extends JPanel {
     private ArrayList<MayTinhDTO> danhSach;
@@ -22,7 +24,7 @@ public class maytinh extends JPanel {
         setLayout(new FlowLayout(FlowLayout.LEFT));
 
         DatMayDAL dal = new DatMayDAL();
-        danhSach = dal.layDanhSachMay();
+        danhSach = dal.selectAll();
 
         for (MayTinhDTO may : danhSach) {
             JPanel panel = createMayPanel(may);
@@ -89,69 +91,126 @@ public class maytinh extends JPanel {
     }
 
     private void showEditDialog() {
-        if (selectedMay == null) return;
+    if (selectedMay == null) return;
 
-        JDialog dialog = new JDialog((Frame) null, "Chỉnh sửa máy", true);
-        dialog.setLayout(new GridLayout(0, 1));
-        JComboBox<String> cbTrangThai = new JComboBox<>(new String[]{"Trống", "Đang sử dụng", "Bảo trì"});
-        JTextField tfMaKH = new JTextField();
-        tfMaKH.setVisible(false);
+    JDialog dialog = new JDialog((Frame) null, "Chỉnh sửa máy", true);
+    dialog.setLayout(new GridLayout(0, 1));
+    JComboBox<String> cbTrangThai = new JComboBox<>(new String[]{"Trống", "Đang sử dụng", "Bảo trì"});
+    JTextField tfMaKH = new JTextField();
+    tfMaKH.setVisible(false);
 
-        cbTrangThai.addActionListener(e -> {
-            String chon = (String) cbTrangThai.getSelectedItem();
-            tfMaKH.setVisible("Đang sử dụng".equals(chon));
-            dialog.pack();
-        });
-
-        dialog.add(new JLabel("Trạng thái:"));
-        dialog.add(cbTrangThai);
-        dialog.add(new JLabel("Mã khách hàng (nếu có):"));
-        dialog.add(tfMaKH);
-
-        JButton btnXacNhan = new JButton("Xác nhận");
-        dialog.add(btnXacNhan);
-
-        btnXacNhan.addActionListener(e -> {
-            String trangThaiStr = (String) cbTrangThai.getSelectedItem();
-            int newTrangThai = 1;
-            if ("Trống".equals(trangThaiStr)) newTrangThai = 1;
-            else if ("Đang sử dụng".equals(trangThaiStr)) newTrangThai = 2;
-            else if ("Bảo trì".equals(trangThaiStr)) newTrangThai = 3;
-
-            if (newTrangThai == 2) {
-                String maKH = tfMaKH.getText();
-                if (maKH.trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(dialog, "Vui lòng nhập mã khách hàng!");
-                    return;
-                }
-                mapStartTime.put(selectedMay, System.currentTimeMillis());
-                startTimer(selectedMay);
-            } else {
-                stopTimer(selectedMay);
-            }
-
-            selectedMay.setTrangThai(newTrangThai);
-
-            // Cập nhật lại giao diện
-            removeAll();
-            mapTrangThaiLabel.clear();
-            for (MayTinhDTO may : danhSach) {
-                JPanel panel = createMayPanel(may);
-                add(panel);
-            }
-
-            selectedPanel = null;
-            selectedMay = null;
-
-            revalidate();
-            repaint();
-            dialog.dispose();
-        });
-
+    cbTrangThai.addActionListener(e -> {
+        String chon = (String) cbTrangThai.getSelectedItem();
+        tfMaKH.setVisible("Đang sử dụng".equals(chon));
         dialog.pack();
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);
-    }
+    });
+
+    dialog.add(new JLabel("Trạng thái:"));
+    dialog.add(cbTrangThai);
+    dialog.add(new JLabel("Mã khách hàng (nếu có):"));
+    dialog.add(tfMaKH);
+
+    JButton btnXacNhan = new JButton("Xác nhận");
+    dialog.add(btnXacNhan);
+
+    btnXacNhan.addActionListener(e2 -> {
+        String trangThaiStr = (String) cbTrangThai.getSelectedItem();
+        int newTrangThai = 1;
+        if ("Trống".equals(trangThaiStr)) newTrangThai = 1;
+        else if ("Đang sử dụng".equals(trangThaiStr)) newTrangThai = 2;
+        else if ("Bảo trì".equals(trangThaiStr)) newTrangThai = 3;
+
+        // Nếu trạng thái chuyển sang "Đang sử dụng"
+        if (newTrangThai == 2) {
+            String maKHStr = tfMaKH.getText().trim();
+            if (maKHStr.isEmpty()) {
+                JOptionPane.showMessageDialog(dialog, "Vui lòng nhập mã khách hàng!");
+                return;
+            }
+
+            int maKH;
+            try {
+                maKH = Integer.parseInt(maKHStr);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(dialog, "Mã khách hàng không hợp lệ!");
+                return;
+            }
+
+            // Kiểm tra mã khách hàng
+            KhachHangDAO khDAL = new KhachHangDAO();
+            if (!khDAL.tonTaiMaKH(maKH)) {
+                JOptionPane.showMessageDialog(dialog, "Mã khách hàng không tồn tại!");
+                return;
+            }
+
+            // Lưu thời gian bắt đầu vào map
+            long now = System.currentTimeMillis();
+            mapStartTime.put(selectedMay, now);
+            startTimer(selectedMay);
+
+            // Tạo SuDungMayDTO mới
+            SuDungMayDTO sdm = new SuDungMayDTO();
+            sdm.setMaKhachHang(maKH);
+            sdm.setMaMay(selectedMay.getMaMay());
+            sdm.setThoiGianBatDau(new java.sql.Timestamp(now));
+            sdm.setThoiGianKetThuc(null);  // Thời gian kết thúc sẽ được cập nhật khi trạng thái thay đổi
+            sdm.setTongThoiGian(0);
+            sdm.setChiPhi(0.0);
+
+            SuDungMayDAO sdmDAL = new SuDungMayDAO();
+            boolean success = sdmDAL.insert(sdm);
+            if (!success) {
+                JOptionPane.showMessageDialog(dialog, "Lỗi khi lưu dữ liệu sử dụng máy!");
+                return;
+            }
+        } else {
+            // Khi trạng thái thay đổi từ "Đang sử dụng" sang trạng thái khác
+            if (selectedMay.getTrangThai() == 2) {
+                // Cập nhật thời gian kết thúc cho SuDungMay
+                DatMayDAL dm= new DatMayDAL();
+                try{
+                    double gia= dm.layGiaThue(selectedMay.getMaMay());
+
+                    long now = System.currentTimeMillis();
+                    SuDungMayDAO sdmDAL = new SuDungMayDAO();
+                    boolean updated = sdmDAL.capNhatTrangThaiSuDung(selectedMay.getMaMay(), gia,new java.sql.Timestamp(now));
+                    if (!updated) {
+                        JOptionPane.showMessageDialog(dialog, "Lỗi khi cập nhật thời gian kết thúc!");
+                        return;
+                    }
+                }
+                catch (Exception e){
+                    System.out.println("loi");
+                }
+            }
+
+            stopTimer(selectedMay);
+        }
+
+        // Cập nhật lại trạng thái của máy
+        selectedMay.setTrangThai(newTrangThai);
+
+        // Cập nhật lại giao diện
+        removeAll();
+        mapTrangThaiLabel.clear();
+        for (MayTinhDTO may : danhSach) {
+            JPanel panel = createMayPanel(may);
+            add(panel);
+        }
+
+        selectedPanel = null;
+        selectedMay = null;
+
+        revalidate();
+        repaint();
+        dialog.dispose();
+    });
+
+    dialog.pack();
+    dialog.setLocationRelativeTo(this);
+    dialog.setVisible(true);
+}
+
 
     private void startTimer(MayTinhDTO may) {
         if (mapTimer.containsKey(may)) return;
