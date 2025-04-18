@@ -1,9 +1,13 @@
 package GUI;
 
+import java.sql.*;
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
+//import java.beans.Statement;
+import java.math.BigDecimal;
 import java.net.URL;
+//import java.security.Timestamp;
 
 public class thucan extends JPanel {
 
@@ -65,7 +69,8 @@ public class thucan extends JPanel {
 
         // ========== NÚT VÀ TỔNG TIỀN ==========
         JButton datDonButton = new JButton("Đặt đơn");
-        
+                datDonButton.addActionListener(e -> datDonHang());
+
         totalLabel = new JLabel("Tổng tiền: 0 đ");
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
@@ -119,6 +124,100 @@ public class thucan extends JPanel {
         }
         totalLabel.setText("Tổng tiền: " + total + " đ");
     }
+    
+    private void datDonHang() {
+    if (cartModel.getRowCount() == 0) {
+        JOptionPane.showMessageDialog(this, "Vui lòng chọn ít nhất một món ăn.");
+        return;
+    }
+
+    try (Connection conn = DAL.DBConnect.getConnection()) {
+        if (conn == null) {
+            JOptionPane.showMessageDialog(this, "Không thể kết nối database.");
+            return;
+        }
+
+        conn.setAutoCommit(false); // bắt đầu transaction
+
+        int maKH = 1;   // 👈 Tạm thời mã khách hardcode
+        int maMay = 2;  // 👈 Tạm thời mã máy cũng hardcode, bạn có thể lấy từ máy đang chọn
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        BigDecimal tongTien = BigDecimal.ZERO;
+
+        // === 1. Insert vào DonHangThucAn
+        String insertDon = "INSERT INTO DonHangThucAn (MaKH, MaMay, NgayDat, TongTien, TrangThai, created_at) VALUES (?, ?, ?, ?, ?, ?)";
+        PreparedStatement donStmt = conn.prepareStatement(insertDon, Statement.RETURN_GENERATED_KEYS);
+        for (int i = 0; i < cartModel.getRowCount(); i++) {
+            int qty = (int) cartModel.getValueAt(i, 1);
+            int price = (int) cartModel.getValueAt(i, 2);
+            tongTien = tongTien.add(BigDecimal.valueOf(qty * price));
+        }
+
+        donStmt.setInt(1, maKH);
+        donStmt.setInt(2, maMay);
+        donStmt.setTimestamp(3, now);
+        donStmt.setBigDecimal(4, tongTien);
+        donStmt.setString(5, "DangCho");
+        donStmt.setTimestamp(6, now);
+        donStmt.executeUpdate();
+
+        ResultSet rs = donStmt.getGeneratedKeys();
+        int maDH = -1;
+        if (rs.next()) {
+            maDH = rs.getInt(1);
+        } else {
+            conn.rollback();
+            JOptionPane.showMessageDialog(this, "Không thể tạo đơn hàng.");
+            return;
+        }
+
+        // === 2. Thêm chi tiết & cập nhật kho
+        for (int i = 0; i < cartModel.getRowCount(); i++) {
+            String tenMon = (String) cartModel.getValueAt(i, 0);
+            int qty = (int) cartModel.getValueAt(i, 1);
+
+            // Tìm mã thức ăn từ tên
+            PreparedStatement findStmt = conn.prepareStatement("SELECT MaThucAn FROM ThucAn WHERE TenThucAn = ?");
+            findStmt.setString(1, tenMon);
+            ResultSet rsFind = findStmt.executeQuery();
+
+            int maTA = -1;
+            if (rsFind.next()) {
+                maTA = rsFind.getInt("MaThucAn");
+            } else {
+                conn.rollback();
+                JOptionPane.showMessageDialog(this, "Không tìm thấy món: " + tenMon);
+                return;
+            }
+
+            // Trừ kho
+            PreparedStatement updateKho = conn.prepareStatement("UPDATE KhoThucAn SET SoLuong = SoLuong - ? WHERE MaThucAn = ?");
+            updateKho.setInt(1, qty);
+            updateKho.setInt(2, maTA);
+            int updated = updateKho.executeUpdate();
+
+            if (updated == 0) {
+                conn.rollback();
+                JOptionPane.showMessageDialog(this, "Không đủ hàng trong kho cho món: " + tenMon);
+                return;
+            }
+
+            // TODO: Chưa có bảng chi tiết đơn hàng, nếu cần thêm bảng `ChiTietDonThucAn` thì sẽ insert ở đây
+        }
+
+        conn.commit();
+        JOptionPane.showMessageDialog(this, "Đặt món thành công!");
+
+        // Xoá giỏ hàng sau khi đặt
+        cartModel.setRowCount(0);
+        updateTotalLabel();
+
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        JOptionPane.showMessageDialog(this, "Lỗi khi đặt món: " + ex.getMessage());
+    }
+}
+
 
     // EDITOR SPINNER CHO CỘT SỐ LƯỢNG
     class SpinnerEditor extends AbstractCellEditor implements TableCellEditor {

@@ -1,145 +1,217 @@
 package GUI;
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
+import java.util.*;
+import java.text.SimpleDateFormat;
+import javax.swing.Timer;
+import DTO.MayTinhDTO;
+import DAL.DatMayDAL;
 
 public class maytinh extends JPanel {
+    private ArrayList<MayTinhDTO> danhSach;
+    private Map<MayTinhDTO, JLabel> mapTrangThaiLabel = new HashMap<>();
+    private Map<MayTinhDTO, Timer> mapTimer = new HashMap<>();
+    private Map<MayTinhDTO, Long> mapStartTime = new HashMap<>();
 
-    // Khai báo các thành phần giao diện
-    private JComboBox<String> mayTinhComboBox;
-    private JTextField startTimeField;
-    private JTextField endTimeField;
-    private JButton datButton;
+    private JPanel selectedPanel = null;
+    private Color previousColor = null;
+    private MayTinhDTO selectedMay = null;
 
-    // Constructor tạo giao diện Đặt Máy
     public maytinh() {
-        setLayout(new BorderLayout());
+        setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        // Tiêu đề
-        JLabel titleLabel = new JLabel("Đặt Máy", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        this.add(titleLabel, BorderLayout.NORTH);
+        DatMayDAL dal = new DatMayDAL();
+        danhSach = dal.layDanhSachMay();
 
-        // Tạo panel con chứa các thành phần
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        for (MayTinhDTO may : danhSach) {
+            JPanel panel = createMayPanel(may);
+            add(panel);
+        }
+    }
 
-        // Mô tả chọn máy tính
-        JLabel descriptionLabel = new JLabel("Chọn máy tính bạn muốn đặt:");
-        descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        centerPanel.add(descriptionLabel);
+    private JPanel createMayPanel(MayTinhDTO may) {
+        JPanel panel = new JPanel();
+        panel.setPreferredSize(new Dimension(120, 120));
+        panel.setLayout(new BorderLayout());
 
-        // Tạo panel cho các máy tính với ô vuông hiển thị trạng thái
-        JPanel machinePanel = new JPanel();
-        machinePanel.setLayout(new GridLayout(4, 5, 10, 10)); // 4 hàng, 5 cột
+        JLabel lblTen = new JLabel(may.getTenMay(), SwingConstants.CENTER);
+        JLabel lblTrangThai = new JLabel(getTrangThaiText(may.getTrangThai()), SwingConstants.CENTER);
+        mapTrangThaiLabel.put(may, lblTrangThai);
 
-        // Tạo các ô vuông cho mỗi máy
-        String[] mayTinhList = new String[20];
-        Color[] mayTinhColors = new Color[20];
-        String[] mayTinhStatuses = new String[20];
+        JButton btnChinhSuaMay = new JButton("Chỉnh sửa");
+        btnChinhSuaMay.setVisible(false); // Chỉ hiển thị khi panel được chọn
 
-        // Giả sử bạn có các trạng thái máy tính (bạn có thể thay đổi tình trạng theo ý muốn)
-        for (int i = 0; i < 5; i++) {
-            mayTinhList[i] = "Máy " + (i + 1);
-            if (i  == 1 || i== 4) { // Máy đang dùng
-                mayTinhColors[i] = Color.YELLOW;
-                mayTinhStatuses[i] = "Đang dùng";
-            } else if (i % 2 == 1) { // Máy bảo trì
-                mayTinhColors[i] = Color.GREEN;
-                mayTinhStatuses[i] = "Bảo trì";
-            } else { // Máy trống
-                mayTinhColors[i] = Color.WHITE;
-                mayTinhStatuses[i] = "Trống";
-            }
-            
-            // Tạo một panel cho mỗi máy
-            JPanel machineSquare = new JPanel();
-            machineSquare.setBackground(mayTinhColors[i]);
-            machineSquare.setPreferredSize(new Dimension(100, 100)); // Kích thước ô vuông
+        panel.add(lblTen, BorderLayout.NORTH);
+        panel.add(lblTrangThai, BorderLayout.CENTER);
+        panel.add(btnChinhSuaMay, BorderLayout.SOUTH);
 
-            JLabel machineLabel = new JLabel(mayTinhList[i]);
-            machineLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            machineSquare.add(machineLabel);
+        Color color = getColorForTrangThai(may.getTrangThai());
+        panel.setBackground(color);
+        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
-            JLabel statusLabel = new JLabel(mayTinhStatuses[i]);
-            statusLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            statusLabel.setFont(new Font("Arial", Font.ITALIC, 12));
-
-            // Thêm label trạng thái vào dưới mỗi ô vuông
-            machineSquare.add(statusLabel, BorderLayout.SOUTH);
-            machinePanel.add(machineSquare);
-            themSuKienClick(machineSquare, statusLabel);
+        if (may.getTrangThai() == 2) {
+            startTimer(may);
         }
 
-        centerPanel.add(machinePanel);
+        panel.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (selectedPanel != null && selectedPanel != panel) {
+                    selectedPanel.setBackground(previousColor);
+                    // Ẩn nút chỉnh sửa của panel cũ
+                    for (Component c : selectedPanel.getComponents()) {
+                        if (c instanceof JButton) {
+                            c.setVisible(false);
+                        }
+                    }
+                }
 
-        // Phần nhập thời gian (dùng JSpinner thay cho JDateChooser)
-JPanel timePanel = new JPanel();
-timePanel.setLayout(new FlowLayout());
-
-JLabel startLabel = new JLabel("Thời gian bắt đầu:");
-SpinnerDateModel startModel = new SpinnerDateModel();
-JSpinner startSpinner = new JSpinner(startModel);
-startSpinner.setEditor(new JSpinner.DateEditor(startSpinner, "dd/MM/yyyy HH:mm"));
-startSpinner.setPreferredSize(new Dimension(150, 25));
-
-JLabel endLabel = new JLabel("Thời gian kết thúc:");
-SpinnerDateModel endModel = new SpinnerDateModel();
-JSpinner endSpinner = new JSpinner(endModel);
-endSpinner.setEditor(new JSpinner.DateEditor(endSpinner, "dd/MM/yyyy HH:mm"));
-endSpinner.setPreferredSize(new Dimension(150, 25));
-
-timePanel.add(startLabel);
-timePanel.add(startSpinner);
-timePanel.add(endLabel);
-timePanel.add(endSpinner);
-
-centerPanel.add(timePanel);
-
-
-        // Nút Đặt
-        datButton = new JButton("Đặt Máy");
-        datButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                // Xử lý khi nút được nhấn
-                String mayTinh = (String) mayTinhComboBox.getSelectedItem();
-                String startTime = startTimeField.getText();
-                String endTime = endTimeField.getText();
-                JOptionPane.showMessageDialog(maytinh.this, "Đã đặt " + mayTinh + " từ " + startTime + " đến " + endTime);
-            }
-        });
-        centerPanel.add(datButton);
-
-        // Thêm panel con vào panel chính
-        this.add(centerPanel, BorderLayout.CENTER);
-    }
-    
-    private void themSuKienClick(JPanel machineSquare, JLabel statusLabel) {
-    machineSquare.addMouseListener(new java.awt.event.MouseAdapter() {
-        private boolean isDat = false;
-
-        @Override
-        public void mouseClicked(java.awt.event.MouseEvent evt) {
-            String status = statusLabel.getText();
-
-            // Chỉ xử lý nếu máy đang trống hoặc đã được đặt
-            if (status.equals("Trống") || status.equals("Đang đặt")) {
-                if (!isDat) {
-                    machineSquare.setBackground(Color.CYAN);
-                    statusLabel.setText("Đang đặt");
-                    isDat = true;
+                if (selectedPanel == panel) {
+                    panel.setBackground(previousColor);
+                    selectedPanel = null;
+                    selectedMay = null;
+                    btnChinhSuaMay.setVisible(false);
+                    updateLabelTrangThai(may);
                 } else {
-                    machineSquare.setBackground(Color.WHITE);
-                    statusLabel.setText("Trống");
-                    isDat = false;
+                    previousColor = panel.getBackground();
+                    panel.setBackground(Color.CYAN);
+                    selectedPanel = panel;
+                    selectedMay = may;
+                    lblTrangThai.setText("Đang chọn");
+                    btnChinhSuaMay.setVisible(true);
                 }
             }
-            // Nếu máy đang dùng hoặc bảo trì thì không làm gì
-        }
-    });
-}
+        });
 
+        btnChinhSuaMay.addActionListener(e -> showEditDialog());
+
+        return panel;
+    }
+
+    private void showEditDialog() {
+        if (selectedMay == null) return;
+
+        JDialog dialog = new JDialog((Frame) null, "Chỉnh sửa máy", true);
+        dialog.setLayout(new GridLayout(0, 1));
+        JComboBox<String> cbTrangThai = new JComboBox<>(new String[]{"Trống", "Đang sử dụng", "Bảo trì"});
+        JTextField tfMaKH = new JTextField();
+        tfMaKH.setVisible(false);
+
+        cbTrangThai.addActionListener(e -> {
+            String chon = (String) cbTrangThai.getSelectedItem();
+            tfMaKH.setVisible("Đang sử dụng".equals(chon));
+            dialog.pack();
+        });
+
+        dialog.add(new JLabel("Trạng thái:"));
+        dialog.add(cbTrangThai);
+        dialog.add(new JLabel("Mã khách hàng (nếu có):"));
+        dialog.add(tfMaKH);
+
+        JButton btnXacNhan = new JButton("Xác nhận");
+        dialog.add(btnXacNhan);
+
+        btnXacNhan.addActionListener(e -> {
+            String trangThaiStr = (String) cbTrangThai.getSelectedItem();
+            int newTrangThai = 1;
+            if ("Trống".equals(trangThaiStr)) newTrangThai = 1;
+            else if ("Đang sử dụng".equals(trangThaiStr)) newTrangThai = 2;
+            else if ("Bảo trì".equals(trangThaiStr)) newTrangThai = 3;
+
+            if (newTrangThai == 2) {
+                String maKH = tfMaKH.getText();
+                if (maKH.trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(dialog, "Vui lòng nhập mã khách hàng!");
+                    return;
+                }
+                mapStartTime.put(selectedMay, System.currentTimeMillis());
+                startTimer(selectedMay);
+            } else {
+                stopTimer(selectedMay);
+            }
+
+            selectedMay.setTrangThai(newTrangThai);
+
+            // Cập nhật lại giao diện
+            removeAll();
+            mapTrangThaiLabel.clear();
+            for (MayTinhDTO may : danhSach) {
+                JPanel panel = createMayPanel(may);
+                add(panel);
+            }
+
+            selectedPanel = null;
+            selectedMay = null;
+
+            revalidate();
+            repaint();
+            dialog.dispose();
+        });
+
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
+    private void startTimer(MayTinhDTO may) {
+        if (mapTimer.containsKey(may)) return;
+
+        long startTime = mapStartTime.getOrDefault(may, System.currentTimeMillis());
+        mapStartTime.put(may, startTime);
+
+        Timer timer = new Timer(1000, new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                long elapsed = (System.currentTimeMillis() - startTime) / 1000;
+                long h = elapsed / 3600;
+                long m = (elapsed % 3600) / 60;
+                long s = elapsed % 60;
+
+                String timeStr = String.format("%02d:%02d:%02d", h, m, s);
+                JLabel lbl = mapTrangThaiLabel.get(may);
+                if (lbl != null) {
+                    lbl.setText(timeStr);
+                }
+            }
+        });
+        timer.start();
+        mapTimer.put(may, timer);
+    }
+
+    private void stopTimer(MayTinhDTO may) {
+        Timer timer = mapTimer.get(may);
+        if (timer != null) {
+            timer.stop();
+            mapTimer.remove(may);
+        }
+        mapStartTime.remove(may);
+    }
+
+    private void updateLabelTrangThai(MayTinhDTO may) {
+        JLabel lbl = mapTrangThaiLabel.get(may);
+        if (lbl != null) {
+            if (may.getTrangThai() == 2 && mapStartTime.containsKey(may)) {
+                // Giữ nguyên đồng hồ
+            } else {
+                lbl.setText(getTrangThaiText(may.getTrangThai()));
+            }
+        }
+    }
+
+    private Color getColorForTrangThai(int trangThai) {
+        switch (trangThai) {
+            case 1: return Color.WHITE;
+            case 2: return Color.YELLOW;
+            case 3: return Color.GREEN;
+            default: return Color.LIGHT_GRAY;
+        }
+    }
+
+    private String getTrangThaiText(int trangThai) {
+        switch (trangThai) {
+            case 1: return "Trống";
+            case 2: return "Đang sử dụng";
+            case 3: return "Bảo trì";
+            default: return "Không rõ";
+        }
+    }
 }

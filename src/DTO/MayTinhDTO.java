@@ -20,17 +20,18 @@ public class MayTinhDTO {
     private String tenMay;
     private int trangThai;
     private String viTri;
+    private int giaThue;
     private Timestamp thoiGianTao;
 
     public MayTinhDTO() {
     }
 
-    public MayTinhDTO(int maMay, String tenMay, int trangThai, String viTri, Timestamp thoiGianTao) {
+    public MayTinhDTO(int maMay, String tenMay, int trangThai, String viTri, int giaThue) {
         this.maMay = maMay;
         this.tenMay = tenMay;
         this.trangThai = trangThai;
         this.viTri = viTri;
-        this.thoiGianTao = thoiGianTao;
+        this.giaThue= giaThue;
     }
 
     public int getMaMay() {
@@ -72,6 +73,8 @@ public class MayTinhDTO {
     public void setThoiGianTao(Timestamp thoiGianTao) {
         this.thoiGianTao = thoiGianTao;
     }
+    
+     public int getGiaThue() { return giaThue; }
 
     @Override
     public String toString() {
