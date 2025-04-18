@@ -3,7 +3,8 @@ package GUI;
 //import BUS.TaiKhoanBUS;
 //import DTO.TaiKhoanDTO;
 import BUS.NhanVienBUS;
-import DTO.NhanVienDTO;
+import BUS.TaiKhoanBUS;
+import DTO.TaiKhoanDTO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -12,12 +13,12 @@ public class Login extends JFrame {
     private JTextField txtUsername;
     private JPasswordField txtPassword;
     private JButton btnDangNhap;
-    private NhanVienBUS nvBUS;
-//    private TaiKhoanBUS tkBUS;
+//    private NhanVienBUS nvBUS;
+    private TaiKhoanBUS tkBUS;
 
     public Login() {
-//        tkBUS = new TaiKhoanBUS();
-        nvBUS = new NhanVienBUS();
+        tkBUS = new TaiKhoanBUS();
+//        nvBUS = new NhanVienBUS();
         setSystemLookAndFeel();
         initComponents();
     }
@@ -145,7 +146,7 @@ public class Login extends JFrame {
             return;
         }
 
-        NhanVienDTO nv = nvBUS.dangNhap(username, matkhau);
+        TaiKhoanDTO nv = tkBUS.dangNhap(username, matkhau);
         if(nv != null){
             new datmaytay();
             dispose();

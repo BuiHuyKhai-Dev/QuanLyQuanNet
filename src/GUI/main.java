@@ -8,8 +8,8 @@ package GUI;
  * @author ADMIN
  */
 public class main {
-     public static void main(String[] args) {
-//            new datmaytay();
-                new Login();
-     }
+//     public static void main(String[] args) {
+////            new datmaytay();
+////                new Login();
+//     }
 }

@@ -4,10 +4,24 @@
  */
 package BUS;
 
+import DAO.TaiKhoanDAO;
+import DTO.TaiKhoanDTO;
+import java.util.ArrayList;
+
 /**
  *
  * @author Minnie
  */
 public class TaiKhoanBUS {
+//        private final ArrayList<TaiKhoanDTO> listTK;
+        private final TaiKhoanDAO tkDAO;
     
+        public TaiKhoanBUS(){
+            this.tkDAO = TaiKhoanDAO.getInstance();
+//            this.tkDAO= tkDAO.selectAll();
+        }
+    
+        public TaiKhoanDTO dangNhap(String username, String matkhau){
+            return tkDAO.kiemTraDangNhap(username, matkhau);
+        }
 }
