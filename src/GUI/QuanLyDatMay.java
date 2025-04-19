@@ -10,44 +10,46 @@ public class QuanLyDatMay extends JFrame {
     public QuanLyDatMay() {
         setLayout(new BorderLayout());
 
-        // --- Panel chứa 2 nút bên trái ---
+        // --- Panel menu bên trái ---
         JPanel leftPanel = new JPanel();
-        leftPanel.setLayout(new GridLayout(2, 1, 10, 10));
-        leftPanel.setBorder(BorderFactory.createEmptyBorder(20, 10, 20, 10));
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+        leftPanel.setBackground(new Color(230, 230, 230));
+        leftPanel.setPreferredSize(new Dimension(180, getHeight()));
+        leftPanel.setBorder(BorderFactory.createEmptyBorder(30, 10, 30, 10));
 
-        JButton btnXemTinhTrang = new JButton("Xem tình trạng máy");
-        JButton btnXemLichSu = new JButton("Xem lịch sử sử dụng");
+        // --- Tạo các nút ---
+        JButton btnXemTinhTrang = new JButton("🖥  Tình trạng máy");
+        JButton btnXemLichSu = new JButton("📜  Lịch sử sử dụng");
 
+        btnXemTinhTrang.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnXemLichSu.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        btnXemTinhTrang.setMaximumSize(new Dimension(160, 40));
+        btnXemLichSu.setMaximumSize(new Dimension(160, 40));
+
+        // Khoảng cách giữa các nút
         leftPanel.add(btnXemTinhTrang);
+        leftPanel.add(Box.createRigidArea(new Dimension(0, 15)));
         leftPanel.add(btnXemLichSu);
 
-        // --- Panel trung tâm sử dụng CardLayout ---
+        // --- Panel trung tâm dùng CardLayout ---
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
-
-        // Tạm thời tạo 2 panel đơn giản để hiển thị
-        JPanel tinhTrangPanel = new JPanel();
-        tinhTrangPanel.setBackground(Color.LIGHT_GRAY);
-        tinhTrangPanel.add(new JLabel("Đây là panel tình trạng máy"));
-
-        JPanel lichSuPanel = new JPanel();
-        lichSuPanel.setBackground(Color.WHITE);
-        lichSuPanel.add(new JLabel("Đây là panel lịch sử sử dụng"));
 
         cardPanel.add(new maytinh(), "TinhTrang");
         cardPanel.add(new SuDungMayGUI(), "LichSu");
 
-        // Sự kiện chuyển panel khi bấm nút
+        // --- Sự kiện chuyển panel ---
         btnXemTinhTrang.addActionListener(e -> cardLayout.show(cardPanel, "TinhTrang"));
         btnXemLichSu.addActionListener(e -> cardLayout.show(cardPanel, "LichSu"));
 
-        // Thêm vào giao diện chính
+        // --- Thêm vào giao diện chính ---
         add(leftPanel, BorderLayout.WEST);
         add(cardPanel, BorderLayout.CENTER);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 500);
-        setLocationRelativeTo(null);
 
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(900, 550);
+        setLocationRelativeTo(null);
         setVisible(true);
     }
 }

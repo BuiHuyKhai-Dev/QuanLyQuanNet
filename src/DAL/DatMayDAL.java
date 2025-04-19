@@ -13,10 +13,10 @@ import java.util.ArrayList;
  */
 public class DatMayDAL {
    DBConnect db= new DBConnect();
-   Connection conn= db.getConnection();
+   Connection conn= null;
     public ArrayList<MayTinhDTO> selectAll() {
         ArrayList<MayTinhDTO> ds = new ArrayList<>();
-        try {
+        try (Connection conn = db.getConnection()){
             String sql = "SELECT MaMay, TenMay, TrangThai, ViTri, GiaThue FROM MayTinh";
             PreparedStatement stmt = conn.prepareStatement(sql);
             ResultSet rs = stmt.executeQuery();
@@ -44,7 +44,7 @@ public class DatMayDAL {
 
     public double layGiaThue(int maMay) throws SQLException {
         double giaThue = 0;
-
+        try (Connection conn = db.getConnection()){
         // Câu lệnh SQL để truy vấn giá thuê của máy tính
         String sql = "SELECT GiaThue FROM maytinh WHERE MaMay = ?";
 
@@ -63,9 +63,28 @@ public class DatMayDAL {
         // Đóng ResultSet và PreparedStatement
         rs.close();
         stmt.close();
+        }catch (Exception e){
+            System.out.println("loi");
+            return -1;
+        }
 
         // Trả về giá thuê
         return giaThue;
+    }
+    
+    public boolean capnhattrangthai(int maMay, int tt){
+        String query= "Update maytinh set trangthai= ? where maMay= ?";
+        try (Connection conn = db.getConnection()){
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, tt);
+            stmt.setInt(2, maMay);
+            stmt.executeUpdate();
+        }
+        catch (Exception e){
+            System.out.println("loi");
+            return false;
+        }
+        return true;
     }
 
 }

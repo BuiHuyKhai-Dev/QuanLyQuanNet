@@ -69,8 +69,9 @@ public class SuDungMayGUI extends JPanel {
         revalidate();
         repaint();
     }
+    
 
-    private void hienThiLichSuDatMay() {
+    public void hienThiLichSuDatMay() {
     if (maMayDaChon == -1) return;
 
     SuDungMayDAO suDungDAO = new SuDungMayDAO();
