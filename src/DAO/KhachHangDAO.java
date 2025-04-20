@@ -10,7 +10,8 @@ package DAO;
  */
 import DAL.DBConnect;
 import java.sql.*;
-
+import java.util.ArrayList;
+import DTO.KhachHangDTO;
 public class KhachHangDAO {
     DBConnect db = new DBConnect();
     // Hàm kiểm tra mã khách hàng có tồn tại không
@@ -71,6 +72,28 @@ public class KhachHangDAO {
 
     return thanhCong;
 }
+    public ArrayList<KhachHangDTO> getAllKhachHang() {
+        ArrayList<KhachHangDTO> ds = new ArrayList<>();
+        String sql = "SELECT MaKH, TenKH, SoDienThoai FROM khachhang";
 
+        try (Connection conn = db.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                KhachHangDTO kh = new KhachHangDTO(
+                    rs.getInt("MaKH"),
+                    rs.getString("TenKH"),
+                    rs.getString("SoDienThoai")
+                );
+                ds.add(kh);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return ds;
+    }
 
 }

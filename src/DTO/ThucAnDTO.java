@@ -1,36 +1,33 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package DTO;
 
+import java.math.BigDecimal;
+import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.Date;
+import java.util.ArrayList;
 
-/**
- *
- * @author Minnie
- */
+import DAO.ThucAnDAO;
+
 public class ThucAnDTO {
     private int maThucAn;
     private String tenThucAn;
     private String donVi;
-    private double donGia;
+    private BigDecimal donGia;
     private Date hanSuDung;
-    private Timestamp thoiGianTao;
+    private Timestamp createdAt;
+    public ThucAnDTO() {}
 
-    public ThucAnDTO() {
-    }
-
-    public ThucAnDTO(int maThucAn, String tenThucAn, String donVi, double donGia, Date hanSuDung, Timestamp thoiGianTao) {
+    public ThucAnDTO(int maThucAn, String tenThucAn, String donVi, BigDecimal donGia, Date hanSuDung) {
         this.maThucAn = maThucAn;
         this.tenThucAn = tenThucAn;
         this.donVi = donVi;
         this.donGia = donGia;
         this.hanSuDung = hanSuDung;
-        this.thoiGianTao = thoiGianTao;
     }
 
+    // Getter và Setter
+    public static ArrayList<ThucAnDTO> getAll(){
+        return ThucAnDAO.getAll();
+    }
     public int getMaThucAn() {
         return maThucAn;
     }
@@ -55,11 +52,11 @@ public class ThucAnDTO {
         this.donVi = donVi;
     }
 
-    public double getDonGia() {
+    public BigDecimal getDonGia() {
         return donGia;
     }
 
-    public void setDonGia(double donGia) {
+    public void setDonGia(BigDecimal donGia) {
         this.donGia = donGia;
     }
 
@@ -70,41 +67,16 @@ public class ThucAnDTO {
     public void setHanSuDung(Date hanSuDung) {
         this.hanSuDung = hanSuDung;
     }
-
-    public Timestamp getThoiGianTao() {
-        return thoiGianTao;
+    
+    public Timestamp getCreatedAt() {
+        return createdAt;
     }
 
-    public void setThoiGianTao(Timestamp thoiGianTao) {
-        this.thoiGianTao = thoiGianTao;
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
     }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 97 * hash + this.maThucAn;
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final ThucAnDTO other = (ThucAnDTO) obj;
-        return this.maThucAn == other.maThucAn;
-    }
-
     @Override
     public String toString() {
-        return "ThucAnDTO{" + "maThucAn=" + maThucAn + ", tenThucAn=" + tenThucAn + ", donVi=" + donVi + ", donGia=" + donGia + ", hanSuDung=" + hanSuDung + ", thoiGianTao=" + thoiGianTao + '}';
+        return this.tenThucAn; 
     }
-    
-    
 }

@@ -18,7 +18,11 @@ public class KhachHangDTO {
     private Timestamp thoigianTao;
 
     public KhachHangDTO(){}
-    
+    public KhachHangDTO(int maKhachHang, String tenKhachHang, String soDienThoai) {
+        this.maKhachHang = maKhachHang;
+        this.tenKhachHang = tenKhachHang;
+        this.soDienThoai = soDienThoai;
+    }
     public KhachHangDTO(int maKhachHang, String tenKhachHang, String soDienThoai, String Email, String matKhau, double soDuTaiKhoan, Timestamp thoigianTao) {
         this.maKhachHang = maKhachHang;
         this.tenKhachHang = tenKhachHang;
