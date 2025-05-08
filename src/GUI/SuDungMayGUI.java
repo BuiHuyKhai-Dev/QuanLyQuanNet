@@ -47,7 +47,7 @@ public class SuDungMayGUI extends JPanel {
 
         // Load danh sách máy
         hienThiDanhSachMay();
-    }
+    } 
 
     private void hienThiDanhSachMay() {
         DatMayDAL mayDAO = new DatMayDAL();
