@@ -1,114 +1,59 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package DTO;
-import java.sql.Timestamp;
-/**
- *
- * @author Minnie
- */
 public class KhachHangDTO {
-    private int maKhachHang;
-    private String tenKhachHang;
-    private String soDienThoai;
-    private String Email;
-    private String matKhau;
-    private double soDuTaiKhoan;
-    private Timestamp thoigianTao;
+    private String maKH, tenKH, matKhau, cccd, soDT, ngaySinh, ngayDangKy;
+    private int soGio;
+    private double soTienNaptong, soDu;
+    private int trangThai;
 
-    public KhachHangDTO(){}
-    
-    public KhachHangDTO(int maKhachHang, String tenKhachHang, String soDienThoai, String Email, String matKhau, double soDuTaiKhoan, Timestamp thoigianTao) {
-        this.maKhachHang = maKhachHang;
-        this.tenKhachHang = tenKhachHang;
-        this.soDienThoai = soDienThoai;
-        this.Email = Email;
+    public KhachHangDTO() {}
+
+    public KhachHangDTO(String maKH, String tenKH, String matKhau, String cccd, String soDT,
+                        String ngaySinh, String ngayDangKy, int soGio, double soTienNaptong,
+                        double soDu, int trangThai) {
+        this.maKH = maKH;
+        this.tenKH = tenKH;
         this.matKhau = matKhau;
-        this.soDuTaiKhoan = soDuTaiKhoan;
-        this.thoigianTao = thoigianTao;
+        this.cccd = cccd;
+        this.soDT = soDT;
+        this.ngaySinh = ngaySinh;
+        this.ngayDangKy = ngayDangKy;
+        this.soGio = soGio;
+        this.soTienNaptong = soTienNaptong;
+        this.soDu = soDu;
+        this.trangThai = trangThai;
     }
 
-    public int getMaKhachHang() {
-        return maKhachHang;
-    }
+    // Getter & Setter
+    public String getMaKH() { return maKH; }
+    public void setMaKH(String maKH) { this.maKH = maKH; }
 
-    public void setMaKhachHang(int maKhachHang) {
-        this.maKhachHang = maKhachHang;
-    }
+    public String getTenKH() { return tenKH; }
+    public void setTenKH(String tenKH) { this.tenKH = tenKH; }
 
-    public String getTenKhachHang() {
-        return tenKhachHang;
-    }
+    public String getMatKhau() { return matKhau; }
+    public void setMatKhau(String matKhau) { this.matKhau = matKhau; }
 
-    public void setTenKhachHang(String tenKhachHang) {
-        this.tenKhachHang = tenKhachHang;
-    }
+    public String getCccd() { return cccd; }
+    public void setCccd(String cccd) { this.cccd = cccd; }
 
-    public String getSoDienThoai() {
-        return soDienThoai;
-    }
+    public String getSoDT() { return soDT; }
+    public void setSoDT(String soDT) { this.soDT = soDT; }
 
-    public void setSoDienThoai(String soDienThoai) {
-        this.soDienThoai = soDienThoai;
-    }
+    public String getNgaySinh() { return ngaySinh; }
+    public void setNgaySinh(String ngaySinh) { this.ngaySinh = ngaySinh; }
 
-    public String getEmail() {
-        return Email;
-    }
+    public String getNgayDangKy() { return ngayDangKy; }
+    public void setNgayDangKy(String ngayDangKy) { this.ngayDangKy = ngayDangKy; }
 
-    public void setEmail(String Email) {
-        this.Email = Email;
-    }
+    public int getSoGio() { return soGio; }
+    public void setSoGio(int soGio) { this.soGio = soGio; }
 
-    public String getMatKhau() {
-        return matKhau;
-    }
+    public double getSoTienNaptong() { return soTienNaptong; }
+    public void setSoTienNaptong(double soTienNaptong) { this.soTienNaptong = soTienNaptong; }
 
-    public void setMatKhau(String matKhau) {
-        this.matKhau = matKhau;
-    }
+    public double getSoDu() { return soDu; }
+    public void setSoDu(double soDu) { this.soDu = soDu; }
 
-    public double getSoDuTaiKhoan() {
-        return soDuTaiKhoan;
-    }
-
-    public void setSoDuTaiKhoan(double soDuTaiKhoan) {
-        this.soDuTaiKhoan = soDuTaiKhoan;
-    }
-
-    public Timestamp getThoigianTao() {
-        return thoigianTao;
-    }
-
-    public void setThoigianTao(Timestamp thoigianTao) {
-        this.thoigianTao = thoigianTao;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 53 * hash + this.maKhachHang;
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final KhachHangDTO other = (KhachHangDTO) obj;
-        return this.maKhachHang == other.maKhachHang;
-    }
-
-    @Override
-    public String toString() {
-        return "KhachHangDTO{" + "maKhachHang=" + maKhachHang + ", tenKhachHang=" + tenKhachHang + ", soDienThoai=" + soDienThoai + ", Email=" + Email + ", matKhau=" + matKhau + ", soDuTaiKhoan=" + soDuTaiKhoan + ", thoigianTao=" + thoigianTao + '}';
-    }
+    public int getTrangThai() { return trangThai; }
+    public void setTrangThai(int trangThai) { this.trangThai = trangThai; }
 }
