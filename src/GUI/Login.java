@@ -148,8 +148,8 @@ public class Login extends JFrame {
 
         TaiKhoanDTO nv = tkBUS.dangNhap(username, matkhau);
         if(nv != null){
-//            new datmaytay();
-                new QuanLyDatMay();
+            new datmaytay();
+//                new QuanLyDatMay();
             dispose();
         }else{
             showErrorMessage("Tài khoản hoặc mật khẩu không đúng!");

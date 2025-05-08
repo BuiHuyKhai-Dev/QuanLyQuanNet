@@ -20,17 +20,22 @@ public class QuanLyDatMay extends JFrame {
         // --- Tạo các nút ---
         JButton btnXemTinhTrang = new JButton("🖥  Tình trạng máy");
         JButton btnXemLichSu = new JButton("📜  Lịch sử sử dụng");
+        JButton btnChinhLichSu = new JButton("📜  Chỉnh sửa lịch sử sử dụng");
 
         btnXemTinhTrang.setAlignmentX(Component.CENTER_ALIGNMENT);
         btnXemLichSu.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnChinhLichSu.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         btnXemTinhTrang.setMaximumSize(new Dimension(160, 40));
         btnXemLichSu.setMaximumSize(new Dimension(160, 40));
+        btnChinhLichSu.setMaximumSize(new Dimension(160, 40));
 
         // Khoảng cách giữa các nút
         leftPanel.add(btnXemTinhTrang);
         leftPanel.add(Box.createRigidArea(new Dimension(0, 15)));
         leftPanel.add(btnXemLichSu);
+        leftPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        leftPanel.add(btnChinhLichSu);
 
         // --- Panel trung tâm dùng CardLayout ---
         cardLayout = new CardLayout();
@@ -38,10 +43,12 @@ public class QuanLyDatMay extends JFrame {
 
         cardPanel.add(new maytinh(), "TinhTrang");
         cardPanel.add(new SuDungMayGUI(), "LichSu");
+        cardPanel.add(new ChinhSuaSDM(), "ChinhSua");
 
         // --- Sự kiện chuyển panel ---
         btnXemTinhTrang.addActionListener(e -> cardLayout.show(cardPanel, "TinhTrang"));
         btnXemLichSu.addActionListener(e -> cardLayout.show(cardPanel, "LichSu"));
+        btnChinhLichSu.addActionListener(e -> cardLayout.show(cardPanel, "ChinhSua"));
 
         // --- Thêm vào giao diện chính ---
         add(leftPanel, BorderLayout.WEST);

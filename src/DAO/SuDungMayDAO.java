@@ -34,7 +34,7 @@ public ArrayList<SuDungMayDTO> selectAll() {
             int maMay = rs.getInt("MaMay");
             Timestamp thoiGianBatDau = rs.getTimestamp("ThoiGianBatDau");
             Timestamp thoiGianKetThuc = rs.getTimestamp("ThoiGianKetThuc");
-            int tongThoiGian = rs.getInt("TongThoiGian");
+            double tongThoiGian = rs.getDouble("TongThoiGian");
             double chiPhi = rs.getDouble("ChiPhi");
 
             SuDungMayDTO suDung = new SuDungMayDTO(
@@ -104,7 +104,7 @@ public ArrayList<SuDungMayDTO> selectAll() {
         stmt.setNull(4, java.sql.Types.TIMESTAMP);
         
 
-        stmt.setInt(5, sdm.getTongThoiGian());
+        stmt.setDouble(5, sdm.getTongThoiGian());
         stmt.setDouble(6, sdm.getChiPhi());
         stmt.setDouble(7, 1);
 
