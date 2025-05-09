@@ -10,6 +10,7 @@ import java.sql.Timestamp;
  */
 public class SuDungMayDTO {
     private int maSuDung;
+    private int maNV;
     private int maKhachHang;
     private int maMay;
     private Timestamp thoiGianBatDau;
@@ -22,8 +23,9 @@ public class SuDungMayDTO {
     public SuDungMayDTO() {
     }
 
-    public SuDungMayDTO(int maSuDung, int maKhachHang, int maMay, Timestamp thoiGianBatDau, Timestamp thoiGianKetThuc, double tongThoiGian, double chiPhi) {
+    public SuDungMayDTO(int maSuDung, int maNV, int maKhachHang, int maMay, Timestamp thoiGianBatDau, Timestamp thoiGianKetThuc, double tongThoiGian, double chiPhi) {
         this.maSuDung = maSuDung;
+        this.maNV = maNV;
         this.maKhachHang = maKhachHang;
         this.maMay = maMay;
         this.thoiGianBatDau = thoiGianBatDau;
@@ -54,6 +56,13 @@ public class SuDungMayDTO {
 
     public void setMaMay(int maMay) {
         this.maMay = maMay;
+    }
+    public int getMaNV() {
+        return maNV;
+    }
+
+    public void setNV(int maNV) {
+        this.maNV= maNV;
     }
 
     public Timestamp getThoiGianBatDau() {

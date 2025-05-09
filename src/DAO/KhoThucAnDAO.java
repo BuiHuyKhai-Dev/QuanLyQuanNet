@@ -2,6 +2,7 @@ package DAO;
 import java.sql.*;
 import java.util.*;
 import DAL.DBConnect;
+import DTO.KhoThucAnDTO;
 import model.*;
 
 public class KhoThucAnDAO {

@@ -24,12 +24,13 @@ public class SuDungMayDAO {
 public ArrayList<SuDungMayDTO> selectAll() {
     ArrayList<SuDungMayDTO> ds = new ArrayList<>();
     try (Connection conn = db.getConnection()){
-        String sql = "SELECT MaSuDung, MaKH, MaMay, ThoiGianBatDau, ThoiGianKetThuc, TongThoiGian, ChiPhi from sudungmay";
+        String sql = "SELECT * from sudungmay";
         PreparedStatement stmt = conn.prepareStatement(sql);
         ResultSet rs = stmt.executeQuery();
 
         while (rs.next()) {
             int maSuDung = rs.getInt("MaSuDung");
+            int maNV = rs.getInt("MaNV");
             int maKhachHang = rs.getInt("MaKH");
             int maMay = rs.getInt("MaMay");
             Timestamp thoiGianBatDau = rs.getTimestamp("ThoiGianBatDau");
@@ -39,6 +40,7 @@ public ArrayList<SuDungMayDTO> selectAll() {
 
             SuDungMayDTO suDung = new SuDungMayDTO(
                 maSuDung,
+                maNV,
                 maKhachHang,
                 maMay,
                 thoiGianBatDau,
@@ -66,6 +68,7 @@ public ArrayList<SuDungMayDTO> selectAll() {
 
         while (rs.next()) {
             int maSuDung = rs.getInt("MaSuDung");
+            int maNV = rs.getInt("MaNV");
             int maKhachHang = rs.getInt("MaKH");
             int maMay = rs.getInt("MaMay");
             Timestamp thoiGianBatDau = rs.getTimestamp("ThoiGianBatDau");
@@ -75,6 +78,7 @@ public ArrayList<SuDungMayDTO> selectAll() {
 
             ds = new SuDungMayDTO(
                 maSuDung,
+                maNV,
                 maKhachHang,
                 maMay,
                 thoiGianBatDau,
@@ -91,22 +95,23 @@ public ArrayList<SuDungMayDTO> selectAll() {
 }
 
     public boolean insert(SuDungMayDTO sdm) {
-    String sql = "INSERT INTO sudungmay (MaKH, MaMay, ThoiGianBatDau, ThoiGianKetThuc, TongThoiGian, ChiPhi, trangthai) "
-               + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO sudungmay (MaKH, MaNV, MaMay, ThoiGianBatDau, ThoiGianKetThuc, TongThoiGian, ChiPhi, trangthai) "
+               + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
      try (Connection conn = db.getConnection()){
         doiTrangThai(sdm.getMaMay());
         PreparedStatement stmt = conn.prepareStatement(sql);
         stmt.setInt(1, sdm.getMaKhachHang());
-        stmt.setInt(2, sdm.getMaMay());
-        stmt.setTimestamp(3, sdm.getThoiGianBatDau());
+        stmt.setInt(2, sdm.getMaNV());
+        stmt.setInt(3, sdm.getMaMay());
+        stmt.setTimestamp(4, sdm.getThoiGianBatDau());
 
         
-        stmt.setNull(4, java.sql.Types.TIMESTAMP);
+        stmt.setNull(5, java.sql.Types.TIMESTAMP);
         
 
-        stmt.setDouble(5, sdm.getTongThoiGian());
-        stmt.setDouble(6, sdm.getChiPhi());
-        stmt.setDouble(7, 1);
+        stmt.setDouble(6, sdm.getTongThoiGian());
+        stmt.setDouble(7, sdm.getChiPhi());
+        stmt.setDouble(8, 1);
 
         int rows = stmt.executeUpdate();
         stmt.close();

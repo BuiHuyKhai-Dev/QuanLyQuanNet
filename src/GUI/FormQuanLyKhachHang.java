@@ -5,7 +5,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.List;
-import DAL.Database;
+import DAL.DBConnect;
 import DTO.KhachHangDTO;
 import DAO.KhachHangDAO;
 import BUS.KhachHangBUS;

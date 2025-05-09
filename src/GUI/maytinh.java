@@ -181,7 +181,7 @@ public class maytinh extends JPanel {
 
             // Kiểm tra mã khách hàng
             KhachHangDAO khDAL = new KhachHangDAO();
-            if (!khDAL.tonTaiMaKH(maKH)) {
+            if (khDAL.timTheoMaKH(String.valueOf(maKH))== null) {
                 JOptionPane.showMessageDialog(dialog, "Mã khách hàng không tồn tại!");
                 return;
             }
@@ -194,6 +194,7 @@ public class maytinh extends JPanel {
             // Tạo SuDungMayDTO mới
             SuDungMayDTO sdm = new SuDungMayDTO();
             sdm.setMaKhachHang(maKH);
+            sdm.setNV(1); // Giả sử NV là 1
             sdm.setMaMay(selectedMay.getMaMay());
             sdm.setThoiGianBatDau(new java.sql.Timestamp(now));
             sdm.setThoiGianKetThuc(null);  // Thời gian kết thúc sẽ được cập nhật khi trạng thái thay đổi
