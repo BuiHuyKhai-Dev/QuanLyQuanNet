@@ -7,7 +7,7 @@ import javax.swing.*;
 public class WorkFrame extends JFrame {
     public CardLayout cardLayout = new CardLayout();
     public JPanel PanelCard = new JPanel(cardLayout);
-    private JButton btnTrangChu, btnQuanLyMay, btnDatDoAn, btnQuanLyKhachHang, btnQuanLyNhanVien, btnQuanLyNhaCungCap;
+    private JButton btnTrangChu, btnQuanLyMay, btnDatDoAn, btnQuanLyKhachHang, btnQuanLyNhanVien, btnQuanLyNhaCungCap, btnThongKe;
     private JButton nutDangHoatDong; // Nút đang được chọn
 
     public WorkFrame() {
@@ -67,6 +67,7 @@ public class WorkFrame extends JFrame {
         btnQuanLyKhachHang = createMenuButton("Quản lý khách hàng");
         btnQuanLyNhanVien = createMenuButton("Quản lý nhân viên");
         btnQuanLyNhaCungCap = createMenuButton("Quản lý nhà cung cấp");
+        btnThongKe = createMenuButton("Thống kê"); // Nút Thống kê
 
         gbc.gridy = 1;
         sidebar.add(btnTrangChu, gbc);
@@ -86,8 +87,11 @@ public class WorkFrame extends JFrame {
         gbc.gridy = 6;
         sidebar.add(btnQuanLyNhaCungCap, gbc);
 
-        // Add a "glue" component to push buttons to the top
         gbc.gridy = 7;
+        sidebar.add(btnThongKe, gbc); // Thêm nút Thống kê
+
+        // Add a "glue" component to push buttons to the top
+        gbc.gridy = 8;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         sidebar.add(new JPanel(), gbc);
@@ -99,6 +103,7 @@ public class WorkFrame extends JFrame {
         PanelCard.add(new QuanLyKhachHangPanel(), "Quản lý khách hàng");
         PanelCard.add(new QuanLyNhanVienPanel(), "Quản lý nhân viên");
         PanelCard.add(new QuanLyNhaCungCapPanel(), "Quản lý nhà cung cấp");
+        PanelCard.add(new ThongKePanel(), "Thống kê"); // Thêm ThongKePanel
 
         // Add sidebar and PanelCard to main panel
         mainPanel.add(sidebar, BorderLayout.WEST);
@@ -131,6 +136,8 @@ public class WorkFrame extends JFrame {
                 cardLayout.show(PanelCard, "Quản lý nhân viên");
             } else if (source == btnQuanLyNhaCungCap) {
                 cardLayout.show(PanelCard, "Quản lý nhà cung cấp");
+            } else if (source == btnThongKe) {
+                cardLayout.show(PanelCard, "Thống kê");
             }
         };
 
@@ -140,6 +147,7 @@ public class WorkFrame extends JFrame {
         btnQuanLyKhachHang.addActionListener(action);
         btnQuanLyNhanVien.addActionListener(action);
         btnQuanLyNhaCungCap.addActionListener(action);
+        btnThongKe.addActionListener(action); // Thêm action listener cho nút Thống kê
     }
 
     private JButton createMenuButton(String text) {
