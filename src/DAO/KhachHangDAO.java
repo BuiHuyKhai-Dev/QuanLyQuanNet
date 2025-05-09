@@ -1,13 +1,13 @@
 package DAO;
-import DAL.Database;
 import DTO.KhachHangDTO;
+import DAL.DBConnect;
 import java.sql.*;
 import java.util.*;
 
 public class KhachHangDAO {
     public static List<KhachHangDTO> layDanhSachKhachHang() {
         List<KhachHangDTO> ds = new ArrayList<>();
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnect.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery("SELECT * FROM khachhang WHERE trangthai = 1")) {
 
@@ -35,7 +35,7 @@ public class KhachHangDAO {
     public static boolean themKhachHang(KhachHangDTO kh) {
         String sql = "INSERT INTO khachhang (makh, tenkh, matkhau, cccd, sodienthoai, ngaysinh, ngaydangky, sogio, sotiennaptong, sodu, trangthai) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnect.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, kh.getMaKH());
@@ -59,7 +59,7 @@ public class KhachHangDAO {
 
     public static boolean suaKhachHang(KhachHangDTO kh) {
         String sql = "UPDATE khachhang SET tenkh=?, matkhau=?, cccd=?, sodienthoai=?, ngaysinh=? WHERE makh=?";
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnect.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, kh.getTenKH());
@@ -78,7 +78,7 @@ public class KhachHangDAO {
     
     public static boolean napTien(String maKH, double soTien) {
         String sql = "UPDATE khachhang SET sotiennaptong = sotiennaptong + ?, sodu = sodu + ? WHERE makh = ?";
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnect.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setDouble(1, soTien);
@@ -94,7 +94,7 @@ public class KhachHangDAO {
 
     public static boolean xoaMemKhachHang(String maKH) {
         String sql = "UPDATE khachhang SET trangthai = 0 WHERE makh = ?";
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnect.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, maKH);
             return ps.executeUpdate() > 0;
@@ -106,7 +106,7 @@ public class KhachHangDAO {
 
     public static KhachHangDTO timTheoCCCD(String cccd) {
         String sql = "SELECT * FROM khachhang WHERE cccd = ? AND trangthai = 1";
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnect.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, cccd);
             ResultSet rs = ps.executeQuery();
@@ -132,7 +132,7 @@ public class KhachHangDAO {
     }
     public static KhachHangDTO timTheoMaKH(String maKH) {
         String sql = "SELECT * FROM khachhang WHERE makh = ? AND trangthai = 1";
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnect.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, maKH);
             ResultSet rs = ps.executeQuery();
@@ -156,4 +156,7 @@ public class KhachHangDAO {
         }
         return null;
     }
+    
+    public int laySoDuTaiKhoan(int mkh){ return 1;}
+    public void capNhatSoDu(int mkh, double a){System.out.println("DAO.KhachHangDAO.capNhatSoDu()");}
 }

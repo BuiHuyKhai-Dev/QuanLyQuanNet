@@ -8,10 +8,6 @@ package GUI;
  *
  * @author Minnie
  */
-public class main {
-    public static void main(String[] args) {
-        // Khởi tạo giao diện chính
-        WorkFrame workFrame = new WorkFrame();
-        workFrame.setVisible(true);
-    }
+public class ThongKePanel {
+    
 }

@@ -1,7 +1,7 @@
 package DAO;
 
 import DTO.NhanVienDTO;
-import DAL.Database;
+import DAL.DBConnect;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,7 @@ public class NhanVienDAO {
     public List<NhanVienDTO> getDanhSachNhanVien() {
         List<NhanVienDTO> list = new ArrayList<>();
         String sql = "SELECT * FROM " + TABLE_NAME;
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnect.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
 
@@ -41,7 +41,7 @@ public class NhanVienDAO {
     public boolean themNhanVien(NhanVienDTO nv) {
         String sql = "INSERT INTO nhanvien (manv, tennv, matkhau, cccd, sodt, ngaysinh, ngaydangky, username, role, chucvu, trangthai) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnect.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, nv.getMaNV());
@@ -65,7 +65,7 @@ public class NhanVienDAO {
 
     public boolean suaNhanVien(NhanVienDTO nv) {
         String sql = "UPDATE nhanvien SET tennv=?, matkhau=?, cccd=?, sodt=?, ngaysinh=?, username=?, role=?, chucvu=?, trangthai=? WHERE manv=?";
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnect.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, nv.getTenNV());
@@ -88,7 +88,7 @@ public class NhanVienDAO {
 
     public NhanVienDTO timTheoMaNV(String maNV) {
         String sql = "SELECT * FROM nhanvien WHERE manv = ?";
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnect.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, maNV);
             ResultSet rs = pstmt.executeQuery();
@@ -116,7 +116,7 @@ public class NhanVienDAO {
 
         public static boolean xoaNhanVien(String maNV) {
         String sql = "UPDATE nhanvien SET trangthai = 0 WHERE manv = ?";
-        try (Connection conn = Database.getConnection();
+        try (Connection conn = DBConnect.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, maNV);
             return ps.executeUpdate() > 0;
