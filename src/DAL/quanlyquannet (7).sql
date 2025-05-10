@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 09, 2025 lúc 04:20 AM
+-- Thời gian đã tạo: Th5 09, 2025 lúc 12:34 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -160,31 +160,37 @@ INSERT INTO `hoadon` (`MaHD`, `MaKH`, `LoaiHD`, `RefID`, `NgayLap`, `TongTien`, 
 --
 -- Cấu trúc bảng cho bảng `khachhang`
 --
-CREATE TABLE khachhang (
-    makh int(255) AUTO_INCREMENT PRIMARY KEY,
-    tenkh VARCHAR(255) NOT NULL,
-    matkhau VARCHAR(255) NOT NULL,
-    cccd VARCHAR(255) NOT NULL,
-    sodienthoai INT (10) NOT NULL,
-    ngaysinh DATE,
-    ngaydangky DATE DEFAULT (CURRENT_DATE),
-    sogio VARCHAR(20) NOT NULL,
-    sotiennaptong DECIMAL(15,3),
-    sodu DECIMAL(15,3),
-    trangThai int(1)
-);
-INSERT INTO khachhang (tenkh, matkhau, cccd, sodienthoai, ngaysinh, ngaydangky, sogio, sotiennaptong, sodu, trangthai)
-VALUES
-('Nguyễn Hữu Cảnh', '12345678', '012345678901', '0912345678', '2000-05-10', CURDATE(), 5, 100000.000, 20000.000, 1),
-('Bùi Thị Liên',  'abcdefgh', '011111111111', '0987654321', '1995-12-20', CURDATE(), 3, 50000.000, 10000.000, 1),
-('Lê Văn Nhã',    'matkhau12', '022222222222', '0909090909', '1990-07-15', CURDATE(), 10, 150000.000, 75000.000, 1),
-('Phạm Tiến Dũng', 'pass1234', '033333333333', '0911111111', '1999-01-01', CURDATE(), 0, 0.000, 0.000, 1),
-('Lê Văn Lục',     'hoahoaa1', '044444444444', '0933333333', '1988-03-10', CURDATE(), 1, 20000.000, 10000.000, 1),
-('Nguyễn Thị Loan',  'password9', '055555555555', '0901234567', '1992-08-25', CURDATE(), 7, 300000.000, 150000.000, 1),
-('Mẫn Nhiên',  'abcd1234', '066666666666', '0976543210', '2001-04-14', CURDATE(), 2, 100000.000, 30000.000, 1),
-('Phan Kim Tiền',     'linhpass8', '077777777777', '0981111222', '1997-07-07', CURDATE(), 0, 0.000, 0.000, 1),
-('Nguyễn Thị Lý',    'ngopass99', '088888888888', '0922233445', '1985-12-12', CURDATE(), 12, 500000.000, 100000.000, 1),
-('Bùi Quang MinhMinh', 'tran123456', '099999999999', '0912233445', '1994-09-09', CURDATE(), 4, 250000.000, 50000.000, 1);
+
+CREATE TABLE `khachhang` (
+  `makh` int(255) NOT NULL,
+  `tenkh` varchar(255) NOT NULL,
+  `matkhau` varchar(255) NOT NULL,
+  `cccd` varchar(255) NOT NULL,
+  `sodienthoai` int(10) NOT NULL,
+  `ngaysinh` date DEFAULT NULL,
+  `ngaydangky` date DEFAULT curdate(),
+  `sogio` varchar(20) NOT NULL,
+  `sotiennaptong` decimal(15,3) DEFAULT NULL,
+  `sodu` decimal(15,3) DEFAULT NULL,
+  `trangThai` int(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `khachhang`
+--
+
+INSERT INTO `khachhang` (`makh`, `tenkh`, `matkhau`, `cccd`, `sodienthoai`, `ngaysinh`, `ngaydangky`, `sogio`, `sotiennaptong`, `sodu`, `trangThai`) VALUES
+(1, 'Nguyễn Hữu Cảnh', '12345678', '012345678901', 912345678, '2000-05-10', '2025-05-09', '5', 100000.000, 23718737.540, 1),
+(2, 'Bùi Thị Liên', 'abcdefgh', '011111111111', 987654321, '1995-12-20', '2025-05-09', '3', 50000.000, 17779.711, 1),
+(3, 'Lê Văn Nhã', 'matkhau12', '022222222222', 909090909, '1990-07-15', '2025-05-09', '10', 150000.000, 75000.000, 1),
+(4, 'Phạm Tiến Dũng', 'pass1234', '033333333333', 911111111, '1999-01-01', '2025-05-09', '0', 0.000, 18956261.489, 1),
+(5, 'Lê Văn Lục', 'hoahoaa1', '044444444444', 933333333, '1988-03-10', '2025-05-09', '1', 20000.000, 10000.000, 1),
+(6, 'Nguyễn Thị Loan', 'password9', '055555555555', 901234567, '1992-08-25', '2025-05-09', '7', 300000.000, 150000.000, 1),
+(7, 'Mẫn Nhiên', 'abcd1234', '066666666666', 976543210, '2001-04-14', '2025-05-09', '2', 100000.000, 30000.000, 1),
+(8, 'Phan Kim Tiền', 'linhpass8', '077777777777', 981111222, '1997-07-07', '2025-05-09', '0', 0.000, -1.921, 1),
+(9, 'Nguyễn Thị Lý', 'ngopass99', '088888888888', 922233445, '1985-12-12', '2025-05-09', '12', 500000.000, 100000.000, 1),
+(10, 'Bùi Quang MinhMinh', 'tran123456', '099999999999', 912233445, '1994-09-09', '2025-05-09', '4', 250000.000, 50000.000, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -283,11 +289,11 @@ CREATE TABLE `maytinh` (
 --
 
 INSERT INTO `maytinh` (`MaMay`, `TenMay`, `TrangThai`, `ViTri`, `GiaThue`, `created_at`) VALUES
-(1, 'Máy tính A1', 2, 'Khu 1', 50000, '2025-04-18 21:20:01'),
-(2, 'Máy tính B2', 2, 'Khu 2', 40000, '2025-04-18 21:20:01'),
-(3, 'Máy tính C3', 3, 'Khu 3', 60000, '2025-04-18 21:20:01'),
-(4, 'Máy tính D4', 2, 'Khu 4', 55000, '2025-04-18 21:20:01'),
-(5, 'Máy tính E5', 1, 'Khu 5', 45000, '2025-04-18 21:20:01');
+(1, 'Máy tính A1', 1, 'Khu 1', 5000, '2025-04-18 21:20:01'),
+(2, 'Máy tính B2', 1, 'Khu 2', 4000, '2025-04-18 21:20:01'),
+(3, 'Máy tính C3', 3, 'Khu 3', 6000, '2025-04-18 21:20:01'),
+(4, 'Máy tính D4', 1, 'Khu 4', 5500, '2025-04-18 21:20:01'),
+(5, 'Máy tính E5', 1, 'Khu 5', 4500, '2025-04-18 21:20:01');
 
 -- --------------------------------------------------------
 
@@ -321,33 +327,35 @@ INSERT INTO `nhacungcap` (`MaNCC`, `TenNCC`, `DiaChi`, `SoDienThoai`, `Email`, `
 -- Cấu trúc bảng cho bảng `nhanvien`
 --
 
-CREATE TABLE nhanvien (
-    MaNV int(255) AUTO_INCREMENT PRIMARY KEY,
-    TenNV VARCHAR(255) NOT NULL,
-    MatKhau VARCHAR(255) NOT NULL,
-    CCCD VARCHAR(50) NOT NULL,
-    SoDT INT(10) NOT NULL,
-    NgaySinh DATE,
-    NgayDangKy DATE NOT NULL,
-    Username VARCHAR(255) NOT NULL,
-    Role VARCHAR(50) NOT NULL,
-    ChucVu VARCHAR(50) NOT NULL,
-    TrangThai int(1)
-);
-INSERT INTO nhanvien 
-(TenNV, MatKhau, CCCD, SoDT, NgaySinh, NgayDangKy, Username, Role, ChucVu, TrangThai)
-VALUES
-('Nguyễn Văn An', '12345678', '012345678901', 912345678, '1990-05-10', CURDATE(), 'nguyenvana', 'Tiếp tân', 'Nhân viên', 1),
-('Trần Thị Bích', 'abcxyz88', '011111111111', 987654321, '1995-12-20', CURDATE(), 'tranthib', 'Phục vụ', 'Nhân viên', 1),
-('Lê Văn Cường', 'lepass12', '022222222222', 909090909, '1992-07-15', CURDATE(), 'levanc', 'Xuất nhập kho', 'Nhân viên', 1),
-('Phạm Quốc Dũng', 'pqdpwd99', '033333333333', 911111111, '1988-01-01', CURDATE(), 'phamqd', 'Phục vụ', 'Quản lý', 1),
-('Đỗ Thị Hạnh', 'hanhdo88', '044444444444', 922222222, '1998-03-10', CURDATE(), 'dothihanh', 'Tiếp tân', 'Nhân viên', 1),
-('Trịnh Hữu Nam', 'nam123456', '055555555555', 971234567, '1985-08-25', CURDATE(), 'trinhhn', 'Xuất nhập kho', 'Nhân viên', 1),
-('Nguyễn Thị Yến', 'yenpass88', '066666666666', 966666666, '1996-02-20', CURDATE(), 'nguyenty', 'Phục vụ', 'Admin', 1),
-('Vũ Minh Tuấn', 'tuanvm123', '077777777777', 933333333, '1999-01-01', CURDATE(), 'vuminhtuan', 'Tiếp tân', 'Nhân viên', 1),
-('Lê Thị Thảo', 'thaole98', '088888888888', 928888888, '1997-10-05', CURDATE(), 'lethithao', 'Xuất nhập kho', 'Quản lý', 1),
-('Ngô Hữu Đức', 'ngohd321', '099999999999', 908888888, '1982-12-12', CURDATE(), 'ngohd', 'Phục vụ', 'Admin', 1);
+CREATE TABLE `nhanvien` (
+  `MaNV` int(255) NOT NULL,
+  `TenNV` varchar(255) NOT NULL,
+  `MatKhau` varchar(255) NOT NULL,
+  `CCCD` varchar(50) NOT NULL,
+  `SoDT` int(10) NOT NULL,
+  `NgaySinh` date DEFAULT NULL,
+  `NgayDangKy` date NOT NULL,
+  `Username` varchar(255) NOT NULL,
+  `Role` varchar(50) NOT NULL,
+  `ChucVu` varchar(50) NOT NULL,
+  `TrangThai` int(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `nhanvien`
+--
+
+INSERT INTO `nhanvien` (`MaNV`, `TenNV`, `MatKhau`, `CCCD`, `SoDT`, `NgaySinh`, `NgayDangKy`, `Username`, `Role`, `ChucVu`, `TrangThai`) VALUES
+(1, 'Nguyễn Văn An', '12345678', '012345678901', 912345678, '1990-05-10', '2025-05-09', 'nguyenvana', 'Tiếp tân', 'Nhân viên', 1),
+(2, 'Trần Thị Bích', 'abcxyz88', '011111111111', 987654321, '1995-12-20', '2025-05-09', 'tranthib', 'Phục vụ', 'Nhân viên', 1),
+(3, 'Lê Văn Cường', 'lepass12', '022222222222', 909090909, '1992-07-15', '2025-05-09', 'levanc', 'Xuất nhập kho', 'Nhân viên', 1),
+(4, 'Phạm Quốc Dũng', 'pqdpwd99', '033333333333', 911111111, '1988-01-01', '2025-05-09', 'phamqd', 'Phục vụ', 'Quản lý', 1),
+(5, 'Đỗ Thị Hạnh', 'hanhdo88', '044444444444', 922222222, '1998-03-10', '2025-05-09', 'dothihanh', 'Tiếp tân', 'Nhân viên', 1),
+(6, 'Trịnh Hữu Nam', 'nam123456', '055555555555', 971234567, '1985-08-25', '2025-05-09', 'trinhhn', 'Xuất nhập kho', 'Nhân viên', 1),
+(7, 'Nguyễn Thị Yến', 'yenpass88', '066666666666', 966666666, '1996-02-20', '2025-05-09', 'nguyenty', 'Phục vụ', 'Admin', 1),
+(8, 'Vũ Minh Tuấn', 'tuanvm123', '077777777777', 933333333, '1999-01-01', '2025-05-09', 'vuminhtuan', 'Tiếp tân', 'Nhân viên', 1),
+(9, 'Lê Thị Thảo', 'thaole98', '088888888888', 928888888, '1997-10-05', '2025-05-09', 'lethithao', 'Xuất nhập kho', 'Quản lý', 1),
+(10, 'Ngô Hữu Đức', 'ngohd321', '099999999999', 908888888, '1982-12-12', '2025-05-09', 'ngohd', 'Phục vụ', 'Admin', 1);
 
 -- --------------------------------------------------------
 
@@ -400,11 +408,8 @@ CREATE TABLE `sudungmay` (
 --
 
 INSERT INTO `sudungmay` (`MaSuDung`, `MaNV`, `MaKH`, `MaMay`, `ThoiGianBatDau`, `ThoiGianKetThuc`, `TongThoiGian`, `ChiPhi`, `created_at`, `trangthai`) VALUES
-(49, 1, 5, 5, '2025-04-19 21:45:48', '2025-04-19 22:05:48', 0.33, 15000.00, '2025-04-19 21:45:48', 1),
-(50, 1, 2, 2, '2025-04-19 21:46:20', '2025-04-19 21:52:44', 0.11, 4266.67, '2025-04-19 21:46:20', 0),
-(51, 1, 2, 2, '2025-04-19 21:52:50', '2025-04-19 21:53:17', 0.01, 300.00, '2025-04-19 21:52:50', 0),
-(53, 1, 4, 2, '2025-04-19 21:53:26', '2025-04-19 22:05:44', 0.21, 8200.00, '2025-04-19 21:53:26', 0),
-(54, 1, 1, 1, '2025-04-19 21:55:59', '2025-04-19 21:56:01', 0.00, 27.78, '2025-04-19 21:55:59', 0);
+(57, 1, 1, 1, '2025-05-09 17:30:56', '2025-05-09 17:31:23', 0.01, 37.50, '2025-05-09 17:30:56', 1),
+(58, 1, 8, 2, '2025-05-09 17:33:10', '2025-05-09 17:33:11', 0.00, 1.11, '2025-05-09 17:33:10', 1);
 
 -- --------------------------------------------------------
 
@@ -499,7 +504,7 @@ ALTER TABLE `hoadon`
 -- Chỉ mục cho bảng `khachhang`
 --
 ALTER TABLE `khachhang`
-  ADD PRIMARY KEY (`MaKH`);
+  ADD PRIMARY KEY (`makh`);
 
 --
 -- Chỉ mục cho bảng `kho`
@@ -540,172 +545,34 @@ ALTER TABLE `nhanvien`
   ADD PRIMARY KEY (`MaNV`);
 
 --
--- Chỉ mục cho bảng `phieunhap`
---
-ALTER TABLE `phieunhap`
-  ADD PRIMARY KEY (`MaPN`),
-  ADD KEY `MaNCC` (`MaNCC`);
-
---
 -- Chỉ mục cho bảng `sudungmay`
 --
 ALTER TABLE `sudungmay`
-  ADD PRIMARY KEY (`MaSuDung`),
-  ADD KEY `MaKH` (`MaKH`),
-  ADD KEY `MaMay` (`MaMay`),
-  ADD KEY `fk_sudungmay_nhanvien` (`MaNV`);
-
---
--- Chỉ mục cho bảng `taikhoan`
---
-ALTER TABLE `taikhoan`
-  ADD PRIMARY KEY (`MaNV`);
-
---
--- Chỉ mục cho bảng `thucan`
---
-ALTER TABLE `thucan`
-  ADD PRIMARY KEY (`MaThucAn`);
+  ADD PRIMARY KEY (`MaSuDung`);
 
 --
 -- AUTO_INCREMENT cho các bảng đã đổ
 --
 
 --
--- AUTO_INCREMENT cho bảng `donhangthucan`
---
-ALTER TABLE `donhangthucan`
-  MODIFY `MaDH` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT cho bảng `hoadon`
---
-ALTER TABLE `hoadon`
-  MODIFY `MaHD` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
 -- AUTO_INCREMENT cho bảng `khachhang`
 --
 ALTER TABLE `khachhang`
-  MODIFY `MaKH` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT cho bảng `kho`
---
-ALTER TABLE `kho`
-  MODIFY `MaKho` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
-
---
--- AUTO_INCREMENT cho bảng `maytinh`
---
-ALTER TABLE `maytinh`
-  MODIFY `MaMay` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT cho bảng `nhacungcap`
---
-ALTER TABLE `nhacungcap`
-  MODIFY `MaNCC` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `makh` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT cho bảng `nhanvien`
 --
 ALTER TABLE `nhanvien`
-  MODIFY `MaNV` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
-
---
--- AUTO_INCREMENT cho bảng `phieunhap`
---
-ALTER TABLE `phieunhap`
-  MODIFY `MaPN` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `MaNV` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT cho bảng `sudungmay`
 --
 ALTER TABLE `sudungmay`
-  MODIFY `MaSuDung` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
-
---
--- AUTO_INCREMENT cho bảng `thucan`
---
-ALTER TABLE `thucan`
-  MODIFY `MaThucAn` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- Các ràng buộc cho các bảng đã đổ
---
-
---
--- Các ràng buộc cho bảng `chitietdonthucan`
---
-ALTER TABLE `chitietdonthucan`
-  ADD CONSTRAINT `chitietdonthucan_ibfk_1` FOREIGN KEY (`MaDH`) REFERENCES `donhangthucan` (`MaDH`),
-  ADD CONSTRAINT `chitietdonthucan_ibfk_2` FOREIGN KEY (`MaThucAn`) REFERENCES `thucan` (`MaThucAn`);
-
---
--- Các ràng buộc cho bảng `chitiethoadon`
---
-ALTER TABLE `chitiethoadon`
-  ADD CONSTRAINT `chitiethoadon_ibfk_1` FOREIGN KEY (`MaHD`) REFERENCES `hoadon` (`MaHD`);
-
---
--- Các ràng buộc cho bảng `chitietphieunhap`
---
-ALTER TABLE `chitietphieunhap`
-  ADD CONSTRAINT `chitietphieunhap_ibfk_1` FOREIGN KEY (`MaPN`) REFERENCES `phieunhap` (`MaPN`);
-
---
--- Các ràng buộc cho bảng `donhangthucan`
---
-ALTER TABLE `donhangthucan`
-  ADD CONSTRAINT `donhangthucan_ibfk_1` FOREIGN KEY (`MaKH`) REFERENCES `khachhang` (`MaKH`),
-  ADD CONSTRAINT `donhangthucan_ibfk_2` FOREIGN KEY (`MaMay`) REFERENCES `maytinh` (`MaMay`);
-
---
--- Các ràng buộc cho bảng `hoadon`
---
-ALTER TABLE `hoadon`
-  ADD CONSTRAINT `hoadon_ibfk_1` FOREIGN KEY (`MaKH`) REFERENCES `khachhang` (`MaKH`);
-
---
--- Các ràng buộc cho bảng `khomaytinh`
---
-ALTER TABLE `khomaytinh`
-  ADD CONSTRAINT `khomaytinh_ibfk_1` FOREIGN KEY (`MaKho`) REFERENCES `kho` (`MaKho`),
-  ADD CONSTRAINT `khomaytinh_ibfk_2` FOREIGN KEY (`MaMay`) REFERENCES `maytinh` (`MaMay`);
-
---
--- Các ràng buộc cho bảng `khothucan`
---
-ALTER TABLE `khothucan`
-  ADD CONSTRAINT `khothucan_ibfk_1` FOREIGN KEY (`MaKho`) REFERENCES `kho` (`MaKho`),
-  ADD CONSTRAINT `khothucan_ibfk_2` FOREIGN KEY (`MaThucAn`) REFERENCES `thucan` (`MaThucAn`);
-
---
--- Các ràng buộc cho bảng `phieunhap`
---
-ALTER TABLE `phieunhap`
-  ADD CONSTRAINT `phieunhap_ibfk_1` FOREIGN KEY (`MaNCC`) REFERENCES `nhacungcap` (`MaNCC`);
-
---
--- Các ràng buộc cho bảng `sudungmay`
---
-ALTER TABLE `sudungmay`
-  ADD CONSTRAINT `fk_sudungmay_nhanvien` FOREIGN KEY (`MaNV`) REFERENCES `nhanvien` (`MaNV`),
-  ADD CONSTRAINT `sudungmay_ibfk_1` FOREIGN KEY (`MaKH`) REFERENCES `khachhang` (`MaKH`),
-  ADD CONSTRAINT `sudungmay_ibfk_2` FOREIGN KEY (`MaMay`) REFERENCES `maytinh` (`MaMay`);
-
---
--- Các ràng buộc cho bảng `taikhoan`
---
-ALTER TABLE `taikhoan`
-  ADD CONSTRAINT `taikhoan_ibfk_1` FOREIGN KEY (`MaNV`) REFERENCES `nhanvien` (`MaNV`);
+  MODIFY `MaSuDung` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
-
-ALTER TABLE sudungmay 
-MODIFY MaSuDung INT AUTO_INCREMENT PRIMARY KEY;

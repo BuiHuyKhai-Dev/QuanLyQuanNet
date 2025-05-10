@@ -6,10 +6,8 @@ package DAO;
 
 import DAL.DBConnect;
 import DTO.SuDungMayDTO;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+
 import java.sql.*;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -206,6 +204,57 @@ public ArrayList<SuDungMayDTO> selectAll() {
         return false;
     }
     return true;
+}
+    public ArrayList<SuDungMayDTO> timKiem(
+    ArrayList<SuDungMayDTO> danhSach,
+    int maSD,
+    int maNV,
+    int maKhach,
+    Date tuNgay,
+    Date denNgay,
+    Double chiPhiTu,
+    Double chiPhiDen
+) {
+    ArrayList<SuDungMayDTO> ketQua = new ArrayList<SuDungMayDTO>();
+
+    for (int i = 0; i < danhSach.size(); i++) {
+        SuDungMayDTO sd = danhSach.get(i);
+        boolean thoaMan = true;
+
+        if (maSD != -1 && sd.getMaSuDung() != maSD) {
+            thoaMan = false;
+        }
+
+        if (maNV != -1 && sd.getMaNV() != maNV) {
+            thoaMan = false;
+        }
+
+        if (maKhach != -1 && sd.getMaKhachHang() != maKhach) {
+            thoaMan = false;
+        }
+
+        if (tuNgay != null && sd.getThoiGianBatDau().before(tuNgay)) {
+            thoaMan = false;
+        }
+
+        if (denNgay != null && sd.getThoiGianKetThuc().after(denNgay)) {
+            thoaMan = false;
+        }
+
+        if (chiPhiTu != null && sd.getChiPhi() < chiPhiTu) {
+            thoaMan = false;
+        }
+
+        if (chiPhiDen != null && sd.getChiPhi() > chiPhiDen) {
+            thoaMan = false;
+        }
+
+        if (thoaMan) {
+            ketQua.add(sd);
+        }
+    }
+
+    return ketQua;
 }
 
 

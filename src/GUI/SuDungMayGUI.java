@@ -96,12 +96,13 @@ public class SuDungMayGUI extends JPanel {
     }
 
     // Khai báo lại data và columnNames
-    String[] columnNames = {"Mã SD", "Mã KH", "Thời gian bắt đầu", "Thời gian kết thúc", "Tổng TG", "Chi phí", "Mã PM"};
+    String[] columnNames = {"Mã SD", "Mã NV", "Mã KH", "Thời gian bắt đầu", "Thời gian kết thúc", "Tổng TG", "Chi phí", "Mã PM"};
     String[][] data = new String[lichSuMay.size()][7];
 
     for (int i = 0; i < lichSuMay.size(); i++) {
         SuDungMayDTO s = lichSuMay.get(i);
         data[i][0] = String.valueOf(s.getMaSuDung());
+        data[i][0] = String.valueOf(s.getMaNV());
         data[i][1] = String.valueOf(s.getMaKhachHang());
         data[i][2] = s.getThoiGianBatDau().toString();
         data[i][3] = (s.getThoiGianKetThuc() == null) ? "Đang sử dụng" : s.getThoiGianKetThuc().toString();
