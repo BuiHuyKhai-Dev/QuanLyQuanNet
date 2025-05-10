@@ -7,25 +7,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class KhachHangDAO {
-    public int insert(KhachHangDTO a){
-        int result=0;
-        try{
-             Connection con= (Connection) DBConnect.getConnection();
-             String sql= "Insert into khachhang(MaKH,TenKH,SoDienThoai,Email,SoDuTaiKhoan,created_at)  values ( ? , ? , ? ,  ? ,  ? ,  ?)";
-             PreparedStatement pst=(PreparedStatement) con.prepareStatement(sql);
-             pst.setInt(1, a.getMaKhachHang());
-             pst.setString(2, a.getTenKhachHang());
-             pst.setString(4, a.getSoDienThoai());
-             pst.setDouble(5, a.getSoDuTaiKhoan());
-             java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
-             java.util.Date parsedDate = sdf.parse(a.getThoiGianTao());
-             pst.setDate(6, new java.sql.Date(parsedDate.getTime()));
-             pst.setTimestamp(6, java.sql.Timestamp.valueOf(a.getThoiGianTao()));
-             result=pst.executeUpdate();
-             DBConnect.closeConnection(con);
-        }catch(Exception e){
+    public int insert(KhachHangDTO a) {
+        int result = 0;
+        try {
+            Connection con = (Connection) DBConnect.getConnection();
+            String sql = "INSERT INTO khachhang(TenKH, SoDienThoai, Email, SoDuTaiKhoan, created_at) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setString(1, a.getTenKhachHang());
+            pst.setString(2, a.getSoDienThoai());
+            pst.setString(3, a.getEmail());
+            pst.setDouble(4, a.getSoDuTaiKhoan());
+            pst.setTimestamp(5, java.sql.Timestamp.valueOf(a.getThoiGianTao()));
+            result = pst.executeUpdate();
+            DBConnect.closeConnection(con);
+        } catch (Exception e) {
             Logger.getLogger(KhachHangDAO.class.getName()).log(Level.SEVERE, null, e);
-        }        
+        }
         return result;
     }
     
@@ -108,5 +105,22 @@ public class KhachHangDAO {
             Logger.getLogger(KhachHangDAO.class.getName()).log(Level.SEVERE, null, e);
         }
         return kh;
+    }
+
+    public int getAutoIncrement() {
+        int result = 0;
+        try {
+            Connection con = (Connection) DBConnect.getConnection();
+            String sql = "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'quanlyquannet' AND TABLE_NAME = 'khachhang'";
+            PreparedStatement pst = (PreparedStatement) con.prepareStatement(sql);
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                result = rs.getInt("AUTO_INCREMENT");
+            }
+            DBConnect.closeConnection(con);
+        } catch (Exception e) {
+            Logger.getLogger(KhachHangDAO.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return result;
     }
 }

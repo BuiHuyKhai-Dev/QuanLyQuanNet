@@ -1,14 +1,20 @@
 package GUI;
 
+import BUS.NhaCungCapBUS;
+import DTO.NhaCungCapDTO;
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 public class QuanLyNhaCungCapPanel extends JPanel {
     private DefaultTableModel tableModel;
     private JTable supplierTable;
+    private NhaCungCapBUS nhaCungCapBUS = new NhaCungCapBUS();
 
     public QuanLyNhaCungCapPanel() {
         setLayout(new BorderLayout());
@@ -46,12 +52,56 @@ public class QuanLyNhaCungCapPanel extends JPanel {
         supplierTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(supplierTable);
         add(scrollPane, BorderLayout.CENTER);
+        loadSupplierData(); // Tải dữ liệu nhà cung cấp vào bảng
+
+        // Đặt chiều cao dòng và header
+        supplierTable.setRowHeight(30); // Chiều cao các hàng
+        JTableHeader header = supplierTable.getTableHeader();
+        header.setPreferredSize(new Dimension(header.getWidth(), 25)); // Chiều cao header
+
+        // Căn giữa chữ trong bảng
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        supplierTable.setDefaultRenderer(Object.class, centerRenderer);
+
+        // Tô màu nền xen kẽ cho các dòng
+        supplierTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if (!isSelected) {
+                    c.setBackground(row % 2 == 0 ? Color.LIGHT_GRAY : Color.WHITE); // Màu nền xen kẽ
+                }
+                setHorizontalAlignment(SwingConstants.CENTER); // Căn giữa chữ
+                return c;
+            }
+        });
 
         // Xử lý sự kiện các nút chức năng
         btnAdd.addActionListener(e -> showAddDialog());
         btnDelete.addActionListener(e -> showDeleteDialog());
         btnEdit.addActionListener(e -> showEditDialog());
         btnDetail.addActionListener(e -> showDetailDialog());
+    }
+
+    private void loadSupplierData() {
+        // Xóa dữ liệu cũ trong bảng
+        tableModel.setRowCount(0);
+
+        // Lấy danh sách nhà cung cấp từ NhaCungCapBUS
+        ArrayList<NhaCungCapDTO> danhSachNhaCungCap = nhaCungCapBUS.getNhaCungCapAll();
+
+        // Đổ dữ liệu vào bảng
+        for (NhaCungCapDTO ncc : danhSachNhaCungCap) {
+            tableModel.addRow(new Object[]{
+                ncc.getMaNhaCungCap(),
+                ncc.getTenNhaCungCap(),
+                ncc.getDiaChi(),
+                ncc.getSoDienThoai(),
+                ncc.getEmail(),
+                ncc.getThoiGianTao()
+            });
+        }
     }
 
     private void showAddDialog() {
