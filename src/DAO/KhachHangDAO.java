@@ -1,162 +1,112 @@
 package DAO;
-import DTO.KhachHangDTO;
 import DAL.DBConnect;
+import DTO.KhachHangDTO;
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class KhachHangDAO {
-    public static List<KhachHangDTO> layDanhSachKhachHang() {
-        List<KhachHangDTO> ds = new ArrayList<>();
-        try (Connection conn = DBConnect.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM khachhang WHERE trangthai = 1")) {
-
+    public int insert(KhachHangDTO a){
+        int result=0;
+        try{
+             Connection con= (Connection) DBConnect.getConnection();
+             String sql= "Insert into khachhang(MaKH,TenKH,SoDienThoai,Email,SoDuTaiKhoan,created_at)  values ( ? , ? , ? ,  ? ,  ? ,  ?)";
+             PreparedStatement pst=(PreparedStatement) con.prepareStatement(sql);
+             pst.setInt(1, a.getMaKhachHang());
+             pst.setString(2, a.getTenKhachHang());
+             pst.setString(4, a.getSoDienThoai());
+             pst.setDouble(5, a.getSoDuTaiKhoan());
+             java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+             java.util.Date parsedDate = sdf.parse(a.getThoiGianTao());
+             pst.setDate(6, new java.sql.Date(parsedDate.getTime()));
+             pst.setTimestamp(6, java.sql.Timestamp.valueOf(a.getThoiGianTao()));
+             result=pst.executeUpdate();
+             DBConnect.closeConnection(con);
+        }catch(Exception e){
+            Logger.getLogger(KhachHangDAO.class.getName()).log(Level.SEVERE, null, e);
+        }        
+        return result;
+    }
+    
+    public int update(KhachHangDTO a){
+        int result=0;
+        try{
+             Connection con= (Connection) DBConnect.getConnection();
+             String sql= "Update khachhang set TenKH = ? , SoDienThoai = ? , Email = ? , SoDuTaiKhoan = ? where MaKH = ?";
+             PreparedStatement pst=(PreparedStatement) con.prepareStatement(sql);
+             pst.setString(1, a.getTenKhachHang());
+             pst.setString(2, a.getSoDienThoai());
+             pst.setString(3, a.getEmail());
+             pst.setDouble(4, a.getSoDuTaiKhoan());
+             pst.setInt(5, a.getMaKhachHang());
+             result=pst.executeUpdate();
+             DBConnect.closeConnection(con);
+        }catch(Exception e){
+            Logger.getLogger(KhachHangDAO.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return result;
+    } 
+    
+    public int delete(String a){
+        int result = 0;
+        try {
+            Connection con = (Connection) DBConnect.getConnection();
+            String sql = "Delete From khachhang Where MaKH = ?";
+            PreparedStatement pst = (PreparedStatement) con.prepareStatement(sql);
+            pst.setInt(1, Integer.parseInt(a));
+            result = pst.executeUpdate();
+            DBConnect.closeConnection(con);
+        } catch (Exception e) {
+            Logger.getLogger(KhachHangDAO.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return result;
+    };
+    
+    public ArrayList<KhachHangDTO> selectAll(){
+        ArrayList<KhachHangDTO> list = new ArrayList<>();
+        try {
+            Connection con = (Connection) DBConnect.getConnection();
+            String sql = "Select * From khachhang";
+            PreparedStatement pst = (PreparedStatement) con.prepareStatement(sql);
+            ResultSet rs = pst.executeQuery();
             while (rs.next()) {
-                KhachHangDTO kh = new KhachHangDTO(
-                        rs.getString("makh"),
-                        rs.getString("tenkh"),
-                        rs.getString("matkhau"),
-                        rs.getString("cccd"),
-                        rs.getString("sodienthoai"),
-                        rs.getString("ngaysinh"),
-                        rs.getString("ngaydangky"),
-                        rs.getInt("sogio"),
-                        rs.getDouble("sotiennaptong"),
-                        rs.getDouble("sodu"),
-                        rs.getInt("trangthai")
-                );
-                ds.add(kh);
+                KhachHangDTO kh = new KhachHangDTO();
+                kh.setMaKhachHang(rs.getInt("MaKH"));
+                kh.setTenKhachHang(rs.getString("TenKH"));
+                kh.setSoDienThoai(rs.getString("SoDienThoai"));
+                kh.setEmail(rs.getString("Email"));
+                kh.setSoDuTaiKhoan(rs.getDouble("SoDuTaiKhoan"));
+                kh.setThoiGianTao(rs.getString("created_at"));
+                list.add(kh);
             }
+            DBConnect.closeConnection(con);
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(KhachHangDAO.class.getName()).log(Level.SEVERE, null, e);
         }
-        return ds;
-    }
-    public static boolean themKhachHang(KhachHangDTO kh) {
-        String sql = "INSERT INTO khachhang (makh, tenkh, matkhau, cccd, sodienthoai, ngaysinh, ngaydangky, sogio, sotiennaptong, sodu, trangthai) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, kh.getMaKH());
-            ps.setString(2, kh.getTenKH());
-            ps.setString(3, kh.getMatKhau());
-            ps.setString(4, kh.getCccd());
-            ps.setString(5, kh.getSoDT());
-            ps.setString(6, kh.getNgaySinh());
-            ps.setString(7, kh.getNgayDangKy());
-            ps.setInt(8, kh.getSoGio());
-            ps.setDouble(9, kh.getSoTienNaptong());
-            ps.setDouble(10, kh.getSoDu());
-            ps.setInt(11, kh.getTrangThai());
-
-            return ps.executeUpdate() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public static boolean suaKhachHang(KhachHangDTO kh) {
-        String sql = "UPDATE khachhang SET tenkh=?, matkhau=?, cccd=?, sodienthoai=?, ngaysinh=? WHERE makh=?";
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, kh.getTenKH());
-            ps.setString(2, kh.getMatKhau());
-            ps.setString(3, kh.getCccd());
-            ps.setString(4, kh.getSoDT());
-            ps.setString(5, kh.getNgaySinh());
-            ps.setString(6, kh.getMaKH());
-
-            return ps.executeUpdate() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
+        return list;
+    };
     
-    public static boolean napTien(String maKH, double soTien) {
-        String sql = "UPDATE khachhang SET sotiennaptong = sotiennaptong + ?, sodu = sodu + ? WHERE makh = ?";
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setDouble(1, soTien);
-            ps.setDouble(2, soTien);
-            ps.setString(3, maKH);
-
-            return ps.executeUpdate() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public static boolean xoaMemKhachHang(String maKH) {
-        String sql = "UPDATE khachhang SET trangthai = 0 WHERE makh = ?";
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, maKH);
-            return ps.executeUpdate() > 0;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    public static KhachHangDTO timTheoCCCD(String cccd) {
-        String sql = "SELECT * FROM khachhang WHERE cccd = ? AND trangthai = 1";
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, cccd);
-            ResultSet rs = ps.executeQuery();
+    public KhachHangDTO selectById(String MaKH){
+        KhachHangDTO kh = new KhachHangDTO();
+        try {
+            Connection con = (Connection) DBConnect.getConnection();
+            String sql = "Select * From khachhang Where MaKH = ?";
+            PreparedStatement pst = (PreparedStatement) con.prepareStatement(sql);
+            pst.setInt(1, Integer.parseInt(MaKH));
+            ResultSet rs = pst.executeQuery();
             if (rs.next()) {
-                return new KhachHangDTO(
-                        rs.getString("makh"),
-                        rs.getString("tenkh"),
-                        rs.getString("matkhau"),
-                        rs.getString("cccd"),
-                        rs.getString("sodienthoai"),
-                        rs.getString("ngaysinh"),
-                        rs.getString("ngaydangky"),
-                        rs.getInt("sogio"),
-                        rs.getDouble("sotiennaptong"),
-                        rs.getDouble("sodu"),
-                        rs.getInt("trangthai")
-                );
+                kh.setMaKhachHang(rs.getInt("MaKH"));
+                kh.setTenKhachHang(rs.getString("TenKH"));
+                kh.setSoDienThoai(rs.getString("SoDienThoai"));
+                kh.setEmail(rs.getString("Email"));
+                kh.setSoDuTaiKhoan(rs.getDouble("SoDuTaiKhoan"));
+                kh.setThoiGianTao(rs.getString("created_at"));
             }
+            DBConnect.closeConnection(con);
         } catch (Exception e) {
-            e.printStackTrace();
+            Logger.getLogger(KhachHangDAO.class.getName()).log(Level.SEVERE, null, e);
         }
-        return null;
+        return kh;
     }
-    public static KhachHangDTO timTheoMaKH(String maKH) {
-        String sql = "SELECT * FROM khachhang WHERE makh = ? AND trangthai = 1";
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, maKH);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return new KhachHangDTO(
-                    rs.getString("makh"),
-                    rs.getString("tenkh"),
-                    rs.getString("matkhau"),
-                    rs.getString("cccd"),
-                    rs.getString("sodienthoai"),
-                    rs.getString("ngaysinh"),
-                    rs.getString("ngaydangky"),
-                    rs.getInt("sogio"),
-                    rs.getDouble("sotiennaptong"),
-                    rs.getDouble("sodu"),
-                    rs.getInt("trangthai")
-                );
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-    
-    public int laySoDuTaiKhoan(int mkh){ return 1;}
-    public void capNhatSoDu(int mkh, double a){System.out.println("DAO.KhachHangDAO.capNhatSoDu()");}
 }
