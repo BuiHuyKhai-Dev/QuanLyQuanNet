@@ -96,18 +96,18 @@ public class SuDungMayGUI extends JPanel {
     }
 
     // Khai báo lại data và columnNames
-    String[] columnNames = {"Mã SD", "Mã NV", "Mã KH", "Thời gian bắt đầu", "Thời gian kết thúc", "Tổng TG", "Chi phí", "Mã PM"};
+    String[] columnNames = {"Mã SD", "Mã NV", "Mã KH", "Thời gian bắt đầu", "Thời gian kết thúc", "Tổng TG", "Chi phí"};
     String[][] data = new String[lichSuMay.size()][7];
 
     for (int i = 0; i < lichSuMay.size(); i++) {
         SuDungMayDTO s = lichSuMay.get(i);
         data[i][0] = String.valueOf(s.getMaSuDung());
-        data[i][0] = String.valueOf(s.getMaNV());
-        data[i][1] = String.valueOf(s.getMaKhachHang());
-        data[i][2] = s.getThoiGianBatDau().toString();
-        data[i][3] = (s.getThoiGianKetThuc() == null) ? "Đang sử dụng" : s.getThoiGianKetThuc().toString();
-        data[i][4] = String.valueOf(s.getTongThoiGian());
-        data[i][5] = String.valueOf(s.getChiPhi());
+        data[i][1] = String.valueOf(s.getMaNV());
+        data[i][2] = String.valueOf(s.getMaKhachHang());
+        data[i][3] = s.getThoiGianBatDau().toString();
+        data[i][4] = (s.getThoiGianKetThuc() == null) ? "Đang sử dụng" : s.getThoiGianKetThuc().toString();
+        data[i][5] = String.valueOf(s.getTongThoiGian());
+        data[i][6] = String.valueOf(s.getChiPhi());
     }
     // Tạo bảng
     JTable table = new JTable(data, columnNames);
@@ -130,14 +130,15 @@ public class SuDungMayGUI extends JPanel {
         if (row != -1) {
             // Lấy dữ liệu dòng được chọn
             String maSD = data[row][0];
-            String maKH = data[row][1];
-            String batDau = data[row][2];
-            String ketThuc = data[row][3];
-            String tongTG = data[row][4];
-            String chiPhi = data[row][5];
+            String maNV = data[row][1];
+            String maKH = data[row][2];
+            String batDau = data[row][3];
+            String ketThuc = data[row][4];
+            String tongTG = data[row][5];
+            String chiPhi = data[row][6];
 
             // Gọi hàm xuất file PDF
-            xuatHoaDonPDF(maSD, maKH, batDau, ketThuc, tongTG, chiPhi);
+            xuatHoaDonPDF(maSD, maNV, maKH, batDau, ketThuc, tongTG, chiPhi);
         }
     });
 
@@ -155,7 +156,7 @@ public class SuDungMayGUI extends JPanel {
 
 }
     
-    public void xuatHoaDonPDF(String maSD, String maKH, String batDau, String ketThuc, String tongTG, String chiPhi) {
+    public void xuatHoaDonPDF(String maSD, String maNV, String maKH, String batDau, String ketThuc, String tongTG, String chiPhi) {
     Document document = new Document();
 try {
     String filePath = "hoadon_" + maSD + ".pdf";
@@ -178,6 +179,7 @@ try {
     Paragraph info = new Paragraph();
     info.setFont(fontNormal);
     info.add("Tên khách hàng: " + maKH + "\n");
+    info.add("Tên nhân viên: " + maNV + "\n");
     info.add("Mã hóa đơn: " + maSD + "\n");
     document.add(info);
     document.add(new Paragraph(" "));

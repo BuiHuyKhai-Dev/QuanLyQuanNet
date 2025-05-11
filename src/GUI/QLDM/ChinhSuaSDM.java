@@ -6,6 +6,7 @@ import DTO.SuDungMayDTO;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 
+import java.io.InputStream;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
@@ -28,7 +29,7 @@ public class ChinhSuaSDM extends JPanel {
         setLayout(new BorderLayout());
 
         String[] columnNames = {
-            "Mã SD", "Mã KH", "Mã Máy",
+            "Mã SD", "Mã NV", "Mã KH", "Mã Máy",
             "Thời gian bắt đầu", "Thời gian kết thúc",
             "Tổng TG (giờ)", "Chi phí (VNĐ)"
         };
@@ -73,6 +74,7 @@ public class ChinhSuaSDM extends JPanel {
         for (SuDungMayDTO s : list) {
             model.addRow(new Object[]{
                 s.getMaSuDung(),
+                s.getMaNV(),
                 s.getMaKhachHang(),
                 s.getMaMay(),
                 s.getThoiGianBatDau(),
@@ -238,7 +240,15 @@ public class ChinhSuaSDM extends JPanel {
             PdfWriter.getInstance(document, new FileOutputStream(filePath));
             document.open();
 
-            BaseFont baseFont = BaseFont.createFont("Font/font-times-new-roman.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+            InputStream is = maytinh.class.getResourceAsStream("font-times-new-roman.ttf");
+            BaseFont baseFont = BaseFont.createFont(
+                "font-times-new-roman.ttf",
+                BaseFont.IDENTITY_H,
+                BaseFont.EMBEDDED,
+                true,
+                is.readAllBytes(),
+                null
+            );
             Font fontTitle = new Font(baseFont, 18, Font.BOLD);
             Font fontBold = new Font(baseFont, 12, Font.BOLD);
             Font fontNormal = new Font(baseFont, 12, Font.NORMAL);

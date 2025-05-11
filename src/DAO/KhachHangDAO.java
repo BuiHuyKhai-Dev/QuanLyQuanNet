@@ -149,7 +149,7 @@ public class KhachHangDAO {
 
         ResultSet rs = stmt.executeQuery();
         if (rs.next()) {
-            soDu = rs.getDouble("SoDu");
+            soDu = rs.getDouble("SoDuTaiKhoan");
         }
 
         rs.close();
