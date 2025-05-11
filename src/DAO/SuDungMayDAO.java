@@ -6,10 +6,8 @@ package DAO;
 
 import DAL.DBConnect;
 import DTO.SuDungMayDTO;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
+
 import java.sql.*;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -24,21 +22,23 @@ public class SuDungMayDAO {
 public ArrayList<SuDungMayDTO> selectAll() {
     ArrayList<SuDungMayDTO> ds = new ArrayList<>();
     try (Connection conn = db.getConnection()){
-        String sql = "SELECT MaSuDung, MaKH, MaMay, ThoiGianBatDau, ThoiGianKetThuc, TongThoiGian, ChiPhi from sudungmay";
+        String sql = "SELECT * from sudungmay";
         PreparedStatement stmt = conn.prepareStatement(sql);
         ResultSet rs = stmt.executeQuery();
 
         while (rs.next()) {
             int maSuDung = rs.getInt("MaSuDung");
+            int maNV = rs.getInt("MaNV");
             int maKhachHang = rs.getInt("MaKH");
             int maMay = rs.getInt("MaMay");
             Timestamp thoiGianBatDau = rs.getTimestamp("ThoiGianBatDau");
             Timestamp thoiGianKetThuc = rs.getTimestamp("ThoiGianKetThuc");
-            int tongThoiGian = rs.getInt("TongThoiGian");
+            double tongThoiGian = rs.getDouble("TongThoiGian");
             double chiPhi = rs.getDouble("ChiPhi");
 
             SuDungMayDTO suDung = new SuDungMayDTO(
                 maSuDung,
+                maNV,
                 maKhachHang,
                 maMay,
                 thoiGianBatDau,
@@ -66,6 +66,7 @@ public ArrayList<SuDungMayDTO> selectAll() {
 
         while (rs.next()) {
             int maSuDung = rs.getInt("MaSuDung");
+            int maNV = rs.getInt("MaNV");
             int maKhachHang = rs.getInt("MaKH");
             int maMay = rs.getInt("MaMay");
             Timestamp thoiGianBatDau = rs.getTimestamp("ThoiGianBatDau");
@@ -75,6 +76,7 @@ public ArrayList<SuDungMayDTO> selectAll() {
 
             ds = new SuDungMayDTO(
                 maSuDung,
+                maNV,
                 maKhachHang,
                 maMay,
                 thoiGianBatDau,
@@ -91,22 +93,23 @@ public ArrayList<SuDungMayDTO> selectAll() {
 }
 
     public boolean insert(SuDungMayDTO sdm) {
-    String sql = "INSERT INTO sudungmay (MaKH, MaMay, ThoiGianBatDau, ThoiGianKetThuc, TongThoiGian, ChiPhi, trangthai) "
-               + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+    String sql = "INSERT INTO sudungmay (MaKH, MaNV, MaMay, ThoiGianBatDau, ThoiGianKetThuc, TongThoiGian, ChiPhi, trangthai) "
+               + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
      try (Connection conn = db.getConnection()){
         doiTrangThai(sdm.getMaMay());
         PreparedStatement stmt = conn.prepareStatement(sql);
         stmt.setInt(1, sdm.getMaKhachHang());
-        stmt.setInt(2, sdm.getMaMay());
-        stmt.setTimestamp(3, sdm.getThoiGianBatDau());
+        stmt.setInt(2, sdm.getMaNV());
+        stmt.setInt(3, sdm.getMaMay());
+        stmt.setTimestamp(4, sdm.getThoiGianBatDau());
 
         
-        stmt.setNull(4, java.sql.Types.TIMESTAMP);
+        stmt.setNull(5, java.sql.Types.TIMESTAMP);
         
 
-        stmt.setInt(5, sdm.getTongThoiGian());
-        stmt.setDouble(6, sdm.getChiPhi());
-        stmt.setDouble(7, 1);
+        stmt.setDouble(6, sdm.getTongThoiGian());
+        stmt.setDouble(7, sdm.getChiPhi());
+        stmt.setDouble(8, 1);
 
         int rows = stmt.executeUpdate();
         stmt.close();
@@ -201,6 +204,57 @@ public ArrayList<SuDungMayDTO> selectAll() {
         return false;
     }
     return true;
+}
+    public ArrayList<SuDungMayDTO> timKiem(
+    ArrayList<SuDungMayDTO> danhSach,
+    int maSD,
+    int maNV,
+    int maKhach,
+    Date tuNgay,
+    Date denNgay,
+    Double chiPhiTu,
+    Double chiPhiDen
+) {
+    ArrayList<SuDungMayDTO> ketQua = new ArrayList<SuDungMayDTO>();
+
+    for (int i = 0; i < danhSach.size(); i++) {
+        SuDungMayDTO sd = danhSach.get(i);
+        boolean thoaMan = true;
+
+        if (maSD != -1 && sd.getMaSuDung() != maSD) {
+            thoaMan = false;
+        }
+
+        if (maNV != -1 && sd.getMaNV() != maNV) {
+            thoaMan = false;
+        }
+
+        if (maKhach != -1 && sd.getMaKhachHang() != maKhach) {
+            thoaMan = false;
+        }
+
+        if (tuNgay != null && sd.getThoiGianBatDau().before(tuNgay)) {
+            thoaMan = false;
+        }
+
+        if (denNgay != null && sd.getThoiGianKetThuc().after(denNgay)) {
+            thoaMan = false;
+        }
+
+        if (chiPhiTu != null && sd.getChiPhi() < chiPhiTu) {
+            thoaMan = false;
+        }
+
+        if (chiPhiDen != null && sd.getChiPhi() > chiPhiDen) {
+            thoaMan = false;
+        }
+
+        if (thoaMan) {
+            ketQua.add(sd);
+        }
+    }
+
+    return ketQua;
 }
 
 
