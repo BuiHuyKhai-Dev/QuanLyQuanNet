@@ -127,4 +127,42 @@ public class KhachHangBUS {
             return null;
         }
     }
+
+    public int getLastID() {
+        int max = 0;
+        for (KhachHangDTO kh : listkh) {
+            if (kh.getMaKhachHang() > max) {
+                max = kh.getMaKhachHang();
+            }
+        }
+        return max + 1;
+    }
+
+    public ArrayList<KhachHangDTO> sortByName() {
+        listkh.sort((kh1, kh2) -> {
+            String name1 = kh1.getTenKhachHang();
+            String name2 = kh2.getTenKhachHang();
+            return name1.compareTo(name2);
+        });
+        return listkh;
+    }
+
+    public ArrayList<KhachHangDTO> sortByBalance() {
+        listkh.sort((kh1, kh2) -> {
+            double balance1 = kh1.getSoDuTaiKhoan();
+            double balance2 = kh2.getSoDuTaiKhoan();
+            return Double.compare(balance1, balance2);
+        });
+        return listkh;
+    }
+
+    public ArrayList<KhachHangDTO> sortByID() {
+        listkh.sort((kh1, kh2) -> {
+            int id1 = kh1.getMaKhachHang();
+            int id2 = kh2.getMaKhachHang();
+            return Integer.compare(id1, id2);
+        });
+        return listkh;
+    }
+
 }

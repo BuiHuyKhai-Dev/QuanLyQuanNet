@@ -3,67 +3,100 @@ package DTO;
 public class NhanVienDTO {
     private String maNV;
     private String tenNV;
-    private String matKhau;
-    private String cccd;
-    private String soDT;
+    private int gioiTinh;
     private String ngaySinh;
-    private String ngayDangKy;
-    private String username;
-    private String role;
-    private String chucVu;
-    private int trangThai;
-
+    private String soDT;
+    private String email;
+    private String diaChi;
+    private double luong;
+    private String thoiGianTao;
     // Constructor mặc định
     public NhanVienDTO() {}
 
     // Constructor đầy đủ tham số
-    public NhanVienDTO(String maNV, String tenNV, String matKhau, String cccd, 
-                      String soDT, String ngaySinh, String ngayDangKy, 
-                      String username, String role, String chucVu, int trangThai) {
+    public NhanVienDTO(String maNV, String tenNV, int gioiTinh, String ngaySinh, String soDT, String email, String diaChi, double luong, String thoiGianTao) {
         this.maNV = maNV;
         this.tenNV = tenNV;
-        this.matKhau = matKhau;
-        this.cccd = cccd;
-        this.soDT = soDT;
+        this.gioiTinh = gioiTinh;
         this.ngaySinh = ngaySinh;
-        this.ngayDangKy = ngayDangKy;
-        this.username = username;
-        this.role = role;
-        this.chucVu = chucVu;
-        this.trangThai = trangThai;
+        this.soDT = soDT;
+        this.email = email;
+        this.diaChi = diaChi;
+        this.luong = luong;
+        this.thoiGianTao = thoiGianTao;
     }
 
-    // Getter & Setter
-    public String getMaNV() { return maNV; }
-    public void setMaNV(String maNV) { this.maNV = maNV; }
+    public String getThoiGianTao() {
+        return thoiGianTao;
+    }
 
-    public String getTenNV() { return tenNV; }
-    public void setTenNV(String tenNV) { this.tenNV = tenNV; }
+    public void setThoiGianTao(String thoiGianTao) {
+        this.thoiGianTao = thoiGianTao;
+    }
 
-    public String getMatKhau() { return matKhau; }
-    public void setMatKhau(String matKhau) { this.matKhau = matKhau; }
+    public String getMaNV() {
+        return maNV;
+    }
 
-    public String getCccd() { return cccd; }
-    public void setCccd(String cccd) { this.cccd = cccd; }
+    public void setMaNV(String maNV) {
+        this.maNV = maNV;
+    }
 
-    public String getSoDT() { return soDT; }
-    public void setSoDT(String soDT) { this.soDT = soDT; }
+    public String getTenNV() {
+        return tenNV;
+    }
 
-    public String getNgaySinh() { return ngaySinh; }
-    public void setNgaySinh(String ngaySinh) { this.ngaySinh = ngaySinh; }
+    public void setTenNV(String tenNV) {
+        this.tenNV = tenNV;
+    }
 
-    public String getNgayDangKy() { return ngayDangKy; }
-    public void setNgayDangKy(String ngayDangKy) { this.ngayDangKy = ngayDangKy; }
+    public int getGioiTinh() {
+        return gioiTinh;
+    }
 
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
+    public void setGioiTinh(int gioiTinh) {
+        this.gioiTinh = gioiTinh;
+    }
 
-    public String getRole() { return role; }
-    public void setRole(String role) { this.role = role; }
+    public String getNgaySinh() {
+        return ngaySinh;
+    }
 
-    public String getChucVu() { return chucVu; }
-    public void setChucVu(String chucVu) { this.chucVu = chucVu; }
+    public void setNgaySinh(String ngaySinh) {
+        this.ngaySinh = ngaySinh;
+    }
 
-    public int getTrangThai() { return trangThai; }
-    public void setTrangThai(int trangThai) { this.trangThai = trangThai; }
+    public String getSoDT() {
+        return soDT;
+    }
+
+    public void setSoDT(String soDT) {
+        this.soDT = soDT;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getDiaChi() {
+        return diaChi;
+    }
+
+    public void setDiaChi(String diaChi) {
+        this.diaChi = diaChi;
+    }
+
+    public double getLuong() {
+        return luong;
+    }
+
+    public void setLuong(double luong) {
+        this.luong = luong;
+    }
+
+
 }

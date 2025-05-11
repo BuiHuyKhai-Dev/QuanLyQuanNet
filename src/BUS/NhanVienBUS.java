@@ -1,66 +1,70 @@
 package BUS;
 
-import DTO.NhanVienDTO;
 import DAO.NhanVienDAO;
+import DTO.NhanVienDTO;
 import java.util.List;
 
 public class NhanVienBUS {
-    private static NhanVienDAO dao = new NhanVienDAO();
+    public final NhanVienDAO nvDAO = new NhanVienDAO();
+    private List<NhanVienDTO> listnv = null;
 
-    // Lấy danh sách nhân viên
-    public static List<NhanVienDTO> getDanhSachNhanVien() {
-        return dao.getDanhSachNhanVien();
-    }
-    
-    public static NhanVienDTO timTheoMaNV(String maNV) {
-        return dao.timTheoMaNV(maNV);
-    }
-    // Thêm nhân viên với validation
-    public static boolean themNhanVien(NhanVienDTO nv) {
-        if (!validateCCCD(nv.getCccd())) return false;
-        if (!validateSDT(nv.getSoDT())) return false;
-        if (!validateUsername(nv.getUsername())) return false;
-        if (!validateRole(nv.getRole())) return false;
-        if (!validateChucVu(nv.getChucVu())) return false;
-
-        
-        return dao.themNhanVien(nv);
+    public NhanVienBUS() {
+        listnv = nvDAO.selectAll();
     }
 
-    // Sửa nhân viên với validation
-    public static boolean suaNhanVien(NhanVienDTO nv) {
-        if (!validateCCCD(nv.getCccd())) return false;
-        if (!validateSDT(nv.getSoDT())) return false;
-        if (!validateRole(nv.getRole())) return false;
-        if (!validateChucVu(nv.getChucVu())) return false;
-
-        
-        return dao.suaNhanVien(nv);
+    public List<NhanVienDTO> getNhanVienAll() {
+        if (listnv == null)
+            listnv = nvDAO.selectAll();
+        return listnv;
     }
 
-    // Xóa nhân viên
-    public static boolean xoaNhanVien(String maNV) {
-        return dao.xoaNhanVien(maNV);
+    public Boolean add(NhanVienDTO a) {
+        boolean result = nvDAO.insert(a) != 0;
+        if (result) {
+            listnv.add(a);
+        }
+        return result;
     }
 
-    // Các phương thức validate
-    private static boolean validateCCCD(String cccd) {
-        return cccd.matches("^0\\d{11}$");
+    public NhanVienDTO getNhanVienById(String ma) {
+        for (NhanVienDTO nv : listnv) {
+            if (nv.getMaNV().equals(ma)) {
+                return nv;
+            }
+        }
+        return null;
     }
 
-    private static boolean validateSDT(String sdt) {
-        return sdt.matches("^\\d{10}$");
+    public Boolean updateNhanVien_DB(NhanVienDTO a) {
+        return nvDAO.update(a) != 0;
     }
 
-    private static boolean validateUsername(String username) {
-        return getDanhSachNhanVien().stream()
-               .noneMatch(nv -> nv.getUsername().equalsIgnoreCase(username));
+    public Boolean deleteById(String ma) {
+        NhanVienDTO toDelete = getNhanVienById(ma);
+        boolean result = nvDAO.delete(ma) != 0;
+        if (result && toDelete != null) {
+            listnv.remove(toDelete);
+        }
+        return result;
     }
 
-    private static boolean validateRole(String role) {
-        return role.equals("Xuất nhập kho") || role.equals("Phục vụ") || role.equals("Tiếp tân")|| role.equals("Kế toán")|| role.equals("All");
+    public List<NhanVienDTO> search(String text) {
+        text = text.toLowerCase();
+        List<NhanVienDTO> result = new java.util.ArrayList<>();
+        for (NhanVienDTO nv : listnv) {
+            if (nv.getMaNV().toLowerCase().contains(text)) {
+                result.add(nv);
+            }
+        }
+        return result;
     }
-        private static boolean validateChucVu(String chucvu) {
-        return chucvu.equals("Quản lý") || chucvu.equals("Nhân viên") || chucvu.equals("Admin");
+
+    public List<NhanVienDTO> getListnv() {
+        return listnv;
     }
+
+    public void setListnv(List<NhanVienDTO> listnv) {
+        this.listnv = listnv;
+    }
+
 }
