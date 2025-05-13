@@ -1,14 +1,9 @@
 package GUI;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-
 import GUI.QLDA.DonHangThucAnGUI;
 import GUI.QLDA.datdoan;
-import GUI.QLDM.ChinhSuaSDM;
-import GUI.QLDM.SuDungMayGUI;
-import GUI.QLDM.maytinh;
+import java.awt.*;
+import javax.swing.*;
 
 public class DatDoAnPanel extends JPanel {
     private CardLayout cardLayout;
@@ -23,7 +18,7 @@ public class DatDoAnPanel extends JPanel {
         topPanel.setBackground(new Color(230, 230, 230));
 
         // --- Tạo các nút chức năng ---
-        JButton btnXemTinhTrang = new JButton("🖥  ĐẶt đồ ăn");
+        JButton btnXemTinhTrang = new JButton("🖥  Đặt đồ ăn");
         JButton btnXemLichSu = new JButton("📜  Hóa đơn đặt");
         // JButton btnChinhLichSu = new JButton("✏️  Chỉnh sửa lịch sử");
 
@@ -42,12 +37,12 @@ public class DatDoAnPanel extends JPanel {
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
 
-        cardPanel.add(new datdoan(), "ĐẶt đồ ăn");
+        cardPanel.add(new datdoan(), "Đặt đồ ăn");
         cardPanel.add(new DonHangThucAnGUI(), "Hóa đơn đặt");
         // cardPanel.add(new ChinhSuaSDM(), "ChinhSua");
 
         // --- Gắn sự kiện nút để chuyển card ---
-        btnXemTinhTrang.addActionListener(e -> cardLayout.show(cardPanel, "ĐẶt đồ ăn"));
+        btnXemTinhTrang.addActionListener(e -> cardLayout.show(cardPanel, "Đặt đồ ăn"));
         btnXemLichSu.addActionListener(e -> cardLayout.show(cardPanel, "Hóa đơn đặt"));
         // btnChinhLichSu.addActionListener(e -> cardLayout.show(cardPanel, "ChinhSua"));
 

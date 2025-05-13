@@ -17,6 +17,8 @@ import com.itextpdf.text.Font;
 
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 
 public class ChinhSuaSDM extends JPanel {
 
@@ -40,6 +42,33 @@ public class ChinhSuaSDM extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
 
         loadData();
+        JTableHeader header = table.getTableHeader();
+        header.setPreferredSize(new Dimension(header.getWidth(), 25)); // Chiều cao header
+        table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if (!isSelected) {
+                    c.setBackground(row % 2 == 0 ? Color.LIGHT_GRAY : Color.WHITE); // Màu nền xen kẽ
+                }
+                setHorizontalAlignment(SwingConstants.CENTER); // Căn giữa chữ
+                return c;
+            }
+        });
+        table.setDefaultEditor(Object.class, new DefaultCellEditor(new JTextField()) {
+            @Override
+            public boolean stopCellEditing() {
+                fireEditingStopped();
+                return super.stopCellEditing();
+            }
+        });
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setRowHeight(30); // Chiều cao các hàng
+        // Không cho chọn ô
+        table.setCellSelectionEnabled(false);
+        table.setColumnSelectionAllowed(false);
+        table.setFocusable(false);
+
 
         JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         btnSua = new JButton("Sửa");

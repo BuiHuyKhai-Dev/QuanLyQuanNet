@@ -1,12 +1,10 @@
 package GUI;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-
 import GUI.QLDM.ChinhSuaSDM;
 import GUI.QLDM.SuDungMayGUI;
 import GUI.QLDM.maytinh;
+import java.awt.*;
+import javax.swing.*;
 
 public class QuanLyMayPanel extends JPanel {
     private CardLayout cardLayout;
@@ -23,7 +21,7 @@ public class QuanLyMayPanel extends JPanel {
         // --- Tạo các nút chức năng ---
         JButton btnXemTinhTrang = new JButton("🖥  Tình trạng máy");
         JButton btnXemLichSu = new JButton("📜  Lịch sử sử dụng");
-        JButton btnChinhLichSu = new JButton("✏️  Chỉnh sửa lịch sử");
+        JButton btnChinhLichSu = new JButton("✏️  Lịch sử toàn bộ máy");
 
         // Kích thước thống nhất
         Dimension btnSize = new Dimension(180, 40);

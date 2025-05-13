@@ -1,14 +1,12 @@
 package GUI.QLDA;
 
-import javax.swing.*;
-import javax.swing.table.*;
+import BUS.HoaDonThucAnBUS;
+import DTO.DonHangThucAnDTO;
 import java.awt.*;
-import java.awt.event.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-
-import DTO.DonHangThucAnDTO;
-import BUS.HoaDonThucAnBUS;
+import javax.swing.*;
+import javax.swing.table.*;
 
 public class DonHangThucAnGUI extends JPanel {
     private JTable table;
@@ -30,6 +28,36 @@ public class DonHangThucAnGUI extends JPanel {
         String[] statusOptions = {"Đã đặt", "Đã xác nhận", "Đã giao", "Đã hủy"};
         TableColumn statusColumn = table.getColumnModel().getColumn(5);
         statusColumn.setCellEditor(new DefaultCellEditor(new JComboBox<>(statusOptions)));
+
+        table.setRowHeight(30); // Chiều cao các hàng
+        JTableHeader header = table.getTableHeader();
+        header.setPreferredSize(new Dimension(header.getWidth(), 25)); // Chiều cao header
+        table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if (!isSelected) {
+                    c.setBackground(row % 2 == 0 ? Color.LIGHT_GRAY : Color.WHITE); // Màu nền xen kẽ
+                }
+                setHorizontalAlignment(SwingConstants.CENTER); // Căn giữa chữ
+                return c;
+            }
+        });
+        table.setDefaultEditor(Object.class, new DefaultCellEditor(new JTextField()) {
+            @Override
+            public boolean stopCellEditing() {
+                fireEditingStopped();
+                return super.stopCellEditing();
+            }
+        });
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setFont(new Font("Arial", Font.PLAIN, 14));
+        table.setRowHeight(30); // Chiều cao các hàng
+        // Không cho chọn ô 
+        table.setCellSelectionEnabled(false);
+        table.setColumnSelectionAllowed(false);
+        table.setFocusable(false);
+
 
         JScrollPane scrollPane = new JScrollPane(table);
         add(scrollPane, BorderLayout.CENTER);
