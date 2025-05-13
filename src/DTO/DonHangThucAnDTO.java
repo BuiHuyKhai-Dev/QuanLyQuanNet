@@ -24,17 +24,17 @@ public class DonHangThucAnDTO {
     private double tongTien;
     private int trangThai;
     private Timestamp thoiGianTao;
+    private int maNV;
     
     public DonHangThucAnDTO(){}
 
-    public DonHangThucAnDTO(int maDonHang, int maKhachHang, int maMay, Timestamp ngayDat, double tongTien, int trangThai, Timestamp thoiGianTao) {
-        this.maDonHang = maDonHang;
+    public DonHangThucAnDTO(int maKhachHang, int maMay, Timestamp ngayDat, double tongTien, int trangThai, int maNV) {
         this.maKhachHang = maKhachHang;
         this.maMay = maMay;
         this.ngayDat = ngayDat;
         this.tongTien = tongTien;
         this.trangThai = trangThai;
-        this.thoiGianTao = thoiGianTao;
+        this.maNV = maNV;
     }
 
     public int getMaDonHang() {
@@ -51,6 +51,13 @@ public class DonHangThucAnDTO {
 
     public void setMaKhachHang(int maKhachHang) {
         this.maKhachHang = maKhachHang;
+    }
+    public int getMaNV() {
+        return maNV;
+    }
+
+    public void setMaNV(int maNV) {
+        this.maNV = maNV;
     }
 
     public int getMaMay() {
