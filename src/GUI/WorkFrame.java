@@ -1,5 +1,6 @@
 package GUI;
 
+import DTO.TaiKhoanDTO;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import javax.swing.*;
@@ -8,6 +9,7 @@ public class WorkFrame extends JFrame {
     public CardLayout cardLayout = new CardLayout();
     public JPanel PanelCard = new JPanel(cardLayout);
     private JButton btnTrangChu, btnQuanLyMay, btnDatDoAn, btnQuanLyKhachHang, btnQuanLyNhanVien, btnQuanLyNhaCungCap, btnThongKe;
+    private JButton btnPhieuNhap, btnQuanLyKho, btnPhanQuyen; // Nút mới
     private JButton nutDangHoatDong; // Nút đang được chọn
 
     public WorkFrame() {
@@ -15,6 +17,57 @@ public class WorkFrame extends JFrame {
         this.setVisible(true);
         this.nutDangHoatDong = btnTrangChu; // Ban đầu nút trang chủ được chọn
         this.btnTrangChu.setBackground(new Color(100, 149, 237)); // Màu xanh cho nút đang hoạt động
+    }
+
+    public WorkFrame(TaiKhoanDTO tk) {
+        if (tk.getTrangThai() == 0) {
+            JOptionPane.showMessageDialog(this, "Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên.");
+            System.exit(0);
+        } else {
+            switch (tk.getNhomQuyen()) {
+                case 1 -> {
+                    this.init();
+                    this.setVisible(true);
+                    this.nutDangHoatDong = btnTrangChu; // Ban đầu nút trang chủ được chọn
+                    this.btnTrangChu.setBackground(new Color(100, 149, 237)); // Màu xanh cho nút đang hoạt động
+                }
+                case 2 -> {
+                    this.init();
+                    btnQuanLyNhaCungCap.setVisible(false);
+                    btnQuanLyNhanVien.setVisible(false);
+                    btnQuanLyKho.setVisible(false); // Ẩn nút Quản lý kho
+                    btnPhieuNhap.setVisible(false); // Ẩn nút Phiếu nhập
+                    this.setVisible(true);
+                    this.nutDangHoatDong = btnTrangChu; // Ban đầu nút trang chủ được chọn
+                    this.btnTrangChu.setBackground(new Color(100, 149, 237)); // Màu xanh cho nút đang hoạt động
+                }
+                case 3 -> {
+                    this.init();
+                    btnQuanLyKhachHang.setVisible(false);
+                    btnQuanLyNhanVien.setVisible(false);
+                    this.setVisible(true);
+                    this.nutDangHoatDong = btnTrangChu; // Ban đầu nút trang chủ được chọn
+                    this.btnTrangChu.setBackground(new Color(100, 149, 237)); // Màu xanh cho nút đang hoạt động
+                }
+                case 4 -> {
+                    this.init();
+                    btnQuanLyMay.setVisible(false);
+                    btnQuanLyKhachHang.setVisible(false);
+                    btnQuanLyNhanVien.setVisible(false);
+                    btnQuanLyNhaCungCap.setVisible(false);
+                    btnThongKe.setVisible(false);
+                    btnPhieuNhap.setVisible(false); // Ẩn nút Phiếu nhập
+                    btnQuanLyKho.setVisible(false); // Ẩn nút Quản lý kho
+                    this.setVisible(true);
+                    this.nutDangHoatDong = btnDatDoAn; // Ban đầu nút đặt đồ ăn được chọn
+                    this.btnDatDoAn.setBackground(new Color(100, 149, 237)); // Màu xanh cho nút đang hoạt động
+                }
+                default -> {
+                    JOptionPane.showMessageDialog(this, "Tài khoản không có quyền truy cập.");
+                    System.exit(0);
+                }
+            }
+        }
     }
 
     public void init() {
@@ -67,7 +120,10 @@ public class WorkFrame extends JFrame {
         btnQuanLyKhachHang = createMenuButton("Quản lý khách hàng");
         btnQuanLyNhanVien = createMenuButton("Quản lý nhân viên");
         btnQuanLyNhaCungCap = createMenuButton("Quản lý nhà cung cấp");
-        btnThongKe = createMenuButton("Thống kê"); // Nút Thống kê
+        btnPhieuNhap = createMenuButton("Phiếu nhập"); // Nút mới
+        btnQuanLyKho = createMenuButton("Quản lý kho"); // Nút mới
+        btnThongKe = createMenuButton("Thống kê");
+        btnPhanQuyen = createMenuButton("Phân quyền"); // Nút mới
 
         gbc.gridy = 1;
         sidebar.add(btnTrangChu, gbc);
@@ -86,12 +142,21 @@ public class WorkFrame extends JFrame {
 
         gbc.gridy = 6;
         sidebar.add(btnQuanLyNhaCungCap, gbc);
-
+        
         gbc.gridy = 7;
-        sidebar.add(btnThongKe, gbc); // Thêm nút Thống kê
+        sidebar.add(btnQuanLyKho, gbc); // Thêm nút Quản lý kho
+
+        gbc.gridy = 8;
+        sidebar.add(btnPhieuNhap, gbc); // Thêm nút Phiếu nhập
+
+        gbc.gridy = 9;
+        sidebar.add(btnThongKe, gbc);
+
+        gbc.gridy = 10;
+        sidebar.add(btnPhanQuyen, gbc); // Thêm nút Phân quyền
 
         // Add a "glue" component to push buttons to the top
-        gbc.gridy = 8;
+        gbc.gridy = 10;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.BOTH;
         sidebar.add(new JPanel(), gbc);
@@ -103,7 +168,10 @@ public class WorkFrame extends JFrame {
         PanelCard.add(new QuanLyKhachHangPanel(), "Quản lý khách hàng");
         PanelCard.add(new QuanLyNhanVienPanel(), "Quản lý nhân viên");
         PanelCard.add(new QuanLyNhaCungCapPanel(), "Quản lý nhà cung cấp");
-        PanelCard.add(new ThongKePanel(), "Thống kê"); // Thêm ThongKePanel
+        PanelCard.add(new ThongKePanel(), "Thống kê");
+        PanelCard.add(new PhieuNhapPanel(), "Phiếu nhập"); // Panel mới
+        PanelCard.add(new QuanLyKhoPanel(), "Quản lý kho"); // Panel mới
+        PanelCard.add(new PhanQuyenPanel(), "Phân quyền"); // Panel mới
 
         // Add sidebar and PanelCard to main panel
         mainPanel.add(sidebar, BorderLayout.WEST);
@@ -138,6 +206,12 @@ public class WorkFrame extends JFrame {
                 cardLayout.show(PanelCard, "Quản lý nhà cung cấp");
             } else if (source == btnThongKe) {
                 cardLayout.show(PanelCard, "Thống kê");
+            } else if (source == btnPhieuNhap) {
+                cardLayout.show(PanelCard, "Phiếu nhập");
+            } else if (source == btnQuanLyKho) {
+                cardLayout.show(PanelCard, "Quản lý kho");
+            } else if (source == btnPhanQuyen) {
+                cardLayout.show(PanelCard, "Phân quyền");
             }
         };
 
@@ -147,7 +221,10 @@ public class WorkFrame extends JFrame {
         btnQuanLyKhachHang.addActionListener(action);
         btnQuanLyNhanVien.addActionListener(action);
         btnQuanLyNhaCungCap.addActionListener(action);
-        btnThongKe.addActionListener(action); // Thêm action listener cho nút Thống kê
+        btnThongKe.addActionListener(action);
+        btnPhieuNhap.addActionListener(action); // Thêm action listener cho nút Phiếu nhập
+        btnQuanLyKho.addActionListener(action); // Thêm action listener cho nút Quản lý kho
+        btnPhanQuyen.addActionListener(action); // Thêm action listener cho nút Phân quyền
     }
 
     private JButton createMenuButton(String text) {

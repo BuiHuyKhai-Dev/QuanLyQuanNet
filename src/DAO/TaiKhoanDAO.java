@@ -5,11 +5,11 @@
 package DAO;
 
 import DAL.DBConnect;
-import DTO.NhanVienDTO;
 import DTO.TaiKhoanDTO;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,17 +32,38 @@ public class TaiKhoanDAO {
             pst.setString(2, matkhau);
             ResultSet rs = (ResultSet) pst.executeQuery();
             if(rs.next()){
-                String manv = rs.getString("maNV");
-                String tenDangNhap = rs.getString("TenDangNhap");
+                String tenDangNhap = rs.getString("tendangnhap");
                 String mk = rs.getString("matkhau");   
-                String nhomQuyen = rs.getString("nhomQuyen");   
+                int nhomQuyen = rs.getInt("manhomquyen");   
                 int trangthai = rs.getInt("trangthai");
-                tk = new TaiKhoanDTO(manv, tenDangNhap, mk, nhomQuyen, trangthai);
+                tk = new TaiKhoanDTO(tenDangNhap, mk, nhomQuyen, trangthai);
             }
             DBConnect.closeConnection(con);
         } catch (Exception e) {
             Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, e);
         }
         return tk;
+    }
+
+    public ArrayList<TaiKhoanDTO> selectAll() {
+        ArrayList<TaiKhoanDTO> list = new ArrayList<>();
+        try {
+            Connection con = (Connection) DBConnect.getConnection();
+            String sql = "SELECT * FROM taikhoan";
+            PreparedStatement pst = (PreparedStatement) con.prepareStatement(sql);
+            ResultSet rs = (ResultSet) pst.executeQuery();
+            while (rs.next()) {
+                String tenDangNhap = rs.getString("tendangnhap");
+                String mk = rs.getString("matkhau");
+                int nhomQuyen = rs.getInt("manhomquyen");
+                int trangthai = rs.getInt("trangthai");
+                TaiKhoanDTO tk = new TaiKhoanDTO(tenDangNhap, mk, nhomQuyen, trangthai);
+                list.add(tk);
+            }
+            DBConnect.closeConnection(con);
+        } catch (Exception e) {
+            Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return list;
     }
 }

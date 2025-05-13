@@ -20,6 +20,10 @@ public class TaiKhoanBUS {
             this.tkDAO = TaiKhoanDAO.getInstance();
 //            this.tkDAO= tkDAO.selectAll();
         }
+
+        public ArrayList<TaiKhoanDTO> getAll() {
+            return tkDAO.selectAll();
+        }
     
         public TaiKhoanDTO dangNhap(String username, String matkhau){
             return tkDAO.kiemTraDangNhap(username, matkhau);

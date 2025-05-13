@@ -9,10 +9,9 @@ package DTO;
  * @author Minnie
  */
 public class TaiKhoanDTO {
-    private String maNV;
     private String tenDangNhap;
     private String matKhau;
-    private String nhomQuyen;
+    private int nhomQuyen;
     private int trangThai;
 
     // Constructor không tham số
@@ -20,22 +19,14 @@ public class TaiKhoanDTO {
     }
 
     // Constructor đầy đủ tham số
-    public TaiKhoanDTO(String maNV, String tenDangNhap, String matKhau, String nhomQuyen, int trangThai) {
-        this.maNV = maNV;
+    public TaiKhoanDTO(String tenDangNhap, String matKhau, int nhomQuyen, int trangThai) {
         this.tenDangNhap = tenDangNhap;
         this.matKhau = matKhau;
         this.nhomQuyen = nhomQuyen;
         this.trangThai = trangThai;
     }
 
-    // Getter và Setter
-    public String getMaNV() {
-        return maNV;
-    }
-
-    public void setMaNV(String maNV) {
-        this.maNV = maNV;
-    }
+    // Getter và Settet
 
     public String getTenDangNhap() {
         return tenDangNhap;
@@ -53,11 +44,11 @@ public class TaiKhoanDTO {
         this.matKhau = matKhau;
     }
 
-    public String getNhomQuyen() {
+    public int getNhomQuyen() {
         return nhomQuyen;
     }
 
-    public void setNhomQuyen(String nhomQuyen) {
+    public void setNhomQuyen(int nhomQuyen) {
         this.nhomQuyen = nhomQuyen;
     }
 
@@ -73,7 +64,6 @@ public class TaiKhoanDTO {
     @Override
     public String toString() {
         return "TaiKhoanDTO{" +
-                "maNV='" + maNV + '\'' +
                 ", tenDangNhap='" + tenDangNhap + '\'' +
                 ", matKhau='" + matKhau + '\'' +
                 ", nhomQuyen='" + nhomQuyen + '\'' +

@@ -1,15 +1,12 @@
 package BUS;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-
-import DAL.*;
 import DAO.HoaDonThucAnDAO;
 import DAO.KhachHangDAO;
 import DAO.MayTinhDAO;
 import DAO.NhanVienDAO;
-import DTO.ChiTietHoaDonDTO;
 import DTO.DonHangThucAnDTO;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 
 public class HoaDonThucAnBUS {
     private HoaDonThucAnDAO dhDAL= new HoaDonThucAnDAO();
@@ -27,7 +24,7 @@ public class HoaDonThucAnBUS {
             return false;
         }
 
-        if (mayDAL.chonMayTinhTheoMa(maMay)== null) {
+        if (mayDAL.chonMayTinhTheoMa(maMay) == null) {
             System.out.println("❌ Mã máy không tồn tại!");
             return false;
         }

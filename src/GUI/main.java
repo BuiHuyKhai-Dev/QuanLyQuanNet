@@ -11,7 +11,16 @@ package GUI;
 public class main {
     public static void main(String[] args) {
         // Khởi tạo giao diện chính
-        WorkFrame workFrame = new WorkFrame();
-        workFrame.setVisible(true);
+        DangNhap dn = new DangNhap();
+        dn.setVisible(true);
+        // // Giả sử bạn có một lớp TàiKhoảnBus để xử lý logic liên quan đến tài khoản
+        // TaiKhoanBUS taiKhoanBus = new TaiKhoanBUS();
+        // ArrayList<TaiKhoanDTO> danhSachTaiKhoan = taiKhoanBus.getAll();
+
+        // // In ra danh sách tài khoản
+        // for (TaiKhoanDTO taiKhoan : danhSachTaiKhoan) {
+        //     System.out.println("Tài khoản: " + taiKhoan.getTenDangNhap() + ", Mật khẩu: " + taiKhoan.getMatKhau());
+        //     System.out.println("Nhóm quyền: " + taiKhoan.getNhomQuyen() + ", Trạng thái: " + taiKhoan.getTrangThai());
+        // }
     }
 }

@@ -41,14 +41,14 @@ public class datdoan extends JPanel {
         menuPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Thêm món
-        addMenuItem(menuPanel, "Cơm gà", "img/comga.jpg", 50000);
-        addMenuItem(menuPanel, "Gà rán", "img/garan.jpg", 60000);
-        addMenuItem(menuPanel, "Khoai tây chiên", "img/khoaitay.jpg", 30000);
-        addMenuItem(menuPanel, "Mì xào", "img/mixao.jpg", 40000);
-        addMenuItem(menuPanel, "Trà sữa", "img/trasua.jpg", 35000);
-        addMenuItem(menuPanel, "Bánh mì", "img/banhmi.jpg", 20000);
-        addMenuItem(menuPanel, "Phở bò", "img/phobo.jpg", 45000);
-        addMenuItem(menuPanel, "Nước ngọt", "img/nuocngot.jpg", 15000);
+        addMenuItem(menuPanel, "Cơm gà", "../../img/comga.jpg", 50000);
+        addMenuItem(menuPanel, "Gà rán", "../../img/garan.jpg", 60000);
+        addMenuItem(menuPanel, "Khoai tây chiên", "../../img/khoaitay.jpg", 30000);
+        addMenuItem(menuPanel, "Mì xào", "../../img/mixao.jpg", 40000);
+        addMenuItem(menuPanel, "Trà sữa", "../../img/trasua.jpg", 35000);
+        addMenuItem(menuPanel, "Bánh mì", "../../img/banhmi.jpg", 20000);
+        addMenuItem(menuPanel, "Phở bò", "../../img/phobo.jpg", 45000);
+        addMenuItem(menuPanel, "Nước ngọt", "../../img/nuocngot.jpg", 15000);
 
         JScrollPane menuScrollPane = new JScrollPane(menuPanel);
         menuScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
