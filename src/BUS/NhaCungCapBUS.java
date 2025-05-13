@@ -47,12 +47,59 @@ public class NhaCungCapBUS {
         return nccDAO.update(a) != 0;
     }
 
-    public Boolean deleteById(String ma) {
-        NhaCungCapDTO toDelete = getNhaCungCapById(ma);
-        boolean result = nccDAO.delete(Integer.parseInt(ma)) != 0;
+    public Boolean deleteById(int ma) {
+        NhaCungCapDTO toDelete = getNhaCungCapById(String.valueOf(ma));
+        boolean result = nccDAO.delete(ma) != 0;
         if (result && toDelete != null) {
             listncc.remove(toDelete);
         }
+        return result;
+    }
+
+    public int getLastID() {
+        if (listncc == null) {
+            listncc = nccDAO.selectAll();
+        }
+        int maxId = 0;
+        for (NhaCungCapDTO ncc : listncc) {
+            if (ncc.getMaNhaCungCap() > maxId) {
+                maxId = ncc.getMaNhaCungCap();
+            }
+        }
+        return maxId +1 ;
+    }
+
+    public ArrayList<NhaCungCapDTO> searchName(String name) {
+        String text = name.toLowerCase();
+        ArrayList<NhaCungCapDTO> result = new ArrayList<>();
+        for (NhaCungCapDTO ncc : listncc) {
+            if (ncc.getTenNhaCungCap().toLowerCase().contains(text)) {
+                result.add(ncc);
+            }
+        }
+        return result;
+    }
+
+    public ArrayList<NhaCungCapDTO> searchPhone(String phone) {
+        String text = phone.toLowerCase();
+        ArrayList<NhaCungCapDTO> result = new ArrayList<>();
+        for (NhaCungCapDTO ncc : listncc) {
+            if (ncc.getSoDienThoai().toLowerCase().contains(text)) {
+                result.add(ncc);
+            }
+        }
+        return result;
+    }
+
+    public ArrayList<NhaCungCapDTO> sortName() {
+        ArrayList<NhaCungCapDTO> result = new ArrayList<>(listncc);
+        result.sort((NhaCungCapDTO o1, NhaCungCapDTO o2) -> o1.getTenNhaCungCap().compareTo(o2.getTenNhaCungCap()));
+        return result;
+    }
+
+    public ArrayList<NhaCungCapDTO> sortAdress() {
+        ArrayList<NhaCungCapDTO> result = new ArrayList<>(listncc);
+        result.sort((NhaCungCapDTO o1, NhaCungCapDTO o2) -> o1.getDiaChi().compareTo(o2.getDiaChi()));
         return result;
     }
 }

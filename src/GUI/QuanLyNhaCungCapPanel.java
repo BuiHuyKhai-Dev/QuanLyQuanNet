@@ -35,7 +35,7 @@ public class QuanLyNhaCungCapPanel extends JPanel {
 
         // ComboBox sắp xếp và ô tìm kiếm phía phải
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JComboBox<String> sortComboBox = new JComboBox<>(new String[]{"Sắp xếp theo tên", "Sắp xếp theo thời gian tạo"});
+        JComboBox<String> sortComboBox = new JComboBox<>(new String[]{"Tất cả","Sắp xếp theo tên", "Sắp xếp theo địa chỉ"});
         JTextField searchField = new JTextField(15);
         JButton btnSearch = new JButton("Tìm kiếm");
         rightPanel.add(sortComboBox);
@@ -63,6 +63,13 @@ public class QuanLyNhaCungCapPanel extends JPanel {
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         supplierTable.setDefaultRenderer(Object.class, centerRenderer);
+        supplierTable.setDefaultEditor(Object.class, null);
+        supplierTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // Chọn 1 hàng
+        supplierTable.setRowSelectionAllowed(true); // Cho phép chọn hàng
+        supplierTable.setColumnSelectionAllowed(false); // Không cho phép chọn cột
+        supplierTable.setCellSelectionEnabled(false);
+        supplierTable.setRowSelectionAllowed(true);
+        supplierTable.setFocusable(false); // Không cho phép chọn ô
 
         // Tô màu nền xen kẽ cho các dòng
         supplierTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
@@ -82,6 +89,61 @@ public class QuanLyNhaCungCapPanel extends JPanel {
         btnDelete.addActionListener(e -> showDeleteDialog());
         btnEdit.addActionListener(e -> showEditDialog());
         btnDetail.addActionListener(e -> showDetailDialog());
+        btnSearch.addActionListener(e -> {
+            String searchText = searchField.getText();
+            if (searchText.isEmpty()) {
+                ArrayList<NhaCungCapDTO> resutl = nhaCungCapBUS.getNhaCungCapAll(); // Nếu ô tìm kiếm rỗng, tải lại dữ liệu
+                for (NhaCungCapDTO ncc : resutl) {
+                    tableModel.addRow(new Object[]{
+                        ncc.getMaNhaCungCap(),
+                        ncc.getTenNhaCungCap(),
+                        ncc.getDiaChi(),
+                        ncc.getSoDienThoai(),
+                        ncc.getEmail(),
+                        ncc.getThoiGianTao()
+                    });
+                }
+            } else {
+                // Tìm kiếm và lọc dữ liệu
+                tableModel.setRowCount(0);
+                ArrayList<NhaCungCapDTO> danhSachNhaCungCap = nhaCungCapBUS.getNhaCungCapAll();
+                for (NhaCungCapDTO ncc : danhSachNhaCungCap) {
+                    if (ncc.getTenNhaCungCap().toLowerCase().contains(searchText.toLowerCase())) {
+                        tableModel.addRow(new Object[]{
+                            ncc.getMaNhaCungCap(),
+                            ncc.getTenNhaCungCap(),
+                            ncc.getDiaChi(),
+                            ncc.getSoDienThoai(),
+                            ncc.getEmail(),
+                            ncc.getThoiGianTao()
+                        });
+                    }
+                }
+            }
+        });
+        sortComboBox.addActionListener(e -> {
+            String selectedItem = (String) sortComboBox.getSelectedItem();
+            tableModel.setRowCount(0); // Xóa dữ liệu cũ trong bảng
+            ArrayList<NhaCungCapDTO> sortedList;
+            if ("Sắp xếp theo tên".equals(selectedItem)) {
+                sortedList = nhaCungCapBUS.sortName();
+            } else if ("Sắp xếp theo địa chỉ".equals(selectedItem)) {
+                sortedList = nhaCungCapBUS.sortAdress();
+            } else {
+                sortedList = nhaCungCapBUS.getNhaCungCapAll(); // Nếu không chọn sắp xếp, tải lại dữ liệu
+            }
+            for (NhaCungCapDTO ncc : sortedList) {
+                tableModel.addRow(new Object[]{
+                    ncc.getMaNhaCungCap(),
+                    ncc.getTenNhaCungCap(),
+                    ncc.getDiaChi(),
+                    ncc.getSoDienThoai(),
+                    ncc.getEmail(),
+                    ncc.getThoiGianTao()
+                });
+            }
+
+        });
     }
 
     private void loadSupplierData() {
@@ -135,9 +197,48 @@ public class QuanLyNhaCungCapPanel extends JPanel {
             // Lấy thời gian hiện tại
             String createdTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-            // Thêm dữ liệu vào bảng
-            tableModel.addRow(new Object[]{tableModel.getRowCount() + 1, name, address, phone, email, createdTime});
+            // Kiểm tra dữ liệu nhập vào
+            if (name.isEmpty() || address.isEmpty() || phone.isEmpty() || email.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng điền đầy đủ thông tin!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (!phone.matches("\\d{10}")) {
+                JOptionPane.showMessageDialog(this, "Số điện thoại không hợp lệ!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (!email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+                JOptionPane.showMessageDialog(this, "Email không hợp lệ!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            if (nhaCungCapBUS.getNhaCungCapById(phone) != null) {
+                JOptionPane.showMessageDialog(this, "Nhà cung cấp đã tồn tại!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            // Kiểm tra xem nhà cung cấp đã tồn tại chưa
+            for (int i = 0; i < tableModel.getRowCount(); i++) {
+                if (tableModel.getValueAt(i, 1).equals(name)) {
+                    JOptionPane.showMessageDialog(this, "Nhà cung cấp đã tồn tại!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            }
+
+            // Thêm dữ liệu vào NhaCungCapBUS
+            NhaCungCapDTO ncc = new NhaCungCapDTO();
+            ncc.setMaNhaCungCap(nhaCungCapBUS.getLastID());
+            ncc.setTenNhaCungCap(name);
+            ncc.setDiaChi(address);
+            ncc.setSoDienThoai(phone);
+            ncc.setEmail(email);
+            ncc.setThoiGianTao(createdTime);
+            if (nhaCungCapBUS.add(ncc)) {
+                JOptionPane.showMessageDialog(this, "Thêm nhà cung cấp thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Thêm nhà cung cấp thất bại!", "Thông báo", JOptionPane.ERROR_MESSAGE);
+            }
             dialog.dispose();
+
+            // Thêm dữ liệu vào bảng
+            tableModel.addRow(new Object[]{nhaCungCapBUS.getLastID(), name, address, phone, email, createdTime});
         });
         dialog.add(btnConfirm);
 
@@ -158,6 +259,11 @@ public class QuanLyNhaCungCapPanel extends JPanel {
 
         int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa nhà cung cấp này?", "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
+            if(nhaCungCapBUS.deleteById((Integer) tableModel.getValueAt(selectedRow, 0))) {
+                JOptionPane.showMessageDialog(this, "Xóa nhà cung cấp thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Xóa nhà cung cấp thất bại!", "Thông báo", JOptionPane.ERROR_MESSAGE);
+            }
             tableModel.removeRow(selectedRow);
         }
     }
@@ -195,6 +301,20 @@ public class QuanLyNhaCungCapPanel extends JPanel {
             tableModel.setValueAt(txtAddress.getText(), selectedRow, 2);
             tableModel.setValueAt(txtPhone.getText(), selectedRow, 3);
             tableModel.setValueAt(txtEmail.getText(), selectedRow, 4);
+
+            // Cập nhật dữ liệu vào NhaCungCapBUS
+            NhaCungCapDTO ncc = new NhaCungCapDTO();
+            ncc.setMaNhaCungCap((Integer) tableModel.getValueAt(selectedRow, 0));
+            ncc.setTenNhaCungCap(txtName.getText());
+            ncc.setDiaChi(txtAddress.getText());
+            ncc.setSoDienThoai(txtPhone.getText());
+            ncc.setEmail(txtEmail.getText());
+            ncc.setThoiGianTao((String) tableModel.getValueAt(selectedRow, 5));
+            if (nhaCungCapBUS.updateNhaCungCap_DB(ncc)) {
+                JOptionPane.showMessageDialog(this, "Sửa nhà cung cấp thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Sửa nhà cung cấp thất bại!", "Thông báo", JOptionPane.ERROR_MESSAGE);
+            }
             dialog.dispose();
         });
         dialog.add(btnConfirm);

@@ -82,6 +82,9 @@ public class QuanLyKhachHangPanel extends JPanel {
         customerTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // Chọn 1 hàng
         customerTable.setRowSelectionAllowed(true); // Cho phép chọn hàng
         customerTable.setColumnSelectionAllowed(false); // Không cho phép chọn cột
+        customerTable.setCellSelectionEnabled(false);
+        customerTable.setRowSelectionAllowed(true);
+        customerTable.setFocusable(false); // Không cho phép chọn ô
 
         // Lấy dữ liệu khách hàng từ KhachHangBUS và đổ vào bảng
         loadCustomerData();
@@ -152,7 +155,12 @@ public class QuanLyKhachHangPanel extends JPanel {
     int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa khách hàng này?", "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
     if (confirm == JOptionPane.YES_OPTION) {
         int maKhachHang = (int) tableModel.getValueAt(selectedRow, 0);
-        khachHangBUS.deleteById(maKhachHang);
+        // Xóa khách hàng trong danh sách
+        if(khachHangBUS.deleteById(maKhachHang)) {
+            JOptionPane.showMessageDialog(this, "Xóa khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Xóa khách hàng thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
 
         // Cập nhật lại bảng
         loadCustomerData();
@@ -202,14 +210,18 @@ public class QuanLyKhachHangPanel extends JPanel {
 
             // Cập nhật khách hàng trong danh sách
             KhachHangDTO updatedCustomer = new KhachHangDTO(maKhachHang, name, phone, email, balance, null);
-            khachHangBUS.updateKhachHang_DB(updatedCustomer);
+
+            if(khachHangBUS.updateKhachHang_DB(updatedCustomer)) {
+                JOptionPane.showMessageDialog(this, "Cập nhật khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Cập nhật khách hàng thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
 
             // Cập nhật lại bảng
             tableModel.setValueAt(name, selectedRow, 1); // Cập nhật tên
             tableModel.setValueAt(phone, selectedRow, 2); // Cập nhật số điện thoại
             tableModel.setValueAt(email, selectedRow, 3); // Cập nhật email
             tableModel.setValueAt(balance, selectedRow, 4);
-            System.out.println("ok");
             dialog.dispose();
         });
         dialog.add(btnConfirm);
@@ -360,7 +372,12 @@ public class QuanLyKhachHangPanel extends JPanel {
             KhachHangDTO newCustomer = new KhachHangDTO(
                 khachHangBUS.getLastID(), name, phone, email, balance, createdTime
             );
-            khachHangBUS.add(newCustomer);
+
+            if(khachHangBUS.add(newCustomer)) {
+                JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Thêm khách hàng thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
 
             // Cập nhật lại bảng
             loadCustomerData();

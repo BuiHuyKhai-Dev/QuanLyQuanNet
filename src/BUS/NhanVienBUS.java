@@ -2,17 +2,17 @@ package BUS;
 
 import DAO.NhanVienDAO;
 import DTO.NhanVienDTO;
-import java.util.List;
+import java.util.ArrayList;
 
 public class NhanVienBUS {
     public final NhanVienDAO nvDAO = new NhanVienDAO();
-    private List<NhanVienDTO> listnv = null;
+    private ArrayList<NhanVienDTO> listnv = null;
 
     public NhanVienBUS() {
         listnv = nvDAO.selectAll();
     }
 
-    public List<NhanVienDTO> getNhanVienAll() {
+    public ArrayList<NhanVienDTO> getNhanVienAll() {
         if (listnv == null)
             listnv = nvDAO.selectAll();
         return listnv;
@@ -48,9 +48,9 @@ public class NhanVienBUS {
         return result;
     }
 
-    public List<NhanVienDTO> search(String text) {
+    public ArrayList<NhanVienDTO> search(String text) {
         text = text.toLowerCase();
-        List<NhanVienDTO> result = new java.util.ArrayList<>();
+        ArrayList<NhanVienDTO> result = new java.util.ArrayList<>();
         for (NhanVienDTO nv : listnv) {
             if (nv.getMaNV().toLowerCase().contains(text)) {
                 result.add(nv);
@@ -59,12 +59,74 @@ public class NhanVienBUS {
         return result;
     }
 
-    public List<NhanVienDTO> getListnv() {
+    public ArrayList<NhanVienDTO> getListnv() {
         return listnv;
     }
 
-    public void setListnv(List<NhanVienDTO> listnv) {
+    public void setListnv(ArrayList<NhanVienDTO> listnv) {
         this.listnv = listnv;
+    }
+
+    public int getLastID() {
+        if (listnv == null || listnv.isEmpty()) {
+            return 0;
+        }
+        int maxId = Integer.parseInt(listnv.get(0).getMaNV());
+        for (NhanVienDTO nv : listnv) {
+            int id = Integer.parseInt(nv.getMaNV());
+            if (id > maxId) {
+                maxId = id;
+            }
+        }
+        return maxId + 1;
+    }
+
+    public ArrayList<NhanVienDTO> searchName(String text) {
+        text = text.toLowerCase();
+        ArrayList<NhanVienDTO> result = new ArrayList<>();
+        for (NhanVienDTO nv : listnv) {
+            if (nv.getTenNV().toLowerCase().contains(text)) {
+                result.add(nv);
+            }
+        }
+        return result;
+    }
+
+    public ArrayList<NhanVienDTO> searchSDT(String text) {
+        text = text.toLowerCase();
+        ArrayList<NhanVienDTO> result = new ArrayList<>();
+        for (NhanVienDTO nv : listnv) {
+            if (nv.getSoDT().toLowerCase().contains(text)) {
+                result.add(nv);
+            }
+        }
+        return result;
+    }
+
+    public ArrayList<NhanVienDTO> sortName() {
+        ArrayList<NhanVienDTO> sortedList = new ArrayList<>(listnv);
+        sortedList.sort((o1, o2) -> o1.getTenNV().compareToIgnoreCase(o2.getTenNV()));
+        return sortedList;
+    }
+
+    public ArrayList<NhanVienDTO> sortSalary() {
+       ArrayList<NhanVienDTO> sortedList = new ArrayList<>(listnv);
+        sortedList.sort((o1, o2) -> {
+            double salary1 = o1.getLuong();
+            double salary2 = o2.getLuong();
+            return Double.compare(salary1, salary2);
+        });
+        return sortedList;
+    }
+
+    public ArrayList<NhanVienDTO> sortByID() {
+        ArrayList<NhanVienDTO> sortedList = new ArrayList<>(listnv);
+        sortedList.sort((o1, o2) -> {
+            int id1 = Integer.parseInt(o1.getMaNV());
+            int id2 = Integer.parseInt(o2.getMaNV());
+            return Integer.compare(id1, id2);
+        });
+        return sortedList;
     }
 
 }
