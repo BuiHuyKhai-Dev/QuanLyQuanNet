@@ -102,4 +102,15 @@ public class NhaCungCapBUS {
         result.sort((NhaCungCapDTO o1, NhaCungCapDTO o2) -> o1.getDiaChi().compareTo(o2.getDiaChi()));
         return result;
     }
+    
+    public ArrayList<NhaCungCapDTO> filterByDate(String fromDate, String toDate) {
+        ArrayList<NhaCungCapDTO> filteredList = new ArrayList<>();
+        for (NhaCungCapDTO nv : nccDAO.selectAll()) {
+            String ngayTao = nv.getThoiGianTao();
+            if (ngayTao.compareTo(fromDate) >= 0 && ngayTao.compareTo(toDate) <= 0) {
+                filteredList.add(nv);
+            }
+        }
+        return filteredList;
+    }
 }

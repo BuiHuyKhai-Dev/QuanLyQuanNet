@@ -1,6 +1,7 @@
 package BUS;
 import DAO.KhachHangDAO;
 import DTO.KhachHangDTO;
+import DTO.NhanVienDTO;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -164,5 +165,15 @@ public class KhachHangBUS {
         });
         return listkh;
     }
-
+    
+    public ArrayList<KhachHangDTO> filterByDate(String fromDate, String toDate) {
+        ArrayList<KhachHangDTO> filteredList = new ArrayList<>();
+        for (KhachHangDTO kh : khDAO.selectAll()) {
+            String ngayTao = kh.getThoiGianTao();
+            if (ngayTao.compareTo(fromDate) >= 0 && ngayTao.compareTo(toDate) <= 0) {
+                filteredList.add(kh);
+            }
+        }
+        return filteredList;
+    }
 }

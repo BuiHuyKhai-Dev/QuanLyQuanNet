@@ -129,4 +129,14 @@ public class NhanVienBUS {
         return sortedList;
     }
 
+    public ArrayList<NhanVienDTO> filterByDate(String fromDate, String toDate) {
+        ArrayList<NhanVienDTO> filteredList = new ArrayList<>();
+        for (NhanVienDTO nv : nvDAO.selectAll()) {
+            String ngayTao = nv.getThoiGianTao();
+            if (ngayTao.compareTo(fromDate) >= 0 && ngayTao.compareTo(toDate) <= 0) {
+                filteredList.add(nv);
+            }
+        }
+        return filteredList;
+    }
 }

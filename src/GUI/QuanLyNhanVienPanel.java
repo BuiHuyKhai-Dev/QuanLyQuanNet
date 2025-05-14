@@ -11,6 +11,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import com.toedter.calendar.JDateChooser; // Import thư viện JCalendar
 
 public class QuanLyNhanVienPanel extends JPanel {
     private DefaultTableModel tableModel;
@@ -40,9 +41,24 @@ public class QuanLyNhanVienPanel extends JPanel {
         JComboBox<String> sortComboBox = new JComboBox<>(new String[]{"Tất cả","Sắp xếp theo tên", "Sắp xếp theo lương"});
         JTextField searchField = new JTextField(15);
         JButton btnSearch = new JButton("Tìm kiếm");
+        JLabel lblFromDate = new JLabel("Từ:");
+        JDateChooser fromDateChooser = new JDateChooser();
+        fromDateChooser.setDateFormatString("yyyy-MM-dd");
+
+        JLabel lblToDate = new JLabel("Đến:");
+        JDateChooser toDateChooser = new JDateChooser();
+        toDateChooser.setDateFormatString("yyyy-MM-dd");
+
+        JButton btnFilter = new JButton("Lọc");
+
         rightPanel.add(sortComboBox);
         rightPanel.add(searchField);
         rightPanel.add(btnSearch);
+        rightPanel.add(lblFromDate);
+        rightPanel.add(fromDateChooser);
+        rightPanel.add(lblToDate);
+        rightPanel.add(toDateChooser);
+        rightPanel.add(btnFilter);
 
         topPanel.add(leftPanel, BorderLayout.WEST);
         topPanel.add(rightPanel, BorderLayout.EAST);
@@ -219,6 +235,33 @@ public class QuanLyNhanVienPanel extends JPanel {
                         nv.getThoiGianTao()
                     });
                 }
+            }
+        });
+        btnFilter.addActionListener(e -> {
+            String fromDate = fromDateChooser.getDate() != null ? new java.text.SimpleDateFormat("yyyy-MM-dd").format(fromDateChooser.getDate()) : "";
+            String toDate = toDateChooser.getDate() != null ? new java.text.SimpleDateFormat("yyyy-MM-dd").format(toDateChooser.getDate()) : "";
+
+            if (fromDate.isEmpty() || toDate.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn cả ngày bắt đầu và ngày kết thúc!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Lọc dữ liệu theo khoảng thời gian
+            ArrayList<NhanVienDTO> filteredList = nhanVienBUS.filterByDate(fromDate, toDate);
+            tableModel.setRowCount(0); // Xóa dữ liệu cũ
+            for (NhanVienDTO nv : filteredList) {
+                String gioiTinh = nv.getGioiTinh() == 1 ? "Nam" : "Nữ";
+                tableModel.addRow(new Object[]{
+                    nv.getMaNV(),
+                    nv.getTenNV(),
+                    gioiTinh,
+                    nv.getNgaySinh(),
+                    nv.getSoDT(),
+                    nv.getEmail(),
+                    nv.getDiaChi(),
+                    nv.getLuong(),
+                    nv.getThoiGianTao()
+                });
             }
         });
     }
