@@ -10,6 +10,7 @@ import java.sql.Timestamp;
  */
 public class KhoThucAn {
     private int maKho;
+    private int maNCC;
     private int maThucAn;
     private int soLuong;
     private Timestamp thoiGianTao;
@@ -17,11 +18,20 @@ public class KhoThucAn {
     public KhoThucAn() {
     }
 
-    public KhoThucAn(int maKho, int maThucAn, int soLuong, Timestamp thoiGianTao) {
+    public KhoThucAn(int maKho, int maNCC,int maThucAn, int soLuong, Timestamp thoiGianTao) {
         this.maKho = maKho;
         this.maThucAn = maThucAn;
+        this.maNCC = maNCC;
         this.soLuong = soLuong;
         this.thoiGianTao = thoiGianTao;
+    }
+
+    public int getMaNCC() {
+        return maNCC;
+    }
+
+    public void setMaNCC(int maNCC) {
+        this.maNCC = maNCC;
     }
 
     public int getMaKho() {

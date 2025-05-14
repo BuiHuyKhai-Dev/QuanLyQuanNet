@@ -1,13 +1,24 @@
 package GUI;
 
+import BUS.KhoMayTinhBUS;
+import BUS.KhoThucAnBUS;
+import DAO.KhoMayTinhDAO;
+import DAO.KhoThucAnDAO;
+import DTO.KhoMayTinhDTO;
+import DTO.KhoThucAnDTO;
 import java.awt.*;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import com.toedter.calendar.JDateChooser;
+import com.toedter.calendar.JDateChooser; // Import thư viện JCalendar
+import javax.swing.table.DefaultTableCellRenderer;
+
 
 public class QuanLyKhoPanel extends JPanel {
     private CardLayout cardLayout;
     private JPanel cardPanel;
+    private KhoMayTinhBUS khoMayTinhBUS = new KhoMayTinhBUS();
+    private KhoThucAnBUS khoThucAnBUS = new KhoThucAnBUS();
 
     public QuanLyKhoPanel() {
         setLayout(new BorderLayout());
@@ -96,14 +107,38 @@ public class QuanLyKhoPanel extends JPanel {
         DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
         JTable table = new JTable(tableModel);
 
-        // Add sample data
-        tableModel.addRow(new Object[]{"Nhà cung cấp A", "MT001", 10});
-        tableModel.addRow(new Object[]{"Nhà cung cấp B", "MT002", 5});
+        // Thêm dữ liệu từ cơ sở dữ liệu vào bảng
+        ArrayList<KhoMayTinhDTO> khoMayTinhList = new KhoMayTinhDAO().sellectAll();
+        for (KhoMayTinhDTO khoMayTinh : khoMayTinhList) {
+            // Lấy tên nhà cung cấp từ mã nhà cung cấp
+            tableModel.addRow(new Object[]{
+                khoMayTinhBUS.getTenMayByMa(khoMayTinh.getMaNCC()),
+                khoMayTinh.getMaMay(),
+                khoMayTinh.getSoLuong()
+            });
+        }
 
         // Table customization
         table.setRowHeight(30);
         table.getTableHeader().setPreferredSize(new Dimension(table.getTableHeader().getWidth(), 25));
         JScrollPane scrollPane = new JScrollPane(table);
+        table.setFillsViewportHeight(true);
+        table.setCellSelectionEnabled(false);
+        table.setColumnSelectionAllowed(false);
+        table.setFocusable(false);
+        table.setDefaultEditor(Object.class, null); // Không cho chỉnh sửa ô
+        // Center align text in cells
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        table.setDefaultRenderer(Object.class, centerRenderer);
+
+        // Set header background color to gray
+        DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
+        headerRenderer.setBackground(Color.LIGHT_GRAY);
+        headerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < table.getColumnModel().getColumnCount(); i++) {
+            table.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
+        }
 
         panel.add(scrollPane, BorderLayout.CENTER);
         return panel;
@@ -113,13 +148,33 @@ public class QuanLyKhoPanel extends JPanel {
         JPanel panel = new JPanel(new BorderLayout());
 
         // Table model for Kho thức ăn
-        String[] columns = {"Tên nhà cung cấp", "Tên thức ăn", "Số lượng"};
+        String[] columns = {"Tên nhà cung cấp", "Tên thức ăn", "Số lượng tồn kho"};
         DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
         JTable table = new JTable(tableModel);
 
-        // Add sample data
-        tableModel.addRow(new Object[]{"Nhà cung cấp A", "Bánh mì", 50});
-        tableModel.addRow(new Object[]{"Nhà cung cấp B", "Nước ngọt", 30});
+        // Thêm dữ liệu từ cơ sở dữ liệu vào bảng
+        ArrayList<KhoThucAnDTO> khoThucAnList = new KhoThucAnDAO().getAllKhoThucAn();
+        for (KhoThucAnDTO khoThucAn : khoThucAnList) {
+            // Lấy tên nhà cung cấp từ mã nhà cung cấp
+            tableModel.addRow(new Object[]{
+                khoThucAnBUS.getTenNCC(khoThucAn.getmaNCC()),
+                khoThucAnBUS.getTenThucAn(khoThucAn.getMaThucAn()),
+                khoThucAn.getSoLuong()
+            });
+        }
+         // Center align text in cells
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        table.setDefaultRenderer(Object.class, centerRenderer);
+
+        // Set header background color to gray
+        DefaultTableCellRenderer headerRenderer = new DefaultTableCellRenderer();
+        headerRenderer.setBackground(Color.LIGHT_GRAY);
+        headerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+        for (int i = 0; i < table.getColumnModel().getColumnCount(); i++) {
+            table.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
+        }
+        
 
         // Table customization
         table.setRowHeight(30);

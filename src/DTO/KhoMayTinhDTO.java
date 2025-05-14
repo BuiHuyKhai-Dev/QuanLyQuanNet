@@ -10,19 +10,29 @@ import java.sql.Timestamp;
  */
 public class KhoMayTinhDTO {
     private int maKho;
+    private int maNCC;
     private int maMay;
     private int soLuong;
-    private Timestamp thoiGianTao;
+    private String thoiGianTao;
     
     public KhoMayTinhDTO(){}
 
-    public KhoMayTinhDTO(int maKho, int maMay, int soLuong, Timestamp thoiGianTao) {
+    public KhoMayTinhDTO(int maKho, int maNCC,int maMay, int soLuong, String thoiGianTao) {
         this.maKho = maKho;
+        this.maNCC = maNCC;
         this.maMay = maMay;
         this.soLuong = soLuong;
         this.thoiGianTao = thoiGianTao;
     }
-
+    
+    public int getMaNCC() {
+        return maNCC;
+    }
+    
+    public void setMaNCC(int maNCC) {
+        this.maNCC = maNCC;
+    }
+    
     public int getMaKho() {
         return maKho;
     }
@@ -47,11 +57,11 @@ public class KhoMayTinhDTO {
         this.soLuong = soLuong;
     }
 
-    public Timestamp getThoiGianTao() {
+    public String getThoiGianTao() {
         return thoiGianTao;
     }
 
-    public void setThoiGianTao(Timestamp thoiGianTao) {
+    public void setThoiGianTao(String thoiGianTao) {
         this.thoiGianTao = thoiGianTao;
     }
 

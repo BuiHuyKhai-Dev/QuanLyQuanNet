@@ -250,10 +250,6 @@ public class QuanLyNhaCungCapPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Email không hợp lệ!", "Thông báo", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            if (nhaCungCapBUS.getNhaCungCapById(phone) != null) {
-                JOptionPane.showMessageDialog(this, "Nhà cung cấp đã tồn tại!", "Thông báo", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
             // Kiểm tra xem nhà cung cấp đã tồn tại chưa
             for (int i = 0; i < tableModel.getRowCount(); i++) {
                 if (tableModel.getValueAt(i, 1).equals(name)) {
@@ -376,36 +372,43 @@ public class QuanLyNhaCungCapPanel extends JPanel {
 
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Chi tiết nhà cung cấp", true);
         dialog.setSize(400, 300);
-        dialog.setLayout(new GridLayout(5, 2, 10, 10));
+        dialog.setLayout(new BorderLayout(10, 10)); // Sử dụng BorderLayout
 
-        dialog.add(new JLabel("Tên nhà cung cấp:"));
+        // Panel chứa thông tin chi tiết
+        JPanel detailPanel = new JPanel(new GridLayout(5, 2, 10, 10));
+        detailPanel.add(new JLabel("Tên nhà cung cấp:"));
         JTextField txtName = new JTextField((String) tableModel.getValueAt(selectedRow, 1));
         txtName.setEditable(false);
-        dialog.add(txtName);
+        detailPanel.add(txtName);
 
-        dialog.add(new JLabel("Địa chỉ:"));
+        detailPanel.add(new JLabel("Địa chỉ:"));
         JTextField txtAddress = new JTextField((String) tableModel.getValueAt(selectedRow, 2));
         txtAddress.setEditable(false);
-        dialog.add(txtAddress);
+        detailPanel.add(txtAddress);
 
-        dialog.add(new JLabel("Số điện thoại:"));
+        detailPanel.add(new JLabel("Số điện thoại:"));
         JTextField txtPhone = new JTextField((String) tableModel.getValueAt(selectedRow, 3));
         txtPhone.setEditable(false);
-        dialog.add(txtPhone);
+        detailPanel.add(txtPhone);
 
-        dialog.add(new JLabel("Email:"));
+        detailPanel.add(new JLabel("Email:"));
         JTextField txtEmail = new JTextField((String) tableModel.getValueAt(selectedRow, 4));
         txtEmail.setEditable(false);
-        dialog.add(txtEmail);
+        detailPanel.add(txtEmail);
 
-        dialog.add(new JLabel("Thời gian tạo:"));
+        detailPanel.add(new JLabel("Thời gian tạo:"));
         JTextField txtCreatedTime = new JTextField((String) tableModel.getValueAt(selectedRow, 5));
         txtCreatedTime.setEditable(false);
-        dialog.add(txtCreatedTime);
+        detailPanel.add(txtCreatedTime);
 
+        dialog.add(detailPanel, BorderLayout.CENTER);
+
+        // Nút đóng
         JButton btnClose = new JButton("Đóng");
         btnClose.addActionListener(e -> dialog.dispose());
-        dialog.add(btnClose);
+        JPanel buttonPanel = new JPanel(new BorderLayout());
+        buttonPanel.add(btnClose, BorderLayout.CENTER); // Nút chiếm toàn bộ chiều ngang
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
 
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);

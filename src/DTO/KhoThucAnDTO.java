@@ -1,16 +1,16 @@
 package DTO;
 public class KhoThucAnDTO {
     private int maKho;
-    private String tenKho;
+    private int maNCC;
     private int maThucAn;
     private String tenThucAn;
     private int soLuong;
 
     public KhoThucAnDTO() {}
 
-    public KhoThucAnDTO(int maKho, String tenKho, int maThucAn, String tenThucAn, int soLuong) {
+    public KhoThucAnDTO(int maKho, int maNCC, int maThucAn, String tenThucAn, int soLuong) {
         this.maKho = maKho;
-        this.tenKho = tenKho;
+        this.maNCC = maNCC;
         this.maThucAn = maThucAn;
         this.tenThucAn = tenThucAn;
         this.soLuong = soLuong;
@@ -24,12 +24,12 @@ public class KhoThucAnDTO {
         this.maKho = maKho;
     }
 
-    public String getTenKho() {
-        return tenKho;
+    public int getmaNCC() {
+        return maNCC;
     }
 
-    public void setTenKho(String tenKho) {
-        this.tenKho = tenKho;
+    public void setmaNCC(int maNCC) {
+        this.maNCC = maNCC;
     }
 
     public int getMaThucAn() {

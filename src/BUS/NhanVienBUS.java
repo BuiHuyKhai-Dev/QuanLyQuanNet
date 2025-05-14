@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class NhanVienBUS {
     public final NhanVienDAO nvDAO = new NhanVienDAO();
-    private ArrayList<NhanVienDTO> listnv = null;
+    private ArrayList<NhanVienDTO> listnv = nvDAO.selectAll();
 
     public NhanVienBUS() {
         listnv = nvDAO.selectAll();
@@ -138,5 +138,14 @@ public class NhanVienBUS {
             }
         }
         return filteredList;
+    }
+
+    public String getTenNV(int ma){
+        for (NhanVienDTO nv : listnv) {
+            if (nv.getMaNV().equals(String.valueOf(ma))) {
+                return nv.getTenNV();
+            }
+        }
+        return null;
     }
 }

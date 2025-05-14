@@ -1,28 +1,27 @@
 package DAO;
-import java.sql.*;
-import java.util.*;
 import DAL.DBConnect;
 import DTO.KhoThucAnDTO;
+import java.sql.*;
+import java.util.*;
 
 public class KhoThucAnDAO {
 
-    public List<KhoThucAnDTO> getAllKhoThucAn() {
-        List<KhoThucAnDTO> list = new ArrayList<>();
-        String sql = """
-            SELECT kta.MaKho, k.TenKho, kta.MaThucAn, ta.TenThucAn, kta.SoLuong
-            FROM khothucan kta
-            JOIN kho k ON kta.MaKho = k.MaKho
-            JOIN thucan ta ON kta.MaThucAn = ta.MaThucAn
-        """;
+    public KhoThucAnDAO() {
+
+    }
+    
+    
+    public ArrayList<KhoThucAnDTO> getAllKhoThucAn() {
+        ArrayList<KhoThucAnDTO> list = new ArrayList<>();
+        String sql = "SELECT * FROM khothucan";
         try (Connection conn = DBConnect.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 KhoThucAnDTO kta = new KhoThucAnDTO();
                 kta.setMaKho(rs.getInt("MaKho"));
-                kta.setTenKho(rs.getString("TenKho"));
+                kta.setmaNCC(rs.getInt("MaNCC"));
                 kta.setMaThucAn(rs.getInt("MaThucAn"));
-                kta.setTenThucAn(rs.getString("TenThucAn"));
                 kta.setSoLuong(rs.getInt("SoLuong"));
                 list.add(kta);
             }

@@ -34,9 +34,9 @@ public class NhaCungCapBUS {
         return result;
     }
 
-    public NhaCungCapDTO getNhaCungCapById(String ma) {
+    public NhaCungCapDTO getNhaCungCapById(int ma) {
         for (NhaCungCapDTO ncc : listncc) {
-            if (ncc.getMaNhaCungCap() == Integer.parseInt(ma)) {
+            if (ncc.getMaNhaCungCap() == (ma)) {
                 return ncc;
             }
         }
@@ -48,7 +48,7 @@ public class NhaCungCapBUS {
     }
 
     public Boolean deleteById(int ma) {
-        NhaCungCapDTO toDelete = getNhaCungCapById(String.valueOf(ma));
+        NhaCungCapDTO toDelete = getNhaCungCapById((ma));
         boolean result = nccDAO.delete(ma) != 0;
         if (result && toDelete != null) {
             listncc.remove(toDelete);
@@ -112,5 +112,10 @@ public class NhaCungCapBUS {
             }
         }
         return filteredList;
+    }
+
+    public String getTenNCC(int ma) {
+        NhaCungCapDTO ncc = getNhaCungCapById(ma);
+        return (ncc != null) ? ncc.getTenNhaCungCap() : null;
     }
 }
