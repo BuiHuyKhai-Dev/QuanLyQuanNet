@@ -8,11 +8,13 @@ import javax.swing.table.TableColumnModel;
 import BUS.HoaDonThucAnBUS;
 import BUS.KhachHangBUS;
 import BUS.NhanVienBUS;
+import BUS.ThucAnBUS;
 import DTO.KhachHangDTO;
 import DTO.NhanVienDTO;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
@@ -40,6 +42,7 @@ public class datdoan extends JPanel {
         temp1.add(btnChonKH);
         btnChonKH.addActionListener(e -> showChonKhachHangDialog());
         inputPanel.add(temp1);
+        txtMaKH.setPreferredSize(new Dimension(100, 25));
         
         inputPanel.add(new JLabel("Mã Máy:"));
         txtMaMay = new JTextField(10);
@@ -52,20 +55,22 @@ public class datdoan extends JPanel {
         temp2.add(btnChonNV);
         btnChonNV.addActionListener(e -> showChonNhanVienDialog());
         inputPanel.add(temp2);
+        txtMaNV.setPreferredSize(new Dimension(100, 25));
 
         add(inputPanel, BorderLayout.NORTH);
 
         JPanel menuPanel = new JPanel(new GridLayout(0, 3, 10, 10));
         menuPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        addMenuItem(menuPanel, "Cơm gà", "../../img/comga.jpg", 50000);
-        addMenuItem(menuPanel, "Gà rán", "../../img/garan.jpg", 60000);
-        addMenuItem(menuPanel, "Khoai tây chiên", "../../img/khoaitay.jpg", 30000);
-        addMenuItem(menuPanel, "Mì xào", "../../img/mixao.jpg", 40000);
-        addMenuItem(menuPanel, "Trà sữa", "../../img/trasua.jpg", 35000);
-        addMenuItem(menuPanel, "Bánh mì", "../../img/banhmi.jpg", 20000);
-        addMenuItem(menuPanel, "Phở bò", "../../img/phobo.jpg", 45000);
-        addMenuItem(menuPanel, "Nước ngọt", "../../img/nuocngot.jpg", 15000);
+        BUS.ThucAnBUS thucAnBUS = new BUS.ThucAnBUS();
+        ArrayList<DTO.ThucAnDTO> danhSachThucAn = thucAnBUS.getDanhSachThucAn();
+
+        for (DTO.ThucAnDTO ta : danhSachThucAn) {
+            String ten = ta.getTenThucAn();
+            // String hinhAnh = ta.getHinhAnh(); // Đảm bảo ảnh là đường dẫn hợp lệ ví dụ: "../../img/comga.jpg"
+            int gia = ta.getDonGia();
+            addMenuItem(menuPanel, ten, "../../img/comga.jpg", gia);
+        }
 
         JScrollPane menuScrollPane = new JScrollPane(menuPanel);
         menuScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -99,25 +104,49 @@ public class datdoan extends JPanel {
             try {
                 int maKH = Integer.parseInt(txtMaKH.getText());
                 int maMay = Integer.parseInt(txtMaMay.getText().trim());
-                int maNV = Integer.parseInt(txtMaKH.getText());
+                int maNV = Integer.parseInt(txtMaNV.getText().trim());
 
                 Timestamp now = new Timestamp(System.currentTimeMillis());
 
                 boolean success = hoaDonBUS.themHoaDon(maKH, maMay, now, totalPrice, 1, maNV);
 
                 if (success) {
+                    // Giả sử bạn có BUS để thêm chi tiết:
+                    HoaDonThucAnBUS ctBUS = new HoaDonThucAnBUS();
+                    int maHD = hoaDonBUS.layMaDonHangCuoi(); // Phải có hàm này
+
+                    for (int i = 0; i < orderTableModel.getRowCount(); i++) {
+                        String tenMon = (String) orderTableModel.getValueAt(i, 0);
+                        int donGia = (int) orderTableModel.getValueAt(i, 1);
+                        int soLuong = (int) orderTableModel.getValueAt(i, 2);
+                        // int thanhTien = (int) orderTableModel.getValueAt(i, 3);
+
+                        // Giả sử bạn có thể lấy mã món từ tên món (nếu không thì cần sửa lại)
+                        int maMon = new ThucAnBUS().getMaMonTheoTen(tenMon); // Phải có hàm này nếu cần
+                        System.out.println("Mã món: " + maMon);
+                        DTO.ChiTietDonHangDTO ct = new DTO.ChiTietDonHangDTO();
+                        ct.setMaDH(maHD);
+                        ct.setMaThucAn(maMon);
+                        ct.setSoLuong(soLuong);
+                        ct.setDonGia(donGia);
+                        // ct.se
+
+                        ctBUS.themChiTietDonHang(ct);
+                    }
+
                     JOptionPane.showMessageDialog(this, "✅ Đặt đơn thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                     orderTableModel.setRowCount(0);
                     totalPrice = 0;
                     lblTotalPrice.setText("Thành tiền: 0 VND");
                 } else {
-                    JOptionPane.showMessageDialog(this, "❌ Không thể đặt đơn. Kiểm tra mã khách hàng, mã máy, mã nhân viên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "❌ Không thể đặt đơn. Kiểm tra thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 }
 
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "⚠️ Vui lòng nhập đúng định dạng cho mã máy!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "⚠️ Vui lòng nhập đúng định dạng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         });
+
 
         bottomPanel.add(btnCheckout, BorderLayout.EAST);
         orderPanel.add(bottomPanel, BorderLayout.SOUTH);

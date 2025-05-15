@@ -11,12 +11,12 @@ public class ThucAnDTO {
     private int maThucAn;
     private String tenThucAn;
     private String donVi;
-    private BigDecimal donGia;
+    private int donGia;
     private Date hanSuDung;
     private Timestamp createdAt;
     public ThucAnDTO() {}
 
-    public ThucAnDTO(int maThucAn, String tenThucAn, String donVi, BigDecimal donGia, Date hanSuDung) {
+    public ThucAnDTO(int maThucAn, String tenThucAn, String donVi, int donGia, Date hanSuDung) {
         this.maThucAn = maThucAn;
         this.tenThucAn = tenThucAn;
         this.donVi = donVi;
@@ -52,11 +52,11 @@ public class ThucAnDTO {
         this.donVi = donVi;
     }
 
-    public BigDecimal getDonGia() {
+    public int getDonGia() {
         return donGia;
     }
 
-    public void setDonGia(BigDecimal donGia) {
+    public void setDonGia(int donGia) {
         this.donGia = donGia;
     }
 

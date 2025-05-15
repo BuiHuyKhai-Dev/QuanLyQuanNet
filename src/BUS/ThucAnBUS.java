@@ -22,4 +22,10 @@ public class ThucAnBUS {
         }
         return null;
     }
+     public ArrayList<ThucAnDTO> getDanhSachThucAn() {
+        return new ThucAnDAO().getAll();
+    }
+    public int getMaMonTheoTen(String tenMon) {
+    return new ThucAnDAO().getMaMonTheoTen(tenMon);
+    }
 }

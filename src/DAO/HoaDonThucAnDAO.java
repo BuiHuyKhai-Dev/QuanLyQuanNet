@@ -213,8 +213,8 @@ public class HoaDonThucAnDAO {
 
         while (rs.next()) {
             ChiTietDonHangDTO chiTiet = new ChiTietDonHangDTO();
-            chiTiet.setMaDH(rs.getString("maDH"));
-            chiTiet.setMaThucAn(rs.getString("maThucAn"));
+            chiTiet.setMaDH(rs.getInt("maDH"));
+            chiTiet.setMaThucAn(rs.getInt("maThucAn"));
             chiTiet.setSoLuong(rs.getInt("soLuong"));
             chiTiet.setDonGia(rs.getDouble("donGia"));
 
@@ -227,5 +227,52 @@ public class HoaDonThucAnDAO {
 
     return danhSachChiTiet;
 }
+
+    public boolean themChiTietDonHang(ChiTietDonHangDTO ct) {
+        try {
+            Connection conn = db.getConnection(); // Kết nối CSDL
+            String sql = "INSERT INTO chitietdonthucan (maDH, maThucAn, soLuong, donGia) VALUES (?, ?, ?, ?)";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, ct.getMaDH());
+            ps.setInt(2, ct.getMaThucAn());
+            ps.setInt(3, ct.getSoLuong());
+            ps.setDouble(4, ct.getDonGia());
+
+            int rowsInserted = ps.executeUpdate();
+            conn.close();
+            return rowsInserted > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+      public int getLastInsertedId() {
+        int id = -1;
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+
+        try {
+            conn = db.getConnection(); // Hàm mở kết nối
+            String sql = "SELECT MAX(maDH) AS lastId FROM donhangthucan";
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                id = rs.getInt("lastId");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            // Đóng kết nối
+            try { if (rs != null) rs.close(); } catch (Exception e) {}
+            try { if (stmt != null) stmt.close(); } catch (Exception e) {}
+            try { if (conn != null) conn.close(); } catch (Exception e) {}
+        }
+
+        return id;
+    }
+    
 
 }

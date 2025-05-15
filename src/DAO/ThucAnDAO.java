@@ -19,7 +19,7 @@ public class ThucAnDAO {
                 ThucAnDTO ta = new ThucAnDTO();
                 ta.setMaThucAn(rs.getInt("MaThucAn"));
                 ta.setTenThucAn(rs.getString("TenThucAn"));
-                ta.setDonGia(rs.getBigDecimal("DonGia")); // Sử dụng BigDecimal thay vì double
+                ta.setDonGia(rs.getInt("DonGia")); // Sử dụng Int thay vì double
                 list.add(ta);
             }
 
@@ -36,7 +36,7 @@ public class ThucAnDAO {
             
             stmt.setString(1, obj.getTenThucAn());
             stmt.setString(2, obj.getDonVi());
-            stmt.setBigDecimal(3, obj.getDonGia());
+            stmt.setInt(3, obj.getDonGia());
             stmt.setDate(4, new java.sql.Date(obj.getHanSuDung().getTime()));
     
             return stmt.executeUpdate() > 0;
@@ -54,7 +54,7 @@ public class ThucAnDAO {
             
             stmt.setString(1, obj.getTenThucAn());
             stmt.setString(2, obj.getDonVi());
-            stmt.setBigDecimal(3, obj.getDonGia());
+            stmt.setInt(3, obj.getDonGia());
             stmt.setDate(4, obj.getHanSuDung());
             stmt.setInt(5, obj.getMaThucAn());
     
@@ -110,7 +110,7 @@ public class ThucAnDAO {
                     obj.setMaThucAn(rs.getInt("MaThucAn"));
                     obj.setTenThucAn(rs.getString("TenThucAn"));
                     obj.setDonVi(rs.getString("DonVi"));
-                    obj.setDonGia(rs.getBigDecimal("DonGia"));
+                    obj.setDonGia(rs.getInt("DonGia"));
                     obj.setHanSuDung(rs.getDate("HanSuDung"));
                     return obj;
                 }
@@ -120,5 +120,29 @@ public class ThucAnDAO {
         }
         return null;
     }
+    public int getMaMonTheoTen(String tenMon) {
+    int maMon = -1;
+
+    try {
+        String sql = "SELECT mathucan FROM thucan WHERE tenthucan = ?";
+        Connection conn = DBConnect.getConnection();
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, tenMon);
+
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()) {
+            maMon = rs.getInt("mathucan");
+        }
+
+        rs.close();
+        ps.close();
+        conn.close();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return maMon;
+}
 
 }

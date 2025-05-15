@@ -5,8 +5,8 @@
 package DTO;
 
 public class ChiTietDonHangDTO {
-    private String maDH;
-    private String maThucAn;
+    private int maDH;
+    private int maThucAn;
     private int soLuong;
     private double donGia;
 
@@ -15,7 +15,7 @@ public class ChiTietDonHangDTO {
     }
 
     // Constructor đầy đủ tham số
-    public ChiTietDonHangDTO(String maDH, String maThucAn, int soLuong, double donGia) {
+    public ChiTietDonHangDTO(int maDH, int maThucAn, int soLuong, double donGia) {
         this.maDH = maDH;
         this.maThucAn = maThucAn;
         this.soLuong = soLuong;
@@ -23,19 +23,19 @@ public class ChiTietDonHangDTO {
     }
 
     // Getter và Setter
-    public String getMaDH() {
+    public int getMaDH() {
         return maDH;
     }
 
-    public void setMaDH(String maDH) {
+    public void setMaDH(int maDH) {
         this.maDH = maDH;
     }
 
-    public String getMaThucAn() {
+    public int getMaThucAn() {
         return maThucAn;
     }
 
-    public void setMaThucAn(String maThucAn) {
+    public void setMaThucAn(int maThucAn) {
         this.maThucAn = maThucAn;
     }
 

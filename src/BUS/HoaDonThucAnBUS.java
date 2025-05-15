@@ -56,4 +56,11 @@ public class HoaDonThucAnBUS {
     public ArrayList<ChiTietDonHangDTO> selectAllCTDH(int maDH){
         return dhDAL.timChiTietDonHang(maDH);
     }
+    public boolean themChiTietDonHang(ChiTietDonHangDTO ct) {
+        return dhDAL.themChiTietDonHang(ct);
+    }
+    public int layMaDonHangCuoi() {
+        return dhDAL.getLastInsertedId();
+    }
+    
 }
