@@ -52,4 +52,13 @@ public class ThucAnBUS {
         }
         return 0;
     }
+
+    public int getMaTheoTenMon(String tenThucAn) {
+        for (ThucAnDTO ta : list) {
+            if (ta.getTenThucAn().equals(tenThucAn)) {
+                return ta.getMaThucAn();
+            }
+        }
+        return 0;
+    }
 }

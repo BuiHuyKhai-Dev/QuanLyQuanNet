@@ -3,10 +3,12 @@ package GUI;
 import BUS.KhoMayTinhBUS;
 import BUS.KhoThucAnBUS;
 import BUS.NhaCungCapBUS;
+import BUS.ThucAnBUS;
 import DAO.KhoMayTinhDAO;
 import DAO.KhoThucAnDAO;
 import DTO.KhoMayTinhDTO;
 import DTO.KhoThucAnDTO;
+import DTO.ThucAnDTO;
 import com.toedter.calendar.JDateChooser;
 import java.awt.*;
 import java.util.ArrayList;
@@ -150,15 +152,15 @@ public class QuanLyKhoPanel extends JPanel {
         JPanel panel = new JPanel(new BorderLayout());
 
         // Table model for Kho thức ăn
-        String[] columns = {"Tên nhà cung cấp", "Tên thức ăn", "Đơn giá", "Số lượng tồn kho"};
+        String[] columns = {"Mã thức ăn", "Tên thức ăn", "Đơn giá", "Số lượng tồn kho"};
         DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
         JTable table = new JTable(tableModel);
 
         // Thêm dữ liệu từ cơ sở dữ liệu vào bảng
-        ArrayList<KhoThucAnDTO> khoThucAnList = new KhoThucAnDAO().getAllKhoThucAn();
-        for (KhoThucAnDTO khoThucAn : khoThucAnList) {
+        ArrayList<ThucAnDTO> ThucAnList = new ThucAnBUS().getAllThucAn();
+        for (ThucAnDTO khoThucAn : ThucAnList) {
             tableModel.addRow(new Object[]{
-                khoThucAnBUS.getTenNCC(khoThucAn.getmaNCC()),
+                khoThucAn.getMaThucAn(), // Mã thức ăn
                 khoThucAnBUS.getTenThucAn(khoThucAn.getMaThucAn()),
                 khoThucAnBUS.getDonGia(khoThucAn.getMaThucAn()),
                 khoThucAn.getSoLuong()
@@ -195,77 +197,73 @@ public class QuanLyKhoPanel extends JPanel {
 
         // Thêm sự kiện cho nút Thêm
         btnAdd.addActionListener(e -> {
-        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Thêm thức ăn", true);
-        dialog.setSize(400, 300);
-        dialog.setLayout(new GridBagLayout()); // Sử dụng GridBagLayout
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5); // Khoảng cách giữa các thành phần
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.gridx = 0;
-        gbc.gridy = 0;
+            JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Thêm thức ăn", true);
+            dialog.setSize(400, 300);
+            dialog.setLayout(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(5, 5, 5, 5);
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.gridx = 0;
+            gbc.gridy = 0;
 
-        // Tên nhà cung cấp
-        dialog.add(new JLabel("Tên nhà cung cấp:"), gbc);
-        gbc.gridx = 1;
-        JComboBox<String> cbSupplier = new JComboBox<>();
-        ArrayList<String> supplierList = new NhaCungCapBUS().getAllTenNCC(); // Lấy danh sách tên nhà cung cấp
-        for (String supplier : supplierList) {
-            cbSupplier.addItem(supplier);
-        }
-        dialog.add(cbSupplier, gbc);
+            // Mã thức ăn
+            dialog.add(new JLabel("Mã thức ăn:"), gbc);
+            gbc.gridx = 1;
+            JTextField txtFoodId = new JTextField();
+            dialog.add(txtFoodId, gbc);
 
-        // Tên thức ăn
-        gbc.gridx = 0;
-        gbc.gridy++;
-        dialog.add(new JLabel("Tên thức ăn:"), gbc);
-        gbc.gridx = 1;
-        JTextField txtFoodName = new JTextField();
-        dialog.add(txtFoodName, gbc);
+            // Tên thức ăn
+            gbc.gridx = 0;
+            gbc.gridy++;
+            dialog.add(new JLabel("Tên thức ăn:"), gbc);
+            gbc.gridx = 1;
+            JTextField txtFoodName = new JTextField();
+            dialog.add(txtFoodName, gbc);
 
-        // Đơn giá
-        gbc.gridx = 0;
-        gbc.gridy++;
-        dialog.add(new JLabel("Đơn giá:"), gbc);
-        gbc.gridx = 1;
-        JTextField txtPrice = new JTextField();
-        dialog.add(txtPrice, gbc);
+            // Đơn giá
+            gbc.gridx = 0;
+            gbc.gridy++;
+            dialog.add(new JLabel("Đơn giá:"), gbc);
+            gbc.gridx = 1;
+            JTextField txtPrice = new JTextField();
+            dialog.add(txtPrice, gbc);
 
-        // Số lượng tồn kho
-        gbc.gridx = 0;
-        gbc.gridy++;
-        dialog.add(new JLabel("Số lượng tồn kho:"), gbc);
-        gbc.gridx = 1;
-        JTextField txtQuantity = new JTextField("0"); // Mặc định là 0
-        txtQuantity.setEditable(false); // Không cho phép chỉnh sửa
-        dialog.add(txtQuantity, gbc);
+            // Số lượng tồn kho
+            gbc.gridx = 0;
+            gbc.gridy++;
+            dialog.add(new JLabel("Số lượng tồn kho:"), gbc);
+            gbc.gridx = 1;
+            JTextField txtQuantity = new JTextField("0"); // Mặc định là 0
+            txtQuantity.setEditable(false);
+            dialog.add(txtQuantity, gbc);
 
-        // Nút Xác nhận
-        gbc.gridx = 0;
-        gbc.gridy++;
-        gbc.gridwidth = 2; // Nút chiếm 2 cột
-        gbc.anchor = GridBagConstraints.CENTER;
-        JButton btnConfirm = new JButton("Xác nhận");
-        btnConfirm.addActionListener(ev -> {
-            String supplier = (String) cbSupplier.getSelectedItem();
-            String foodName = txtFoodName.getText();
-            double price = Double.parseDouble(txtPrice.getText());
-            int quantity = Integer.parseInt(txtQuantity.getText());
+            // Nút Xác nhận
+            gbc.gridx = 0;
+            gbc.gridy++;
+            gbc.gridwidth = 2;
+            gbc.anchor = GridBagConstraints.CENTER;
+            JButton btnConfirm = new JButton("Xác nhận");
+            btnConfirm.addActionListener(ev -> {
+                String foodId = txtFoodId.getText();
+                String foodName = txtFoodName.getText();
+                double price = Double.parseDouble(txtPrice.getText());
+                int quantity = Integer.parseInt(txtQuantity.getText());
 
-            // Thêm dữ liệu vào bảng
-            tableModel.addRow(new Object[]{supplier, foodName, price, quantity});
-            dialog.dispose();
+                // Thêm dữ liệu vào bảng
+                tableModel.addRow(new Object[]{foodId, foodName, price, quantity});
+                dialog.dispose();
+            });
+            dialog.add(btnConfirm, gbc);
+
+            // Nút Hủy
+            gbc.gridy++;
+            JButton btnCancel = new JButton("Hủy");
+            btnCancel.addActionListener(ev -> dialog.dispose());
+            dialog.add(btnCancel, gbc);
+
+            dialog.setLocationRelativeTo(this);
+            dialog.setVisible(true);
         });
-        dialog.add(btnConfirm, gbc);
-
-        // Nút Hủy
-        gbc.gridy++;
-        JButton btnCancel = new JButton("Hủy");
-        btnCancel.addActionListener(ev -> dialog.dispose());
-        dialog.add(btnCancel, gbc);
-
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);
-    });
 
         // Thêm sự kiện cho nút Sửa
         btnEdit.addActionListener(e -> {
@@ -277,42 +275,63 @@ public class QuanLyKhoPanel extends JPanel {
 
             JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Sửa thức ăn", true);
             dialog.setSize(400, 300);
-            dialog.setLayout(new GridLayout(4, 2, 10, 10));
+            dialog.setLayout(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(5, 5, 5, 5);
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.gridx = 0;
+            gbc.gridy = 0;
 
-            dialog.add(new JLabel("Tên nhà cung cấp:"));
-            JComboBox<String> cbSupplier = new JComboBox<>();
-            ArrayList<String> supplierList = new NhaCungCapBUS().getAllTenNCC(); // Lấy danh sách tên nhà cung cấp
-            for (String supplier : supplierList) {
-                cbSupplier.addItem(supplier);
-            }
-            cbSupplier.setSelectedItem(tableModel.getValueAt(selectedRow, 0));
-            dialog.add(cbSupplier);
+            // Mã thức ăn
+            dialog.add(new JLabel("Mã thức ăn:"), gbc);
+            gbc.gridx = 1;
+            JTextField txtFoodId = new JTextField(tableModel.getValueAt(selectedRow, 0).toString());
+            txtFoodId.setEditable(false); // Không cho phép chỉnh sửa mã thức ăn
+            dialog.add(txtFoodId, gbc);
 
-            dialog.add(new JLabel("Tên thức ăn:"));
-            JTextField txtFoodName = new JTextField((String) tableModel.getValueAt(selectedRow, 1));
-            dialog.add(txtFoodName);
+            // Tên thức ăn
+            gbc.gridx = 0;
+            gbc.gridy++;
+            dialog.add(new JLabel("Tên thức ăn:"), gbc);
+            gbc.gridx = 1;
+            JTextField txtFoodName = new JTextField(tableModel.getValueAt(selectedRow, 1).toString());
+            dialog.add(txtFoodName, gbc);
 
-            dialog.add(new JLabel("Đơn giá:"));
+            // Đơn giá
+            gbc.gridx = 0;
+            gbc.gridy++;
+            dialog.add(new JLabel("Đơn giá:"), gbc);
+            gbc.gridx = 1;
             JTextField txtPrice = new JTextField(tableModel.getValueAt(selectedRow, 2).toString());
-            dialog.add(txtPrice);
+            dialog.add(txtPrice, gbc);
 
-            dialog.add(new JLabel("Số lượng tồn kho:"));
+            // Số lượng tồn kho
+            gbc.gridx = 0;
+            gbc.gridy++;
+            dialog.add(new JLabel("Số lượng tồn kho:"), gbc);
+            gbc.gridx = 1;
             JTextField txtQuantity = new JTextField(tableModel.getValueAt(selectedRow, 3).toString());
-            txtQuantity.setEditable(false); // Không cho phép chỉnh sửa
-            dialog.add(txtQuantity);
+            txtQuantity.setEditable(false);
+            dialog.add(txtQuantity, gbc);
 
+            // Nút Xác nhận
+            gbc.gridx = 0;
+            gbc.gridy++;
+            gbc.gridwidth = 2;
+            gbc.anchor = GridBagConstraints.CENTER;
             JButton btnConfirm = new JButton("Xác nhận");
             btnConfirm.addActionListener(ev -> {
-                tableModel.setValueAt(cbSupplier.getSelectedItem(), selectedRow, 0);
                 tableModel.setValueAt(txtFoodName.getText(), selectedRow, 1);
                 tableModel.setValueAt(Double.parseDouble(txtPrice.getText()), selectedRow, 2);
                 dialog.dispose();
             });
-            dialog.add(btnConfirm);
+            dialog.add(btnConfirm, gbc);
 
+            // Nút Hủy
+            gbc.gridy++;
             JButton btnCancel = new JButton("Hủy");
             btnCancel.addActionListener(ev -> dialog.dispose());
-            dialog.add(btnCancel);
+            dialog.add(btnCancel, gbc);
 
             dialog.setLocationRelativeTo(this);
             dialog.setVisible(true);
