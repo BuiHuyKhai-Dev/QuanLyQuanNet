@@ -23,7 +23,7 @@ public class ThucAnDAO {
                 ta.setTenThucAn(rs.getString("TenThucAn"));
                 ta.setSoLuong(rs.getInt("SoLuong"));
                 ta.setDonGia(rs.getInt("DonGia"));
-                ta.setThoiGianTao(rs.getTimestamp("ThoiGianTao").toLocalDateTime().toString());
+                ta.setThoiGianTao(rs.getTimestamp("created_at").toLocalDateTime().toString());
                 list.add(ta);
             }
         } catch (SQLException e) {
@@ -36,7 +36,7 @@ public class ThucAnDAO {
         int result = 0;
         try {
             Connection conn = DBConnect.getConnection();
-            String sql = "INSERT INTO ThucAn (MaThucAn, TenThucAn, SoLuong, DonGia, ThoiGianTao) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO ThucAn (MaThucAn, TenThucAn, SoLuong, DonGia, created_at) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setInt(1, ta.getMaThucAn());
             ps.setString(2, ta.getTenThucAn());
