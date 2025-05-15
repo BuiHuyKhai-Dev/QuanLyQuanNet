@@ -2,45 +2,62 @@ package GUI.QLDA;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.sql.Timestamp;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
+
 import BUS.HoaDonThucAnBUS;
+import BUS.KhachHangBUS;
+import BUS.NhanVienBUS;
+import DTO.KhachHangDTO;
+import DTO.NhanVienDTO;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 
 public class datdoan extends JPanel {
     private DefaultTableModel orderTableModel;
     private JLabel lblTotalPrice;
     private int totalPrice = 0;
 
-    private JTextField txtMaKH;
-    private JTextField txtMaMay;
-    private JTextField txtMaNV;
+    JButton btnChonNV = new JButton("Chọn NV");
+    private JTextField txtMaNV= new JTextField();
+    private JTextField txtMaMay= new JTextField();
+    private JTextField txtMaKH= new JTextField();
+    JButton btnChonKH = new JButton("Chọn KH");
     private HoaDonThucAnBUS hoaDonBUS = new HoaDonThucAnBUS();
 
     public datdoan() {
         setLayout(new BorderLayout());
 
-        // Panel nhập mã KH, mã Máy, mã Nhân viên
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         inputPanel.add(new JLabel("Mã Khách Hàng:"));
-        txtMaKH = new JTextField(10);
-        inputPanel.add(txtMaKH);
-
+        
+        JPanel temp1= new JPanel();
+        temp1.add(txtMaKH);
+        temp1.add(btnChonKH);
+        btnChonKH.addActionListener(e -> showChonKhachHangDialog());
+        inputPanel.add(temp1);
+        
         inputPanel.add(new JLabel("Mã Máy:"));
         txtMaMay = new JTextField(10);
         inputPanel.add(txtMaMay);
 
         inputPanel.add(new JLabel("Mã Nhân Viên:"));
-        txtMaNV = new JTextField(10);
-        inputPanel.add(txtMaNV);
+        
+        JPanel temp2= new JPanel();
+        temp2.add(txtMaNV);
+        temp2.add(btnChonNV);
+        btnChonNV.addActionListener(e -> showChonNhanVienDialog());
+        inputPanel.add(temp2);
 
         add(inputPanel, BorderLayout.NORTH);
 
-        // Panel menu món ăn bên trái
         JPanel menuPanel = new JPanel(new GridLayout(0, 3, 10, 10));
         menuPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // Thêm món
         addMenuItem(menuPanel, "Cơm gà", "../../img/comga.jpg", 50000);
         addMenuItem(menuPanel, "Gà rán", "../../img/garan.jpg", 60000);
         addMenuItem(menuPanel, "Khoai tây chiên", "../../img/khoaitay.jpg", 30000);
@@ -54,12 +71,21 @@ public class datdoan extends JPanel {
         menuScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         menuScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-        // Panel đơn hàng bên phải
         JPanel orderPanel = new JPanel(new BorderLayout());
         orderPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        orderTableModel = new DefaultTableModel(new Object[]{"Tên món", "Đơn giá", "Số lượng", "Thành tiền"}, 0);
-        JTable orderTable = new JTable(orderTableModel);
+        orderTableModel = new DefaultTableModel(new Object[]{"Tên món", "Đơn giá", "Số lượng", "Thành tiền", "Hủy"}, 0);
+        JTable orderTable = new JTable(orderTableModel) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 4; // chỉ cột "Hủy" cho phép tương tác
+            }
+        };
+
+        // Gán renderer và editor cho cột "Hủy"
+        orderTable.getColumn("Hủy").setCellRenderer(new ButtonRenderer());
+        orderTable.getColumn("Hủy").setCellEditor(new ButtonEditor(new JCheckBox(), orderTable));
+
         JScrollPane scrollPane = new JScrollPane(orderTable);
         orderPanel.add(scrollPane, BorderLayout.CENTER);
 
@@ -71,9 +97,9 @@ public class datdoan extends JPanel {
         JButton btnCheckout = new JButton("Thanh toán");
         btnCheckout.addActionListener(e -> {
             try {
-                int maKH = Integer.parseInt(txtMaKH.getText().trim());
+                int maKH = Integer.parseInt(txtMaKH.getText());
                 int maMay = Integer.parseInt(txtMaMay.getText().trim());
-                int maNV = Integer.parseInt(txtMaNV.getText().trim());
+                int maNV = Integer.parseInt(txtMaKH.getText());
 
                 Timestamp now = new Timestamp(System.currentTimeMillis());
 
@@ -89,9 +115,10 @@ public class datdoan extends JPanel {
                 }
 
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "⚠️ Vui lòng nhập đúng định dạng cho mã khách hàng, mã máy và mã nhân viên!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "⚠️ Vui lòng nhập đúng định dạng cho mã máy!", "Lỗi", JOptionPane.ERROR_MESSAGE);
             }
         });
+
         bottomPanel.add(btnCheckout, BorderLayout.EAST);
         orderPanel.add(bottomPanel, BorderLayout.SOUTH);
 
@@ -101,6 +128,72 @@ public class datdoan extends JPanel {
         splitPane.setOneTouchExpandable(true);
         add(splitPane, BorderLayout.CENTER);
     }
+
+    private void showChonKhachHangDialog() {
+    KhachHangBUS khBUS = new KhachHangBUS();
+    ArrayList<KhachHangDTO> ds = khBUS.getKhachHangAll();
+
+    JDialog dialog = new JDialog((JFrame)null, "Chọn Khách Hàng", true);
+    dialog.setSize(600, 300);
+    dialog.setLayout(new BorderLayout());
+
+    String[] columnNames = {"Mã KH", "Tên KH", "SĐT", "Email"};
+    DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+    for (KhachHangDTO kh : ds) {
+        model.addRow(new Object[]{kh.getMaKhachHang(), kh.getTenKhachHang(), kh.getSoDienThoai(), kh.getEmail()});
+    }
+
+    JTable table = new JTable(model);
+    dialog.add(new JScrollPane(table), BorderLayout.CENTER);
+
+    JButton btnChon = new JButton("Chọn");
+    btnChon.addActionListener(e -> {
+        int row = table.getSelectedRow();
+        if (row != -1) {
+            int maKH = (int) table.getValueAt(row, 0);
+            txtMaKH.setText(String.valueOf(maKH));
+            dialog.dispose();
+        }
+    });
+    dialog.add(btnChon, BorderLayout.SOUTH);
+
+    dialog.setLocationRelativeTo(this);
+    dialog.setVisible(true);
+}
+
+
+    private void showChonNhanVienDialog() {
+    NhanVienBUS nvBUS = new NhanVienBUS();
+    ArrayList<NhanVienDTO> ds = nvBUS.getNhanVienAll();
+
+    JDialog dialog = new JDialog((JFrame)null, "Chọn Nhân Viên", true);
+    dialog.setSize(600, 300);
+    dialog.setLayout(new BorderLayout());
+
+    String[] columnNames = {"Mã NV", "Tên NV", "SĐT", "Email"};
+    DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+    for (NhanVienDTO nv : ds) {
+        model.addRow(new Object[]{nv.getMaNV(), nv.getTenNV(), nv.getSoDT(), nv.getEmail()});
+    }
+
+    JTable table = new JTable(model);
+    dialog.add(new JScrollPane(table), BorderLayout.CENTER);
+
+    JButton btnChon = new JButton("Chọn");
+    btnChon.addActionListener(e -> {
+        int row = table.getSelectedRow();
+        if (row != -1) {
+            String maNV = (String) table.getValueAt(row, 0);
+            txtMaNV.setText(maNV);
+            dialog.dispose();
+        }
+    });
+    dialog.add(btnChon, BorderLayout.SOUTH);
+
+    dialog.setLocationRelativeTo(this);
+    dialog.setVisible(true);
+}
+
 
     private void addMenuItem(JPanel menuPanel, String name, String imagePath, int price) {
         JPanel itemPanel = new JPanel(new BorderLayout());
@@ -147,7 +240,7 @@ public class datdoan extends JPanel {
                 if (quantity <= 0) throw new NumberFormatException();
 
                 int total = price * quantity;
-                orderTableModel.addRow(new Object[]{name, price, quantity, total});
+                orderTableModel.addRow(new Object[]{name, price, quantity, total, "Hủy"});
                 totalPrice += total;
                 lblTotalPrice.setText("Thành tiền: " + totalPrice + " VND");
                 dialog.dispose();
@@ -163,5 +256,47 @@ public class datdoan extends JPanel {
 
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
+    }
+
+    // Renderer cho nút trong bảng
+    class ButtonRenderer extends JButton implements TableCellRenderer {
+        public ButtonRenderer() {
+            setText("Hủy");
+        }
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                       boolean isSelected, boolean hasFocus, int row, int column) {
+            return this;
+        }
+    }
+
+    // Editor xử lý khi ấn nút "Hủy"
+    class ButtonEditor extends DefaultCellEditor {
+        protected JButton button;
+        private JTable table;
+
+        public ButtonEditor(JCheckBox checkBox, JTable table) {
+            super(checkBox);
+            this.table = table;
+            button = new JButton("Hủy");
+            button.addActionListener(e -> {
+                int row = table.getEditingRow();
+                int thanhTien = (int) table.getValueAt(row, 3);
+                totalPrice -= thanhTien;
+                lblTotalPrice.setText("Thành tiền: " + totalPrice + " VND");
+                ((DefaultTableModel) table.getModel()).removeRow(row);
+            });
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                                                     boolean isSelected, int row, int column) {
+            return button;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            return "Hủy";
+        }
     }
 }

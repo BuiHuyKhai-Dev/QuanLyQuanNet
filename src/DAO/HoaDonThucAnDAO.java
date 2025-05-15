@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import DAL.DBConnect;
+import DTO.ChiTietDonHangDTO;
 import DTO.DonHangThucAnDTO;
 
 public class HoaDonThucAnDAO {
@@ -200,4 +201,31 @@ public class HoaDonThucAnDAO {
             return false;
         }
     }
+    public ArrayList<ChiTietDonHangDTO> timChiTietDonHang(int maDonHang) {
+    ArrayList<ChiTietDonHangDTO> danhSachChiTiet = new ArrayList<>();
+    String query = "SELECT * FROM chitietdonthucan WHERE maDH = ?";
+
+    try (Connection conn = db.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(query)) {
+
+        stmt.setInt(1, maDonHang);
+        ResultSet rs = stmt.executeQuery();
+
+        while (rs.next()) {
+            ChiTietDonHangDTO chiTiet = new ChiTietDonHangDTO();
+            chiTiet.setMaDH(rs.getString("maDH"));
+            chiTiet.setMaThucAn(rs.getString("maThucAn"));
+            chiTiet.setSoLuong(rs.getInt("soLuong"));
+            chiTiet.setDonGia(rs.getDouble("donGia"));
+
+            danhSachChiTiet.add(chiTiet);
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return danhSachChiTiet;
+}
+
 }

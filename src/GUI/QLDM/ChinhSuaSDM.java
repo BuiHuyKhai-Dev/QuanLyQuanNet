@@ -19,7 +19,6 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
-import javax.swing.text.Document;
 
 public class ChinhSuaSDM extends JPanel {
 

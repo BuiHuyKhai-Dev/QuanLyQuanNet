@@ -4,6 +4,7 @@ import DAO.HoaDonThucAnDAO;
 import DAO.KhachHangDAO;
 import DAO.MayTinhDAO;
 import DAO.NhanVienDAO;
+import DTO.ChiTietDonHangDTO;
 import DTO.DonHangThucAnDTO;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -51,5 +52,8 @@ public class HoaDonThucAnBUS {
     }
     public boolean xoaHoaDon(int maDonHang) {
         return dhDAL.xoaHoaDon(maDonHang);
+    }
+    public ArrayList<ChiTietDonHangDTO> selectAllCTDH(int maDH){
+        return dhDAL.timChiTietDonHang(maDH);
     }
 }
