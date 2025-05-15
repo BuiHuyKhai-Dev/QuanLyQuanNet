@@ -35,4 +35,13 @@ public class KhoThucAnBUS {
         }
         return null;
     }
+
+    public double getDonGia(int maThucAn) {
+        for (KhoThucAnDTO kta : list) {
+            if (kta.getMaThucAn() == maThucAn) {
+                return thucAnBUS.getDonGia(kta.getMaThucAn());
+            }
+        }
+        return 0;
+    }
 }

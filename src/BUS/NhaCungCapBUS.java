@@ -20,6 +20,14 @@ public class NhaCungCapBUS {
         listncc = nccDAO.selectAll();
     }
 
+    public ArrayList<String> getAllTenNCC() {
+        ArrayList<String> list = new ArrayList<>();
+        for (NhaCungCapDTO ncc : listncc) {
+            list.add(ncc.getTenNhaCungCap());
+        }
+        return list;
+    }
+
     public ArrayList<NhaCungCapDTO> getNhaCungCapAll() {
         if (listncc == null)
             listncc = nccDAO.selectAll();

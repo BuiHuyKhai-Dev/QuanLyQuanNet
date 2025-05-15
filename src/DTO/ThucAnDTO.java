@@ -10,24 +10,20 @@ import DAO.ThucAnDAO;
 public class ThucAnDTO {
     private int maThucAn;
     private String tenThucAn;
-    private String donVi;
-    private int donGia;
-    private Date hanSuDung;
-    private Timestamp createdAt;
+    private int soLuong;
+    private double donGia;
+    private String thoiGianTao;
+    
     public ThucAnDTO() {}
 
-    public ThucAnDTO(int maThucAn, String tenThucAn, String donVi, int donGia, Date hanSuDung) {
+    public ThucAnDTO(int maThucAn, String tenThucAn, int soLuong, double donGia, String thoiGianTao) {
         this.maThucAn = maThucAn;
         this.tenThucAn = tenThucAn;
-        this.donVi = donVi;
+        this.soLuong = soLuong;
         this.donGia = donGia;
-        this.hanSuDung = hanSuDung;
+        this.thoiGianTao = thoiGianTao;
     }
 
-    // Getter và Setter
-    public static ArrayList<ThucAnDTO> getAll(){
-        return ThucAnDAO.getAll();
-    }
     public int getMaThucAn() {
         return maThucAn;
     }
@@ -44,39 +40,29 @@ public class ThucAnDTO {
         this.tenThucAn = tenThucAn;
     }
 
-    public String getDonVi() {
-        return donVi;
+    public int getSoLuong() {
+        return soLuong;
     }
 
-    public void setDonVi(String donVi) {
-        this.donVi = donVi;
+    public void setSoLuong(int soLuong) {
+        this.soLuong = soLuong;
     }
 
-    public int getDonGia() {
+    public double getDonGia() {
         return donGia;
     }
 
-    public void setDonGia(int donGia) {
+    public void setDonGia(double donGia) {
         this.donGia = donGia;
     }
 
-    public Date getHanSuDung() {
-        return hanSuDung;
+    public String getThoiGianTao() {
+        return thoiGianTao;
     }
 
-    public void setHanSuDung(Date hanSuDung) {
-        this.hanSuDung = hanSuDung;
+    public void setThoiGianTao(String thoiGianTao) {
+        this.thoiGianTao = thoiGianTao;
     }
+
     
-    public Timestamp getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
-    }
-    @Override
-    public String toString() {
-        return this.tenThucAn; 
-    }
 }
