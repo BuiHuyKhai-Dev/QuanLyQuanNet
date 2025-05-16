@@ -86,5 +86,25 @@ public class KhoThucAnDAO {
         }
         return false; // Return false if there's an error
     }
-    
+    public int getSoLuong(int maThucAn) {
+    String sql = "SELECT SUM(soLuong) AS tongSoLuong FROM khothucan WHERE maThucAn = ?";
+    int soLuong = 0;
+
+    try (Connection conn = DBConnect.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+
+        ps.setInt(1, maThucAn);
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()) {
+            soLuong = rs.getInt("tongSoLuong");
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+    return soLuong;
+}
+
 }
