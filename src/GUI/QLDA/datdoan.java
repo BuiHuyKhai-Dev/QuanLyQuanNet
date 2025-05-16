@@ -310,7 +310,7 @@ public class datdoan extends JPanel {
             button = new JButton("Hủy");
             button.addActionListener(e -> {
                 int row = table.getEditingRow();
-                int thanhTien = (int) table.getValueAt(row, 3);
+                double thanhTien = (double) table.getValueAt(row, 3);
                 totalPrice -= thanhTien;
                 lblTotalPrice.setText("Thành tiền: " + totalPrice + " VND");
                 ((DefaultTableModel) table.getModel()).removeRow(row);
