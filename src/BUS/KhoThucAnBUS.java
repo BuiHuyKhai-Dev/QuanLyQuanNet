@@ -35,4 +35,8 @@ public class KhoThucAnBUS {
         }
         return null;
     }
+
+    public int laySoLuong(int maThucAn){
+        return new KhoThucAnDAO().getSoLuong(maThucAn);
+    }
 }
