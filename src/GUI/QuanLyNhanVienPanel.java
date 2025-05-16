@@ -2,6 +2,7 @@ package GUI;
 
 import BUS.NhanVienBUS;
 import DTO.NhanVienDTO;
+import com.toedter.calendar.JDateChooser;
 import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -11,7 +12,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import com.toedter.calendar.JDateChooser; // Import thư viện JCalendar
 
 public class QuanLyNhanVienPanel extends JPanel {
     private DefaultTableModel tableModel;
@@ -359,6 +359,7 @@ public class QuanLyNhanVienPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Thêm nhân viên thất bại!", "Thông báo", JOptionPane.ERROR_MESSAGE);
             }
 
+            
             dialog.dispose();
 
              // Thêm dữ liệu vào bảng

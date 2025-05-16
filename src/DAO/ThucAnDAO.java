@@ -80,4 +80,19 @@ public class ThucAnDAO {
         }
         return result;
     }
+
+    public int updateSoLuong(int maThucAn, int soLuong) {
+        int result = 0;
+        try {
+            Connection conn = DBConnect.getConnection();
+            String sql = "UPDATE ThucAn SET SoLuong = ? WHERE MaThucAn = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, soLuong);
+            ps.setInt(2, maThucAn);
+            result = ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 }

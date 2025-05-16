@@ -30,10 +30,12 @@ public class PhieuNhapPanel extends JPanel {
         JButton btnDelete = new JButton("Xóa");
         JButton btnEdit = new JButton("Sửa");
         JButton btnDetail = new JButton("Chi tiết");
+        JButton btnRefresh = new JButton("Làm mới");
         leftPanel.add(btnAdd);
         leftPanel.add(btnDelete);
         leftPanel.add(btnEdit);
         leftPanel.add(btnDetail);
+        leftPanel.add(btnRefresh);
 
         // ComboBox sắp xếp, ô tìm kiếm và lọc thời gian phía phải
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -98,55 +100,22 @@ public class PhieuNhapPanel extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
 
         // Xử lý sự kiện các nút
-        btnAdd.addActionListener(e -> showAddDialog());
+        btnAdd.addActionListener(e -> {
+            JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Thêm phiếu nhập", true);
+            dialog.setContentPane(new PhieuNhapAddPanel());
+            dialog.pack();
+            dialog.setSize(1200, 800); // hoặc điều chỉnh kích thước phù hợp
+            dialog.setLocationRelativeTo(this);
+            dialog.setVisible(true);
+        });
         btnDelete.addActionListener(e -> deleteSelectedRow());
         btnEdit.addActionListener(e -> showEditDialog());
         btnDetail.addActionListener(e -> showDetailDialog());
         btnSearch.addActionListener(e -> searchByKeyword(searchField.getText()));
         btnFilter.addActionListener(e -> filterByDate(fromDateChooser, toDateChooser));
-    }
-
-    private void showAddDialog() {
-        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Thêm phiếu nhập", true);
-        dialog.setSize(400, 300);
-        dialog.setLayout(new GridLayout(5, 2, 10, 10));
-
-        dialog.add(new JLabel("Nhà cung cấp:"));
-        JTextField txtSupplier = new JTextField();
-        dialog.add(txtSupplier);
-
-        dialog.add(new JLabel("Nhân viên nhập:"));
-        JTextField txtEmployee = new JTextField();
-        dialog.add(txtEmployee);
-
-        dialog.add(new JLabel("Tổng tiền:"));
-        JTextField txtTotal = new JTextField();
-        dialog.add(txtTotal);
-
-        dialog.add(new JLabel("Ngày nhập:"));
-        JDateChooser dateChooser = new JDateChooser();
-        dateChooser.setDateFormatString("yyyy-MM-dd");
-        dialog.add(dateChooser);
-
-        JButton btnConfirm = new JButton("Xác nhận");
-        btnConfirm.addActionListener(e -> {
-            String supplier = txtSupplier.getText();
-            String employee = txtEmployee.getText();
-            String total = txtTotal.getText();
-            String date = new SimpleDateFormat("yyyy-MM-dd").format(dateChooser.getDate());
-
-            // Thêm dữ liệu vào bảng
-            tableModel.addRow(new Object[]{tableModel.getRowCount() + 1, supplier, employee, total, date});
-            dialog.dispose();
-        });
-        dialog.add(btnConfirm);
-
-        JButton btnCancel = new JButton("Hủy");
-        btnCancel.addActionListener(e -> dialog.dispose());
-        dialog.add(btnCancel);
-
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);
+        btnRefresh.addActionListener(e -> 
+            reloadTable() // Gọi hàm làm mới bảng
+        );
     }
 
     private void deleteSelectedRow() {
@@ -211,38 +180,43 @@ public class PhieuNhapPanel extends JPanel {
             return;
         }
 
-        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Chi tiết phiếu nhập", true);
-        dialog.setSize(400, 300);
-        dialog.setLayout(new GridLayout(5, 2, 10, 10));
+        // Lấy mã phiếu nhập từ dòng được chọn
+        int maPhieuNhap = Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString());
 
-        dialog.add(new JLabel("Mã Phiếu Nhập:"));
-        JTextField txtId = new JTextField(String.valueOf(tableModel.getValueAt(selectedRow, 0)));
-        txtId.setEditable(false);
-        dialog.add(txtId);
+        // Lấy danh sách chi tiết phiếu nhập từ DAO
+        ArrayList<DTO.ChiTietPhieuNhapDTO> chiTietList = new DAO.ChiTietPhieuNhapDAO().selectByMaPN(maPhieuNhap);
 
-        dialog.add(new JLabel("Nhà cung cấp:"));
-        JTextField txtSupplier = new JTextField((String) tableModel.getValueAt(selectedRow, 1));
-        txtSupplier.setEditable(false);
-        dialog.add(txtSupplier);
+        // Tạo dialog hiển thị chi tiết phiếu nhập
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this));
+        dialog.setTitle("Chi tiết phiếu nhập #" + maPhieuNhap);
+        dialog.setSize(600, 400);
+        dialog.setLayout(new BorderLayout(10, 10));
 
-        dialog.add(new JLabel("Nhân viên nhập:"));
-        JTextField txtEmployee = new JTextField((String) tableModel.getValueAt(selectedRow, 2));
-        txtEmployee.setEditable(false);
-        dialog.add(txtEmployee);
+        // Bảng chi tiết phiếu nhập
+        String[] columns = {"Mã Thức Ăn", "Tên Thức Ăn", "Đơn Giá", "Số Lượng", "Thành Tiền"};
+        DefaultTableModel detailModel = new DefaultTableModel(columns, 0);
+        for (DTO.ChiTietPhieuNhapDTO ct : chiTietList) {
+            // Lấy tên thức ăn từ BUS (nếu cần)
+            String tenThucAn = new BUS.ThucAnBUS().getTenThucAn(ct.getMaThucAn());
+            detailModel.addRow(new Object[]{
+                ct.getMaThucAn(),
+                tenThucAn,
+                ct.getDonGia(),
+                ct.getSoLuong(),
+                ct.getThanhTien()
+            });
+        }
+        JTable detailTable = new JTable(detailModel);
+        detailTable.setRowHeight(28);
+        JScrollPane scrollPane = new JScrollPane(detailTable);
 
-        dialog.add(new JLabel("Tổng tiền:"));
-        JTextField txtTotal = new JTextField((String) tableModel.getValueAt(selectedRow, 3));
-        txtTotal.setEditable(false);
-        dialog.add(txtTotal);
-
-        dialog.add(new JLabel("Ngày nhập:"));
-        JTextField txtDate = new JTextField((String) tableModel.getValueAt(selectedRow, 4));
-        txtDate.setEditable(false);
-        dialog.add(txtDate);
+        dialog.add(scrollPane, BorderLayout.CENTER);
 
         JButton btnClose = new JButton("Đóng");
-        btnClose.addActionListener(e -> dialog.dispose());
-        dialog.add(btnClose);
+        btnClose.addActionListener(ev -> dialog.dispose());
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        btnPanel.add(btnClose);
+        dialog.add(btnPanel, BorderLayout.SOUTH);
 
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
@@ -265,4 +239,19 @@ public class PhieuNhapPanel extends JPanel {
         // Logic lọc theo thời gian
         JOptionPane.showMessageDialog(this, "Lọc từ ngày: " + fromDate + " đến ngày: " + toDate, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
     }
+
+    // Hàm này sẽ được gọi khi cần làm mới bảng
+    public void reloadTable() {
+    tableModel.setRowCount(0);
+    ArrayList<PhieuNhapDTO> listPhieuNhap = new PhieuNhapBUS().getAll();
+    for (PhieuNhapDTO phieuNhap : listPhieuNhap) {
+        tableModel.addRow(new Object[]{
+            phieuNhap.getMaPN(),
+            nhaCungCapBUS.getTenNCC(phieuNhap.getMaNCC()),
+            nhanVienBUS.getTenNV(phieuNhap.getMaNV()),
+            phieuNhap.getTongTien(),
+            phieuNhap.getThoiGianTao()
+        });
+    }
+}
 }
