@@ -2,16 +2,20 @@ package GUI;
 
 import BUS.KhoMayTinhBUS;
 import BUS.KhoThucAnBUS;
+import BUS.NhaCungCapBUS;
+import BUS.ThucAnBUS;
 import DAO.KhoMayTinhDAO;
 import DAO.KhoThucAnDAO;
 import DTO.KhoMayTinhDTO;
 import DTO.KhoThucAnDTO;
+import DTO.ThucAnDTO;
+import com.toedter.calendar.JDateChooser;
 import java.awt.*;
 import java.util.ArrayList;
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import com.toedter.calendar.JDateChooser; // Import thư viện JCalendar
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel; // Import thư viện JCalendar
+
 
 
 public class QuanLyKhoPanel extends JPanel {
@@ -148,21 +152,22 @@ public class QuanLyKhoPanel extends JPanel {
         JPanel panel = new JPanel(new BorderLayout());
 
         // Table model for Kho thức ăn
-        String[] columns = {"Tên nhà cung cấp", "Tên thức ăn", "Số lượng tồn kho"};
+        String[] columns = {"Mã thức ăn", "Tên thức ăn", "Đơn giá", "Số lượng tồn kho"};
         DefaultTableModel tableModel = new DefaultTableModel(columns, 0);
         JTable table = new JTable(tableModel);
 
         // Thêm dữ liệu từ cơ sở dữ liệu vào bảng
-        ArrayList<KhoThucAnDTO> khoThucAnList = new KhoThucAnDAO().getAllKhoThucAn();
-        for (KhoThucAnDTO khoThucAn : khoThucAnList) {
-            // Lấy tên nhà cung cấp từ mã nhà cung cấp
+        ArrayList<ThucAnDTO> ThucAnList = new ThucAnBUS().getAllThucAn();
+        for (ThucAnDTO khoThucAn : ThucAnList) {
             tableModel.addRow(new Object[]{
-                khoThucAnBUS.getTenNCC(khoThucAn.getmaNCC()),
+                khoThucAn.getMaThucAn(), // Mã thức ăn
                 khoThucAnBUS.getTenThucAn(khoThucAn.getMaThucAn()),
+                khoThucAnBUS.getDonGia(khoThucAn.getMaThucAn()),
                 khoThucAn.getSoLuong()
             });
         }
-         // Center align text in cells
+
+        // Center align text in cells
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
         table.setDefaultRenderer(Object.class, centerRenderer);
@@ -174,13 +179,175 @@ public class QuanLyKhoPanel extends JPanel {
         for (int i = 0; i < table.getColumnModel().getColumnCount(); i++) {
             table.getColumnModel().getColumn(i).setHeaderRenderer(headerRenderer);
         }
-        
 
         // Table customization
         table.setRowHeight(30);
         table.getTableHeader().setPreferredSize(new Dimension(table.getTableHeader().getWidth(), 25));
         JScrollPane scrollPane = new JScrollPane(table);
 
+        // Panel chứa các nút chức năng
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JButton btnAdd = new JButton("Thêm");
+        JButton btnEdit = new JButton("Sửa");
+        JButton btnDelete = new JButton("Xóa");
+
+        buttonPanel.add(btnAdd);
+        buttonPanel.add(btnEdit);
+        buttonPanel.add(btnDelete);
+
+        // Thêm sự kiện cho nút Thêm
+        btnAdd.addActionListener(e -> {
+            JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Thêm thức ăn", true);
+            dialog.setSize(400, 300);
+            dialog.setLayout(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(5, 5, 5, 5);
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+
+            // Mã thức ăn
+            dialog.add(new JLabel("Mã thức ăn:"), gbc);
+            gbc.gridx = 1;
+            JTextField txtFoodId = new JTextField();
+            dialog.add(txtFoodId, gbc);
+
+            // Tên thức ăn
+            gbc.gridx = 0;
+            gbc.gridy++;
+            dialog.add(new JLabel("Tên thức ăn:"), gbc);
+            gbc.gridx = 1;
+            JTextField txtFoodName = new JTextField();
+            dialog.add(txtFoodName, gbc);
+
+            // Đơn giá
+            gbc.gridx = 0;
+            gbc.gridy++;
+            dialog.add(new JLabel("Đơn giá:"), gbc);
+            gbc.gridx = 1;
+            JTextField txtPrice = new JTextField();
+            dialog.add(txtPrice, gbc);
+
+            // Số lượng tồn kho
+            gbc.gridx = 0;
+            gbc.gridy++;
+            dialog.add(new JLabel("Số lượng tồn kho:"), gbc);
+            gbc.gridx = 1;
+            JTextField txtQuantity = new JTextField("0"); // Mặc định là 0
+            txtQuantity.setEditable(false);
+            dialog.add(txtQuantity, gbc);
+
+            // Nút Xác nhận
+            gbc.gridx = 0;
+            gbc.gridy++;
+            gbc.gridwidth = 2;
+            gbc.anchor = GridBagConstraints.CENTER;
+            JButton btnConfirm = new JButton("Xác nhận");
+            btnConfirm.addActionListener(ev -> {
+                String foodId = txtFoodId.getText();
+                String foodName = txtFoodName.getText();
+                double price = Double.parseDouble(txtPrice.getText());
+                int quantity = Integer.parseInt(txtQuantity.getText());
+
+                // Thêm dữ liệu vào bảng
+                tableModel.addRow(new Object[]{foodId, foodName, price, quantity});
+                dialog.dispose();
+            });
+            dialog.add(btnConfirm, gbc);
+
+            // Nút Hủy
+            gbc.gridy++;
+            JButton btnCancel = new JButton("Hủy");
+            btnCancel.addActionListener(ev -> dialog.dispose());
+            dialog.add(btnCancel, gbc);
+
+            dialog.setLocationRelativeTo(this);
+            dialog.setVisible(true);
+        });
+
+        // Thêm sự kiện cho nút Sửa
+        btnEdit.addActionListener(e -> {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn một dòng để sửa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Sửa thức ăn", true);
+            dialog.setSize(400, 300);
+            dialog.setLayout(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(5, 5, 5, 5);
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+
+            // Mã thức ăn
+            dialog.add(new JLabel("Mã thức ăn:"), gbc);
+            gbc.gridx = 1;
+            JTextField txtFoodId = new JTextField(tableModel.getValueAt(selectedRow, 0).toString());
+            txtFoodId.setEditable(false); // Không cho phép chỉnh sửa mã thức ăn
+            dialog.add(txtFoodId, gbc);
+
+            // Tên thức ăn
+            gbc.gridx = 0;
+            gbc.gridy++;
+            dialog.add(new JLabel("Tên thức ăn:"), gbc);
+            gbc.gridx = 1;
+            JTextField txtFoodName = new JTextField(tableModel.getValueAt(selectedRow, 1).toString());
+            dialog.add(txtFoodName, gbc);
+
+            // Đơn giá
+            gbc.gridx = 0;
+            gbc.gridy++;
+            dialog.add(new JLabel("Đơn giá:"), gbc);
+            gbc.gridx = 1;
+            JTextField txtPrice = new JTextField(tableModel.getValueAt(selectedRow, 2).toString());
+            dialog.add(txtPrice, gbc);
+
+            // Số lượng tồn kho
+            gbc.gridx = 0;
+            gbc.gridy++;
+            dialog.add(new JLabel("Số lượng tồn kho:"), gbc);
+            gbc.gridx = 1;
+            JTextField txtQuantity = new JTextField(tableModel.getValueAt(selectedRow, 3).toString());
+            txtQuantity.setEditable(false);
+            dialog.add(txtQuantity, gbc);
+
+            // Nút Xác nhận
+            gbc.gridx = 0;
+            gbc.gridy++;
+            gbc.gridwidth = 2;
+            gbc.anchor = GridBagConstraints.CENTER;
+            JButton btnConfirm = new JButton("Xác nhận");
+            btnConfirm.addActionListener(ev -> {
+                tableModel.setValueAt(txtFoodName.getText(), selectedRow, 1);
+                tableModel.setValueAt(Double.parseDouble(txtPrice.getText()), selectedRow, 2);
+                dialog.dispose();
+            });
+            dialog.add(btnConfirm, gbc);
+
+            // Nút Hủy
+            gbc.gridy++;
+            JButton btnCancel = new JButton("Hủy");
+            btnCancel.addActionListener(ev -> dialog.dispose());
+            dialog.add(btnCancel, gbc);
+
+            dialog.setLocationRelativeTo(this);
+            dialog.setVisible(true);
+        });
+
+        // Thêm sự kiện cho nút Xóa
+        btnDelete.addActionListener(e -> {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Vui lòng chọn một dòng để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            tableModel.removeRow(selectedRow);
+        });
+
+        panel.add(buttonPanel, BorderLayout.NORTH);
         panel.add(scrollPane, BorderLayout.CENTER);
         return panel;
     }

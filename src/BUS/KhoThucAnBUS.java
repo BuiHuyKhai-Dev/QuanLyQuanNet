@@ -36,7 +36,12 @@ public class KhoThucAnBUS {
         return null;
     }
 
-    public int laySoLuong(int maThucAn){
-        return new KhoThucAnDAO().getSoLuong(maThucAn);
+    public double getDonGia(int maThucAn) {
+        for (KhoThucAnDTO kta : list) {
+            if (kta.getMaThucAn() == maThucAn) {
+                return thucAnBUS.getDonGia(kta.getMaThucAn());
+            }
+        }
+        return 0;
     }
 }

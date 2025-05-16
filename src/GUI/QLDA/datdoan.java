@@ -63,12 +63,12 @@ public class datdoan extends JPanel {
         menuPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         BUS.ThucAnBUS thucAnBUS = new BUS.ThucAnBUS();
-        ArrayList<DTO.ThucAnDTO> danhSachThucAn = thucAnBUS.getDanhSachThucAn();
+        ArrayList<DTO.ThucAnDTO> danhSachThucAn = thucAnBUS.getAllThucAn();
 
         for (DTO.ThucAnDTO ta : danhSachThucAn) {
             String ten = ta.getTenThucAn();
             // String hinhAnh = ta.getHinhAnh(); // Đảm bảo ảnh là đường dẫn hợp lệ ví dụ: "../../img/comga.jpg"
-            int gia = ta.getDonGia();
+            double gia = ta.getDonGia();
             addMenuItem(menuPanel, ten, "../../img/comga.jpg", gia);
         }
 
@@ -122,7 +122,7 @@ public class datdoan extends JPanel {
                         // int thanhTien = (int) orderTableModel.getValueAt(i, 3);
 
                         // Giả sử bạn có thể lấy mã món từ tên món (nếu không thì cần sửa lại)
-                        int maMon = new ThucAnBUS().getMaMonTheoTen(tenMon); // Phải có hàm này nếu cần
+                        int maMon = new ThucAnBUS().getMaTheoTenMon(tenMon); // Phải có hàm này nếu cần
                         System.out.println("Mã món: " + maMon);
                         DTO.ChiTietDonHangDTO ct = new DTO.ChiTietDonHangDTO();
                         ct.setMaDH(maHD);
@@ -224,7 +224,7 @@ public class datdoan extends JPanel {
 }
 
 
-    private void addMenuItem(JPanel menuPanel, String name, String imagePath, int price) {
+    private void addMenuItem(JPanel menuPanel, String name, String imagePath, double price) {
         JPanel itemPanel = new JPanel(new BorderLayout());
         itemPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
@@ -247,7 +247,7 @@ public class datdoan extends JPanel {
         menuPanel.add(itemPanel);
     }
 
-    private void showOrderDialog(String name, int price) {
+    private void showOrderDialog(String name, double price) {
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Đặt món", true);
         dialog.setSize(300, 200);
         dialog.setLayout(new GridLayout(4, 2, 10, 10));
@@ -268,7 +268,7 @@ public class datdoan extends JPanel {
                 int quantity = Integer.parseInt(txtQuantity.getText());
                 if (quantity <= 0) throw new NumberFormatException();
 
-                int total = price * quantity;
+                double total = price * quantity;
                 orderTableModel.addRow(new Object[]{name, price, quantity, total, "Hủy"});
                 totalPrice += total;
                 lblTotalPrice.setText("Thành tiền: " + totalPrice + " VND");

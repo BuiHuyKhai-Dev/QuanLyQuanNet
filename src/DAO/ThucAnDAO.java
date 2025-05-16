@@ -1,148 +1,83 @@
 package DAO;
 
-import DTO.ThucAnDTO;
 import DAL.DBConnect;
-
+import DTO.ThucAnDTO;
 import java.sql.*;
 import java.util.ArrayList;
 
 public class ThucAnDAO {
 
-    public static ArrayList<ThucAnDTO> getAll() {
-        ArrayList<ThucAnDTO> list = new ArrayList<>();
-        String sql = "SELECT * FROM ThucAn";
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+    public ThucAnDAO() {
+    }
 
+    public ArrayList<ThucAnDTO> getAll() {
+        ArrayList<ThucAnDTO> list = new ArrayList<>();
+        try {
+            Connection conn = DBConnect.getConnection();
+            String sql = "SELECT * FROM ThucAn";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 ThucAnDTO ta = new ThucAnDTO();
                 ta.setMaThucAn(rs.getInt("MaThucAn"));
                 ta.setTenThucAn(rs.getString("TenThucAn"));
-                ta.setDonGia(rs.getInt("DonGia")); // Sử dụng Int thay vì double
+                ta.setSoLuong(rs.getInt("SoLuong"));
+                ta.setDonGia(rs.getInt("DonGia"));
+                ta.setThoiGianTao(rs.getTimestamp("created_at").toLocalDateTime().toString());
                 list.add(ta);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;
     }
 
-    public boolean insert(ThucAnDTO obj) {
-        String sql = "INSERT INTO ThucAn (TenThucAn, DonVi, DonGia, HanSuDung) VALUES (?, ?, ?, ?)";
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setString(1, obj.getTenThucAn());
-            stmt.setString(2, obj.getDonVi());
-            stmt.setInt(3, obj.getDonGia());
-            stmt.setDate(4, new java.sql.Date(obj.getHanSuDung().getTime()));
-    
-            return stmt.executeUpdate() > 0;
-        } catch (Exception e) {
+    public int insert(ThucAnDTO ta) {
+        int result = 0;
+        try {
+            Connection conn = DBConnect.getConnection();
+            String sql = "INSERT INTO ThucAn (MaThucAn, TenThucAn, SoLuong, DonGia, created_at) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, ta.getMaThucAn());
+            ps.setString(2, ta.getTenThucAn());
+            ps.setInt(3, ta.getSoLuong());
+            ps.setDouble(4, ta.getDonGia());
+            ps.setTimestamp(5, Timestamp.valueOf(ta.getThoiGianTao()));
+            result = ps.executeUpdate();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
+        return result;
     }
-    
 
-    public boolean update(ThucAnDTO obj) {
-        String sql = "UPDATE ThucAn SET TenThucAn = ?, DonVi = ?, DonGia = ?, HanSuDung = ? WHERE MaThucAn = ?";
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            
-            stmt.setString(1, obj.getTenThucAn());
-            stmt.setString(2, obj.getDonVi());
-            stmt.setInt(3, obj.getDonGia());
-            stmt.setDate(4, obj.getHanSuDung());
-            stmt.setInt(5, obj.getMaThucAn());
-    
-            return stmt.executeUpdate() > 0;
-        } catch (Exception e) {
+    public int update(ThucAnDTO ta) {
+        int result = 0;
+        try {
+            Connection conn = DBConnect.getConnection();
+            String sql = "UPDATE ThucAn SET TenThucAn = ?, SoLuong = ?, DonGia = ? WHERE MaThucAn = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, ta.getTenThucAn());
+            ps.setInt(2, ta.getSoLuong());
+            ps.setDouble(3, ta.getDonGia());
+            ps.setInt(4, ta.getMaThucAn());
+            result = ps.executeUpdate();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
+        return result;
     }
-    
 
-    public boolean delete(int id) {
-        String deleteKhoThucAnSql = "DELETE FROM KhoThucAn WHERE MaThucAn = ?";
-        String deleteThucAnSql = "DELETE FROM ThucAn WHERE MaThucAn = ?";
-        
-        // Đảm bảo kết nối được khai báo và sử dụng đúng
-        try (Connection conn = DBConnect.getConnection()) {
-            // Bắt đầu giao dịch
-            conn.setAutoCommit(false);
-    
-            // Xóa các bản ghi trong bảng KhoThucAn
-            try (PreparedStatement stmtKho = conn.prepareStatement(deleteKhoThucAnSql)) {
-                stmtKho.setInt(1, id);
-                stmtKho.executeUpdate();
-            }
-    
-            // Xóa bản ghi trong bảng ThucAn
-            try (PreparedStatement stmtThucAn = conn.prepareStatement(deleteThucAnSql)) {
-                stmtThucAn.setInt(1, id);
-                int rowsAffected = stmtThucAn.executeUpdate();
-                
-                // Nếu xóa thành công, commit giao dịch
-                if (rowsAffected > 0) {
-                    conn.commit();
-                    return true;
-                } else {
-                    conn.rollback();  // Nếu không có dòng nào bị xóa, rollback giao dịch
-                    return false;
-                }
-            }
-        } catch (Exception e) {
-        return false;
-    }    
-}
-    public static ThucAnDTO getById(int id) {
-        String sql = "SELECT * FROM ThucAn WHERE MaThucAn = ?";
-        try (Connection conn = DBConnect.getConnection();
-            PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    ThucAnDTO obj = new ThucAnDTO(); // hoặc dùng constructor có tham số nếu bạn có
-                    obj.setMaThucAn(rs.getInt("MaThucAn"));
-                    obj.setTenThucAn(rs.getString("TenThucAn"));
-                    obj.setDonVi(rs.getString("DonVi"));
-                    obj.setDonGia(rs.getInt("DonGia"));
-                    obj.setHanSuDung(rs.getDate("HanSuDung"));
-                    return obj;
-                }
-            }
-        } catch (Exception e) {
+    public int delete(int maThucAn) {
+        int result = 0;
+        try {
+            Connection conn = DBConnect.getConnection();
+            String sql = "DELETE FROM ThucAn WHERE MaThucAn = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, maThucAn);
+            result = ps.executeUpdate();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return result;
     }
-    public int getMaMonTheoTen(String tenMon) {
-    int maMon = -1;
-
-    try {
-        String sql = "SELECT mathucan FROM thucan WHERE tenthucan = ?";
-        Connection conn = DBConnect.getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, tenMon);
-
-        ResultSet rs = ps.executeQuery();
-
-        if (rs.next()) {
-            maMon = rs.getInt("mathucan");
-        }
-
-        rs.close();
-        ps.close();
-        conn.close();
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-
-    return maMon;
-}
-
 }
