@@ -72,7 +72,7 @@ public class ThucAnBUS {
         }
         return 0;
     }
-
+    
     public int getLastID() {
         int max = 0;
         for (ThucAnDTO ta : list) {
@@ -82,4 +82,7 @@ public class ThucAnBUS {
         }
         return max;
     }
+        public boolean giamSoLuongThucAn(int maThucAn, int soLuongGiam) {
+    return new ThucAnDAO().giamSoLuong(maThucAn, soLuongGiam) > 0;
+}
 }
