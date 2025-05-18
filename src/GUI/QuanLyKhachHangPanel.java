@@ -66,14 +66,24 @@ public class QuanLyKhachHangPanel extends JPanel {
         add(topPanel, BorderLayout.NORTH);
 
         // Bảng dữ liệu phía dưới
-        String[] columnNames = {"Mã Khách Hàng", "Tên Khách Hàng", "Số điện thoại", "Email", "Số dư tài khoản", "Thời gian tạo"};
-        tableModel = new DefaultTableModel(columnNames, 0);
+        String[] columnNames = {"Mã Khách Hàng", "Tên Khách Hàng", "Số điện thoại", "Email", "Số dư tài khoản", "Thời gian tạo", "Nạp tiền"};
+        tableModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                // Chỉ cho phép cột "Nạp tiền" được chỉnh sửa (bấm nút)
+                return column == 6;
+            }
+        };
         customerTable = new JTable(tableModel);
 
         // Đặt chiều cao dòng và header
         customerTable.setRowHeight(30);
         JTableHeader header = customerTable.getTableHeader();
         header.setPreferredSize(new Dimension(header.getWidth(), 25));
+
+        // 3. Tạo cell renderer và editor cho cột "Nạp tiền"
+        customerTable.getColumn("Nạp tiền").setCellRenderer(new ButtonRenderer());
+        customerTable.getColumn("Nạp tiền").setCellEditor(new ButtonEditor(new JCheckBox(), this, khachHangBUS));
 
         // Căn giữa chữ trong bảng
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -367,7 +377,8 @@ public class QuanLyKhachHangPanel extends JPanel {
                 kh.getSoDienThoai(),
                 kh.getEmail(),
                 kh.getSoDuTaiKhoan(),
-                kh.getThoiGianTao()
+                kh.getThoiGianTao(),
+                "Nạp tiền"
             });
         }
     }
@@ -487,5 +498,82 @@ public class QuanLyKhachHangPanel extends JPanel {
 
         // Nếu tất cả kiểm tra đều đúng
         return true;
+    }
+}
+
+class ButtonRenderer extends JButton implements javax.swing.table.TableCellRenderer {
+    public ButtonRenderer() {
+        setOpaque(true);
+    }
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        setText(value == null ? "" : value.toString());
+        return this;
+    }
+}
+
+class ButtonEditor extends DefaultCellEditor {
+    private JButton button;
+    private String label;
+    private boolean isPushed;
+    private int selectedRow;
+    private Component parentComponent;
+    private KhachHangBUS khachHangBUS;
+    private JTable table;
+
+    public ButtonEditor(JCheckBox checkBox, Component parentComponent, KhachHangBUS khachHangBUS) {
+        super(checkBox);
+        this.parentComponent = parentComponent;
+        this.khachHangBUS = khachHangBUS;
+        button = new JButton();
+        button.setOpaque(true);
+        button.addActionListener(e -> fireEditingStopped());
+    }
+
+    @Override
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+        label = (value == null) ? "" : value.toString();
+        button.setText(label);
+        isPushed = true;
+        selectedRow = row;
+        this.table = table; // Lưu lại bảng để sử dụng sau này
+        return button;
+    }
+
+    @Override
+    public Object getCellEditorValue() {
+        if (isPushed) {
+            // Khi nhấn nút "Nạp tiền"
+            DefaultTableModel tableModel = (DefaultTableModel) table.getModel();
+            String input = JOptionPane.showInputDialog(parentComponent, "Nhập số tiền cần nạp:", "Nạp tiền", JOptionPane.PLAIN_MESSAGE);
+            double soDuHienTai = Double.parseDouble(tableModel.getValueAt(selectedRow, 4).toString());
+            int maKhachHang = Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString());
+            if (input != null) {
+                try {
+                    double soTienNap = Double.parseDouble(input);
+                    if (soTienNap <= 0) {
+                        JOptionPane.showMessageDialog(parentComponent, "Số tiền phải lớn hơn 0!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        double soDuMoi = soDuHienTai + soTienNap;
+                        // Cập nhật số dư trong database
+                        if (khachHangBUS.napTien(maKhachHang, soDuMoi)) {
+                            tableModel.setValueAt(soDuMoi, selectedRow, 4);
+                            JOptionPane.showMessageDialog(parentComponent, "Nạp tiền thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                        } else {
+                            JOptionPane.showMessageDialog(parentComponent, "Nạp tiền thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                        }
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(parentComponent, "Số tiền không hợp lệ!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+        isPushed = false;
+        return label;
+    }
+
+    @Override
+    public boolean stopCellEditing() {
+        isPushed = false;
+        return super.stopCellEditing();
     }
 }

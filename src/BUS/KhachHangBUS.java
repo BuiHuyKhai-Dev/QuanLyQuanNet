@@ -1,7 +1,6 @@
 package BUS;
 import DAO.KhachHangDAO;
 import DTO.KhachHangDTO;
-import DTO.NhanVienDTO;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -26,6 +25,16 @@ public class KhachHangBUS {
             listkh.add(a);
         }
         return result;
+    }
+
+    public boolean napTien(int ma, double soTien) {
+        for (KhachHangDTO kh : listkh) {
+            if (kh.getMaKhachHang() == ma) {
+                kh.setSoDuTaiKhoan(soTien);
+                return khDAO.update(kh) != 0;
+            }
+        }
+        return false;
     }
 
     public KhachHangDTO getKhachHangById(int ma) {

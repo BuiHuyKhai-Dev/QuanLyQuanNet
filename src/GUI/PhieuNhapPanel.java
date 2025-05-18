@@ -180,8 +180,11 @@ public class PhieuNhapPanel extends JPanel {
             return;
         }
 
-        // Lấy mã phiếu nhập từ dòng được chọn
+        // Lấy thông tin phiếu nhập từ bảng
         int maPhieuNhap = Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString());
+        String tenNCC = tableModel.getValueAt(selectedRow, 1).toString();
+        String tenNV = tableModel.getValueAt(selectedRow, 2).toString();
+        String tongTien = tableModel.getValueAt(selectedRow, 3).toString();
 
         // Lấy danh sách chi tiết phiếu nhập từ DAO
         ArrayList<DTO.ChiTietPhieuNhapDTO> chiTietList = new DAO.ChiTietPhieuNhapDAO().selectByMaPN(maPhieuNhap);
@@ -189,14 +192,26 @@ public class PhieuNhapPanel extends JPanel {
         // Tạo dialog hiển thị chi tiết phiếu nhập
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this));
         dialog.setTitle("Chi tiết phiếu nhập #" + maPhieuNhap);
-        dialog.setSize(600, 400);
+        dialog.setSize(650, 500);
         dialog.setLayout(new BorderLayout(10, 10));
+
+        // Panel thông tin chung phiếu nhập
+        JPanel infoPanel = new JPanel(new GridLayout(2, 4, 10, 10));
+        infoPanel.setBorder(BorderFactory.createTitledBorder("Thông tin phiếu nhập"));
+        infoPanel.add(new JLabel("Mã phiếu nhập:"));
+        infoPanel.add(new JLabel(String.valueOf(maPhieuNhap)));
+        infoPanel.add(new JLabel("Nhà cung cấp:"));
+        infoPanel.add(new JLabel(tenNCC));
+        infoPanel.add(new JLabel("Nhân viên nhập:"));
+        infoPanel.add(new JLabel(tenNV));
+        infoPanel.add(new JLabel("Tổng tiền:"));
+        infoPanel.add(new JLabel(tongTien));
+        dialog.add(infoPanel, BorderLayout.NORTH);
 
         // Bảng chi tiết phiếu nhập
         String[] columns = {"Mã Thức Ăn", "Tên Thức Ăn", "Đơn Giá", "Số Lượng", "Thành Tiền"};
         DefaultTableModel detailModel = new DefaultTableModel(columns, 0);
         for (DTO.ChiTietPhieuNhapDTO ct : chiTietList) {
-            // Lấy tên thức ăn từ BUS (nếu cần)
             String tenThucAn = new BUS.ThucAnBUS().getTenThucAn(ct.getMaThucAn());
             detailModel.addRow(new Object[]{
                 ct.getMaThucAn(),

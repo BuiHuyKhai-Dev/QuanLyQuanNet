@@ -1,23 +1,17 @@
 package GUI.QLDA;
 
-import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
-
 import BUS.HoaDonThucAnBUS;
 import BUS.KhachHangBUS;
-import BUS.KhoThucAnBUS;
 import BUS.NhanVienBUS;
 import BUS.ThucAnBUS;
 import DTO.KhachHangDTO;
 import DTO.NhanVienDTO;
-
 import java.awt.*;
-import java.awt.event.*;
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 public class datdoan extends JPanel {
     private DefaultTableModel orderTableModel;
@@ -62,6 +56,25 @@ public class datdoan extends JPanel {
 
         JPanel menuPanel = new JPanel(new GridLayout(0, 3, 10, 10));
         menuPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        JPanel menuHeaderPanel = new JPanel(new BorderLayout());
+        JLabel lblMenuTitle = new JLabel("Menu Đồ Ăn", SwingConstants.LEFT);
+        lblMenuTitle.setFont(new Font("Arial", Font.BOLD, 18));
+        menuHeaderPanel.add(lblMenuTitle, BorderLayout.WEST);
+
+        JButton btnRefreshMenu = new JButton("Làm mới menu");
+        btnRefreshMenu.setFont(new Font("Arial", Font.PLAIN, 13));
+        menuHeaderPanel.add(btnRefreshMenu, BorderLayout.EAST);
+
+        // Thêm menuHeaderPanel vào phía trên menuPanel
+        JPanel menuWrapper = new JPanel(new BorderLayout());
+        menuWrapper.add(menuHeaderPanel, BorderLayout.NORTH);
+        menuWrapper.add(menuPanel, BorderLayout.CENTER);
+
+        // Thay vì add menuPanel vào JScrollPane, hãy add menuWrapper:
+        JScrollPane menuScrollPane = new JScrollPane(menuWrapper);
+        menuScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        menuScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+
 
         BUS.ThucAnBUS thucAnBUS = new BUS.ThucAnBUS();
         ArrayList<DTO.ThucAnDTO> danhSachThucAn = thucAnBUS.getAllThucAn();
@@ -72,10 +85,6 @@ public class datdoan extends JPanel {
             double gia = ta.getDonGia();
             addMenuItem(menuPanel, ten, "../../img/comga.jpg", gia);
         }
-
-        JScrollPane menuScrollPane = new JScrollPane(menuPanel);
-        menuScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        menuScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         JPanel orderPanel = new JPanel(new BorderLayout());
         orderPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -169,6 +178,22 @@ public class datdoan extends JPanel {
         splitPane.setResizeWeight(0.7);
         splitPane.setOneTouchExpandable(true);
         add(splitPane, BorderLayout.CENTER);
+
+        btnRefreshMenu.addActionListener(e -> {
+            menuPanel.removeAll();
+            for (DTO.ThucAnDTO ta : new ThucAnBUS().getAllThucAn()) {
+                String ten = ta.getTenThucAn();
+                double gia = ta.getDonGia();
+                addMenuItem(menuPanel, ten, "../../img/comga.jpg", gia);
+            }
+            menuPanel.revalidate();
+            menuPanel.repaint();
+        });
+
+        // Đặt kích thước cho các thành phần
+        menuPanel.setPreferredSize(new Dimension(700, 600));
+        orderPanel.setPreferredSize(new Dimension(400, 600));
+        orderTable.setPreferredScrollableViewportSize(new Dimension(400, 300));
     }
 
     private void showChonKhachHangDialog() {
@@ -251,6 +276,12 @@ public class datdoan extends JPanel {
         JLabel lblName = new JLabel(name, SwingConstants.CENTER);
         lblName.setFont(new Font("Arial", Font.BOLD, 14));
         bottomPanel.add(lblName, BorderLayout.CENTER);
+
+        // Thêm label số lượng tồn kho
+        int soLuongTon = new ThucAnBUS().getSoLuong(new ThucAnBUS().getMaTheoTenMon(name));
+        JLabel lblSoLuong = new JLabel("Số lượng: " + soLuongTon, SwingConstants.CENTER);
+        lblSoLuong.setFont(new Font("Arial", Font.PLAIN, 12));
+        bottomPanel.add(lblSoLuong, BorderLayout.NORTH);
 
         JButton btnOrder = new JButton("Đặt món");
         btnOrder.addActionListener(e -> showOrderDialog(name, price));
