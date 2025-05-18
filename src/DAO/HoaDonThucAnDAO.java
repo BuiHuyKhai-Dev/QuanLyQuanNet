@@ -140,7 +140,7 @@ public class HoaDonThucAnDAO {
         ArrayList<Object> values = new ArrayList<>();
 
         if (maKhachHang != null) {
-            sql.append("maKhachHang = ?, ");
+            sql.append("maKh = ?, ");
             values.add(maKhachHang);
         }
         if (maMay != null) {
@@ -167,7 +167,7 @@ public class HoaDonThucAnDAO {
         if (values.isEmpty()) return false;
 
         sql.setLength(sql.length() - 2); // xóa dấu ", "
-        sql.append(" WHERE maDonHang = ?");
+        sql.append(" WHERE maDh = ?");
         values.add(maDonHang);
 
         try (Connection conn = db.getConnection();
