@@ -19,6 +19,17 @@ public class ThucAnBUS {
         list = taDAO.getAll();
     }
     
+    public int updateSoLuong(int maThucAn, int soLuong) {
+        int soLuongHienTai = getSoLuong(maThucAn);
+        int soLuongNew = soLuongHienTai + soLuong;
+        for (ThucAnDTO ta : list) {
+            if (ta.getMaThucAn() == maThucAn) {
+                return taDAO.updateSoLuong(maThucAn, soLuongNew);
+            }
+        }
+        return 0;
+    }
+
     public ArrayList<ThucAnDTO> getAllThucAn() {
         if (list == null) {
             list = taDAO.getAll();
@@ -61,7 +72,17 @@ public class ThucAnBUS {
         }
         return 0;
     }
-    public boolean giamSoLuongThucAn(int maThucAn, int soLuongGiam) {
+    
+    public int getLastID() {
+        int max = 0;
+        for (ThucAnDTO ta : list) {
+            if (ta.getMaThucAn() > max) {
+                max = ta.getMaThucAn();
+            }
+        }
+        return max;
+    }
+        public boolean giamSoLuongThucAn(int maThucAn, int soLuongGiam) {
     return new ThucAnDAO().giamSoLuong(maThucAn, soLuongGiam) > 0;
 }
 }

@@ -1,28 +1,28 @@
 package GUI;
 
 import BUS.KhoMayTinhBUS;
-import BUS.KhoThucAnBUS;
-import BUS.NhaCungCapBUS;
 import BUS.ThucAnBUS;
 import DAO.KhoMayTinhDAO;
-import DAO.KhoThucAnDAO;
+import DAO.ThucAnDAO;
 import DTO.KhoMayTinhDTO;
-import DTO.KhoThucAnDTO;
 import DTO.ThucAnDTO;
 import com.toedter.calendar.JDateChooser;
 import java.awt.*;
 import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel; // Import thư viện JCalendar
+import javax.swing.table.DefaultTableModel;
 
 
 
 public class QuanLyKhoPanel extends JPanel {
     private CardLayout cardLayout;
     private JPanel cardPanel;
+    private ThucAnBUS thucAnBUS = new ThucAnBUS();
+    private ArrayList<ThucAnDTO> thucAnList = thucAnBUS.getAllThucAn();
     private KhoMayTinhBUS khoMayTinhBUS = new KhoMayTinhBUS();
-    private KhoThucAnBUS khoThucAnBUS = new KhoThucAnBUS();
+    private KhoMayTinhDAO khoMayTinhDAO = new KhoMayTinhDAO();
+    private ArrayList<KhoMayTinhDTO> khoMayTinhList = khoMayTinhDAO.sellectAll();
 
     public QuanLyKhoPanel() {
         setLayout(new BorderLayout());
@@ -161,11 +161,13 @@ public class QuanLyKhoPanel extends JPanel {
         for (ThucAnDTO khoThucAn : ThucAnList) {
             tableModel.addRow(new Object[]{
                 khoThucAn.getMaThucAn(), // Mã thức ăn
-                khoThucAnBUS.getTenThucAn(khoThucAn.getMaThucAn()),
-                khoThucAnBUS.getDonGia(khoThucAn.getMaThucAn()),
+                khoThucAn.getTenThucAn(),
+                khoThucAn.getDonGia(),
                 khoThucAn.getSoLuong()
             });
         }
+
+        reloadThucAnList(tableModel);
 
         // Center align text in cells
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -190,10 +192,12 @@ public class QuanLyKhoPanel extends JPanel {
         JButton btnAdd = new JButton("Thêm");
         JButton btnEdit = new JButton("Sửa");
         JButton btnDelete = new JButton("Xóa");
+        JButton btnRefresh = new JButton("Làm mới");
 
         buttonPanel.add(btnAdd);
         buttonPanel.add(btnEdit);
         buttonPanel.add(btnDelete);
+        buttonPanel.add(btnRefresh);
 
         // Thêm sự kiện cho nút Thêm
         btnAdd.addActionListener(e -> {
@@ -206,18 +210,13 @@ public class QuanLyKhoPanel extends JPanel {
             gbc.gridx = 0;
             gbc.gridy = 0;
 
-            // Mã thức ăn
-            dialog.add(new JLabel("Mã thức ăn:"), gbc);
-            gbc.gridx = 1;
-            JTextField txtFoodId = new JTextField();
-            dialog.add(txtFoodId, gbc);
-
             // Tên thức ăn
             gbc.gridx = 0;
-            gbc.gridy++;
+            gbc.gridy = 1;
             dialog.add(new JLabel("Tên thức ăn:"), gbc);
             gbc.gridx = 1;
             JTextField txtFoodName = new JTextField();
+            txtFoodName.setPreferredSize(new Dimension(150, 25));
             dialog.add(txtFoodName, gbc);
 
             // Đơn giá
@@ -226,6 +225,7 @@ public class QuanLyKhoPanel extends JPanel {
             dialog.add(new JLabel("Đơn giá:"), gbc);
             gbc.gridx = 1;
             JTextField txtPrice = new JTextField();
+            txtPrice.setPreferredSize(new Dimension(150, 25));
             dialog.add(txtPrice, gbc);
 
             // Số lượng tồn kho
@@ -234,7 +234,7 @@ public class QuanLyKhoPanel extends JPanel {
             dialog.add(new JLabel("Số lượng tồn kho:"), gbc);
             gbc.gridx = 1;
             JTextField txtQuantity = new JTextField("0"); // Mặc định là 0
-            txtQuantity.setEditable(false);
+            txtQuantity.setPreferredSize(new Dimension(150, 25));
             dialog.add(txtQuantity, gbc);
 
             // Nút Xác nhận
@@ -244,13 +244,20 @@ public class QuanLyKhoPanel extends JPanel {
             gbc.anchor = GridBagConstraints.CENTER;
             JButton btnConfirm = new JButton("Xác nhận");
             btnConfirm.addActionListener(ev -> {
-                String foodId = txtFoodId.getText();
+                int foodId = thucAnBUS.getLastID() + 1 ; // Tạo mã thức ăn mới
                 String foodName = txtFoodName.getText();
                 double price = Double.parseDouble(txtPrice.getText());
                 int quantity = Integer.parseInt(txtQuantity.getText());
+                String createdAt = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // Thời gian tạo
 
-                // Thêm dữ liệu vào bảng
-                tableModel.addRow(new Object[]{foodId, foodName, price, quantity});
+                // Thêm dữ liệu vào cơ sở dữ liệu
+                ThucAnDTO newFood = new ThucAnDTO(foodId, foodName, quantity, price, createdAt);
+                new ThucAnDAO().insert(newFood);
+                // Cập nhật lại danh sách thức ăn
+                thucAnList.add(newFood);
+                // Cập nhật lại bảng
+                reloadThucAnList(tableModel);
+                // Đóng dialog
                 dialog.dispose();
             });
             dialog.add(btnConfirm, gbc);
@@ -321,8 +328,20 @@ public class QuanLyKhoPanel extends JPanel {
             gbc.anchor = GridBagConstraints.CENTER;
             JButton btnConfirm = new JButton("Xác nhận");
             btnConfirm.addActionListener(ev -> {
-                tableModel.setValueAt(txtFoodName.getText(), selectedRow, 1);
-                tableModel.setValueAt(Double.parseDouble(txtPrice.getText()), selectedRow, 2);
+                int foodId = Integer.parseInt(txtFoodId.getText());
+                String foodName = txtFoodName.getText();
+                double price = Double.parseDouble(txtPrice.getText());
+                int quantity = Integer.parseInt(txtQuantity.getText());
+                String createdAt = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")); // Thời gian tạo
+
+                // Cập nhật dữ liệu vào cơ sở dữ liệu
+                ThucAnDTO updatedFood = new ThucAnDTO(foodId, foodName, quantity, price, createdAt);
+                new ThucAnDAO().update(updatedFood);
+                // Cập nhật lại danh sách thức ăn
+                thucAnList.set(selectedRow, updatedFood);
+                // Cập nhật lại bảng
+                reloadThucAnList(tableModel);
+                // Đóng dialog
                 dialog.dispose();
             });
             dialog.add(btnConfirm, gbc);
@@ -344,11 +363,59 @@ public class QuanLyKhoPanel extends JPanel {
                 JOptionPane.showMessageDialog(this, "Vui lòng chọn một dòng để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            tableModel.removeRow(selectedRow);
+            int foodId = Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString());
+            int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa thức ăn này không?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+            if (confirm != JOptionPane.YES_OPTION) {
+                return;
+            }
+            // Xóa dữ liệu khỏi cơ sở dữ liệu
+            new ThucAnDAO().delete(foodId);
+            // Cập nhật lại danh sách thức ăn
+            thucAnList.remove(selectedRow);
+            reloadThucAnList(tableModel);
+        });
+
+        // Thêm sự kiện cho nút Làm mới
+        btnRefresh.addActionListener(e -> {
+            // Làm mới bảng
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
+            model.setRowCount(0); // Xóa tất cả dữ liệu trong bảng
+            // Thêm lại dữ liệu từ cơ sở dữ liệu
+            ArrayList<ThucAnDTO> khoThucAnList = new ThucAnBUS().getAllThucAn();
+            for (ThucAnDTO khoThucAn : khoThucAnList) {
+                model.addRow(new Object[]{
+                    khoThucAn.getMaThucAn(),
+                    khoThucAn.getTenThucAn(),
+                    khoThucAn.getDonGia(),
+                    khoThucAn.getSoLuong()
+                });
+            }
         });
 
         panel.add(buttonPanel, BorderLayout.NORTH);
         panel.add(scrollPane, BorderLayout.CENTER);
         return panel;
+
+        
     }
+
+    private void reloadThucAnList(DefaultTableModel tableModel) {
+            // Clear existing data in the table model
+            tableModel.setRowCount(0);
+
+            // Reload data from the database
+            thucAnList = thucAnBUS.getAllThucAn();
+
+            // Add the updated data to the table model
+            for (ThucAnDTO thucAn : thucAnList) {
+                tableModel.addRow(new Object[]{
+                    thucAn.getMaThucAn(),
+                    thucAn.getTenThucAn(),
+                    thucAn.getDonGia(),
+                    thucAn.getSoLuong()
+                });
+            }
+        }
+        
+
 }

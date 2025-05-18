@@ -12,6 +12,23 @@ public class NhanVienBUS {
         listnv = nvDAO.selectAll();
     }
 
+    public ArrayList<String> getAllTenNV() {
+        ArrayList<String> listTenNV = new ArrayList<>();
+        for (NhanVienDTO nv : listnv) {
+            listTenNV.add(nv.getTenNV());
+        }
+        return listTenNV;
+    }
+
+    public String getMaNV(String tenNV) {
+        for (NhanVienDTO nv : listnv) {
+            if (nv.getTenNV().equals(tenNV)) {
+                return nv.getMaNV();
+            }
+        }
+        return null;
+    }
+
     public ArrayList<NhanVienDTO> getNhanVienAll() {
         if (listnv == null)
             listnv = nvDAO.selectAll();

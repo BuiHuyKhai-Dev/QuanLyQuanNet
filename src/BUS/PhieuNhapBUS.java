@@ -21,4 +21,11 @@ public class PhieuNhapBUS {
         return listPhieuNhap;
     }
 
+    public int getLastID() {
+        ArrayList<PhieuNhapDTO> list = phieuNhapDAO.selectAll();
+        if (list == null || list.isEmpty()) {
+            return 0;
+        }
+        return list.get(list.size() - 1).getMaPN();
+    }
 }
