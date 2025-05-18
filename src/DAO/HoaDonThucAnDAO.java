@@ -54,7 +54,7 @@ public class HoaDonThucAnDAO {
                 hd.setMaKhachHang(rs.getInt("maKH"));
                 hd.setMaMay(rs.getInt("maMay"));
                 hd.setNgayDat(rs.getTimestamp("ngaydat"));
-                hd.setTongTien(rs.getInt("tongTien"));
+                hd.setTongTien(rs.getDouble("tongTien"));
                 hd.setTrangThai(rs.getInt("trangThai"));
                 hd.setMaNV(rs.getInt("maNV"));
 

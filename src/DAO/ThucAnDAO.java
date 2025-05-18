@@ -80,4 +80,20 @@ public class ThucAnDAO {
         }
         return result;
     }
+    public int giamSoLuong(int maThucAn, int soLuongGiam) {
+    int result = 0;
+    try {
+        Connection conn = DBConnect.getConnection();
+        String sql = "UPDATE ThucAn SET SoLuong = SoLuong - ? WHERE MaThucAn = ? AND SoLuong >= ?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setInt(1, soLuongGiam);
+        ps.setInt(2, maThucAn);
+        ps.setInt(3, soLuongGiam);
+        result = ps.executeUpdate(); // Trả về số dòng bị ảnh hưởng (1 nếu thành công, 0 nếu thất bại)
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return result;
+}
+
 }

@@ -44,4 +44,10 @@ public class KhoThucAnBUS {
         }
         return 0;
     }
+    public boolean giamSoLuongThucAn(int maThucAn, int soLuong) {
+        return kmtDAO.truSoLuong(maThucAn, soLuong);
+    }
+    public int getSoLuongHienCo(int maThucAn) {
+        return kmtDAO.getSoLuong(maThucAn);
+    }
 }

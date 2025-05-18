@@ -61,4 +61,7 @@ public class ThucAnBUS {
         }
         return 0;
     }
+    public boolean giamSoLuongThucAn(int maThucAn, int soLuongGiam) {
+    return new ThucAnDAO().giamSoLuong(maThucAn, soLuongGiam) > 0;
+}
 }

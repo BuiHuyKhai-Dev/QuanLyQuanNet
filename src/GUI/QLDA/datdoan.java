@@ -7,6 +7,7 @@ import javax.swing.table.TableColumnModel;
 
 import BUS.HoaDonThucAnBUS;
 import BUS.KhachHangBUS;
+import BUS.KhoThucAnBUS;
 import BUS.NhanVienBUS;
 import BUS.ThucAnBUS;
 import DTO.KhachHangDTO;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 public class datdoan extends JPanel {
     private DefaultTableModel orderTableModel;
     private JLabel lblTotalPrice;
-    private int totalPrice = 0;
+    private double totalPrice = 0;
 
     JButton btnChonNV = new JButton("Chọn NV");
     private JTextField txtMaNV= new JTextField();
@@ -101,51 +102,63 @@ public class datdoan extends JPanel {
 
         JButton btnCheckout = new JButton("Thanh toán");
         btnCheckout.addActionListener(e -> {
-            try {
-                int maKH = Integer.parseInt(txtMaKH.getText());
-                int maMay = Integer.parseInt(txtMaMay.getText().trim());
-                int maNV = Integer.parseInt(txtMaNV.getText().trim());
+    try {
+        int maKH = Integer.parseInt(txtMaKH.getText());
+        int maMay = Integer.parseInt(txtMaMay.getText().trim());
+        int maNV = Integer.parseInt(txtMaNV.getText().trim());
 
-                Timestamp now = new Timestamp(System.currentTimeMillis());
+        Timestamp now = new Timestamp(System.currentTimeMillis());
 
-                boolean success = hoaDonBUS.themHoaDon(maKH, maMay, now, totalPrice, 1, maNV);
+        boolean success = hoaDonBUS.themHoaDon(maKH, maMay, now, totalPrice, 1, maNV);
 
-                if (success) {
-                    // Giả sử bạn có BUS để thêm chi tiết:
-                    HoaDonThucAnBUS ctBUS = new HoaDonThucAnBUS();
-                    int maHD = hoaDonBUS.layMaDonHangCuoi(); // Phải có hàm này
+        if (success) {
+            HoaDonThucAnBUS ctBUS = new HoaDonThucAnBUS();
+            ThucAnBUS khoBUS = new ThucAnBUS();
+            int maHD = hoaDonBUS.layMaDonHangCuoi();
 
-                    for (int i = 0; i < orderTableModel.getRowCount(); i++) {
-                        String tenMon = (String) orderTableModel.getValueAt(i, 0);
-                        int donGia = (int) orderTableModel.getValueAt(i, 1);
-                        int soLuong = (int) orderTableModel.getValueAt(i, 2);
-                        // int thanhTien = (int) orderTableModel.getValueAt(i, 3);
+            for (int i = 0; i < orderTableModel.getRowCount(); i++) {
+                String tenMon = (String) orderTableModel.getValueAt(i, 0);
+                double donGia = (double) orderTableModel.getValueAt(i, 1);
+                int soLuong = (int) orderTableModel.getValueAt(i, 2);
 
-                        // Giả sử bạn có thể lấy mã món từ tên món (nếu không thì cần sửa lại)
-                        int maMon = new ThucAnBUS().getMaTheoTenMon(tenMon); // Phải có hàm này nếu cần
-                        System.out.println("Mã món: " + maMon);
-                        DTO.ChiTietDonHangDTO ct = new DTO.ChiTietDonHangDTO();
-                        ct.setMaDH(maHD);
-                        ct.setMaThucAn(maMon);
-                        ct.setSoLuong(soLuong);
-                        ct.setDonGia(donGia);
-                        // ct.se
+                int maMon = new ThucAnBUS().getMaTheoTenMon(tenMon);
 
-                        ctBUS.themChiTietDonHang(ct);
-                    }
-
-                    JOptionPane.showMessageDialog(this, "✅ Đặt đơn thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                    orderTableModel.setRowCount(0);
-                    totalPrice = 0;
-                    lblTotalPrice.setText("Thành tiền: 0 VND");
-                } else {
-                    JOptionPane.showMessageDialog(this, "❌ Không thể đặt đơn. Kiểm tra thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                int soLuongTon = khoBUS.getSoLuong(maMon);
+                if (soLuongTon < soLuong) {
+                    JOptionPane.showMessageDialog(this, "❌ Món '" + tenMon + "' chỉ còn " + soLuongTon + " trong kho. Không thể đặt số lượng " + soLuong + ".", "Hết hàng", JOptionPane.WARNING_MESSAGE);
+                    return; // Ngừng xử lý nếu có một món không đủ hàng
                 }
 
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "⚠️ Vui lòng nhập đúng định dạng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                // Trừ số lượng trong kho
+                boolean truOK = khoBUS.giamSoLuongThucAn(maMon, soLuong);
+                if (!truOK) {
+                    JOptionPane.showMessageDialog(this, "❌ Lỗi khi trừ số lượng kho cho món: " + tenMon, "Lỗi", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Thêm vào chi tiết đơn hàng
+                DTO.ChiTietDonHangDTO ct = new DTO.ChiTietDonHangDTO();
+                ct.setMaDH(maHD);
+                ct.setMaThucAn(maMon);
+                ct.setSoLuong(soLuong);
+                ct.setDonGia(donGia);
+
+                ctBUS.themChiTietDonHang(ct);
             }
-        });
+
+            JOptionPane.showMessageDialog(this, "✅ Đặt đơn thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            orderTableModel.setRowCount(0);
+            totalPrice = 0;
+            lblTotalPrice.setText("Thành tiền: 0 VND");
+        } else {
+            JOptionPane.showMessageDialog(this, "❌ Không thể đặt đơn. Kiểm tra thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+
+    } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(this, "⚠️ Vui lòng nhập đúng định dạng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
+});
+
 
 
         bottomPanel.add(btnCheckout, BorderLayout.EAST);
@@ -310,7 +323,7 @@ public class datdoan extends JPanel {
             button = new JButton("Hủy");
             button.addActionListener(e -> {
                 int row = table.getEditingRow();
-                int thanhTien = (int) table.getValueAt(row, 3);
+                double thanhTien = (double) table.getValueAt(row, 3);
                 totalPrice -= thanhTien;
                 lblTotalPrice.setText("Thành tiền: " + totalPrice + " VND");
                 ((DefaultTableModel) table.getModel()).removeRow(row);
