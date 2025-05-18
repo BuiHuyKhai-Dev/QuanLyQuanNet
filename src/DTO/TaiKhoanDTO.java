@@ -44,11 +44,11 @@ public class TaiKhoanDTO {
         this.matKhau = matKhau;
     }
 
-    public int getNhomQuyen() {
+    public int getMaNhomQuyen() {
         return nhomQuyen;
     }
 
-    public void setNhomQuyen(int nhomQuyen) {
+    public void setMaNhomQuyen(int nhomQuyen) {
         this.nhomQuyen = nhomQuyen;
     }
 
