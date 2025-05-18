@@ -65,9 +65,9 @@ public class ChinhSuaSDM extends JPanel {
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setRowHeight(30); // Chiều cao các hàng
         // Không cho chọn ô
-        table.setCellSelectionEnabled(false);
-        table.setColumnSelectionAllowed(false);
-        table.setFocusable(false);
+        // table.setCellSelectionEnabled(false);
+        // table.setColumnSelectionAllowed(false);
+        // table.setFocusable(false);
 
 
         JPanel panelButtons = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
@@ -79,7 +79,7 @@ public class ChinhSuaSDM extends JPanel {
         btnLamMoi.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                lamMoiBang();
+                loadData();
             }
         });
 

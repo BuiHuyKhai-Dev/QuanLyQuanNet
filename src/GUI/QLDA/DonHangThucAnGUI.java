@@ -65,6 +65,7 @@ public class DonHangThucAnGUI extends JPanel {
         JButton btnXoa = new JButton("Xóa");
         JButton btnTimKiem = new JButton("Tìm kiếm");
         JButton btnChiTiet = new JButton("Xem chi tiết");
+        JButton btnLammoi= new JButton("Làm mới");
 
         btnCapNhat.addActionListener(e -> capNhatTrangThai());
         btnXoa.addActionListener(e -> xoaHoaDon());
@@ -75,6 +76,8 @@ public class DonHangThucAnGUI extends JPanel {
         buttonPanel.add(btnXoa);
         buttonPanel.add(btnTimKiem);
         buttonPanel.add(btnChiTiet);
+        buttonPanel.add(btnLammoi);
+        btnLammoi.addActionListener(e -> loadData());
 
         add(buttonPanel, BorderLayout.SOUTH);
 
@@ -106,6 +109,7 @@ public class DonHangThucAnGUI extends JPanel {
             bus.capNhatDonHang(maDonHang, null, null, null, null, trangThai, null);
         }
         JOptionPane.showMessageDialog(this, "✅ Cập nhật trạng thái thành công!");
+        loadData();
     }
 
     private void xoaHoaDon() {
@@ -116,6 +120,7 @@ public class DonHangThucAnGUI extends JPanel {
             if (confirm == JOptionPane.YES_OPTION) {
                 bus.xoaHoaDon(maDon);
                 model.removeRow(selectedRow);
+                loadData();
             }
         } else {
             JOptionPane.showMessageDialog(this, "⚠️ Vui lòng chọn một dòng để xóa.");
