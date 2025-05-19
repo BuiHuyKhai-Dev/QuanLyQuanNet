@@ -11,6 +11,15 @@ import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableCellRenderer;
+import com.itextpdf.text.*;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.List;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.*;
+
+import java.io.FileOutputStream;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class PhieuNhapPanel extends JPanel {
     private JTable table;
@@ -31,10 +40,15 @@ public class PhieuNhapPanel extends JPanel {
         JButton btnEdit = new JButton("Sửa");
         JButton btnDetail = new JButton("Chi tiết");
         JButton btnRefresh = new JButton("Làm mới");
+        JButton btnPrintPDF = new JButton("In PDF");
+        
+        btnPrintPDF.addActionListener(e -> xuatPhieuNhapPDF());
+
         leftPanel.add(btnAdd);
         leftPanel.add(btnDelete);
         leftPanel.add(btnEdit);
         leftPanel.add(btnDetail);
+        leftPanel.add(btnPrintPDF);
         leftPanel.add(btnRefresh);
 
         // ComboBox sắp xếp, ô tìm kiếm và lọc thời gian phía phải
@@ -269,4 +283,116 @@ public class PhieuNhapPanel extends JPanel {
         });
     }
 }
+private void xuatPhieuNhapPDF() {
+    int selectedRow = table.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Vui lòng chọn một phiếu nhập để in!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    try {
+        int maPN = Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString());
+        String tenNCC = tableModel.getValueAt(selectedRow, 1).toString();
+        String tenNV = tableModel.getValueAt(selectedRow, 2).toString();
+        double tongTien = Double.parseDouble(tableModel.getValueAt(selectedRow, 3).toString());
+        String ngayNhap = tableModel.getValueAt(selectedRow, 4).toString();
+
+        ArrayList<DTO.ChiTietPhieuNhapDTO> chiTietList = new DAO.ChiTietPhieuNhapDAO().selectByMaPN(maPN);
+
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Lưu phiếu nhập dưới dạng PDF");
+        int userSelection = fileChooser.showSaveDialog(this);
+        if (userSelection != JFileChooser.APPROVE_OPTION) return;
+
+        String filePath = fileChooser.getSelectedFile().getAbsolutePath();
+        if (!filePath.endsWith(".pdf")) {
+            filePath += ".pdf";
+        }
+
+        Document document = new Document();
+        PdfWriter.getInstance(document, new FileOutputStream(filePath));
+        document.open();
+
+        // Font tiếng Việt
+        BaseFont baseFont = BaseFont.createFont("src/GUI/font-times-new-roman.ttf", BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+        Font fontTitle = new Font(baseFont, 18, Font.BOLD);
+        Font fontBold = new Font(baseFont, 12, Font.BOLD);
+        Font fontNormal = new Font(baseFont, 12);
+
+        // Tiêu đề
+        Paragraph title = new Paragraph("HÓA ĐƠN PHIẾU NHẬP", fontTitle);
+        title.setAlignment(Element.ALIGN_CENTER);
+        document.add(title);
+        document.add(new Paragraph(" "));
+
+        // Thông tin chung
+        Paragraph info = new Paragraph();
+        info.setFont(fontNormal);
+        info.add("Mã phiếu nhập: " + maPN + "\n");
+        info.add("Nhà cung cấp: " + tenNCC + "\n");
+        info.add("Nhân viên nhập: " + tenNV + "\n");
+        info.add("Ngày nhập: " + ngayNhap + "\n");
+        document.add(info);
+        document.add(new Paragraph(" "));
+
+        // Bảng chi tiết
+        PdfPTable tableCT = new PdfPTable(5);
+        tableCT.setWidthPercentage(100);
+        tableCT.setWidths(new int[]{2, 4, 2, 3, 3});
+        tableCT.setSpacingBefore(10f);
+        tableCT.setSpacingAfter(10f);
+
+        // Tiêu đề bảng có màu
+        String[] headers = {"Mã PN", "Mã Thức Ăn", "Số Lượng", "Đơn Giá", "Thành Tiền"};
+        for (String header : headers) {
+            PdfPCell cell = new PdfPCell(new Phrase(header, fontBold));
+            cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+            cell.setPadding(8);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell.setBorderWidthBottom(2);
+            tableCT.addCell(cell);
+        }
+
+        NumberFormat currencyVN = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+
+        for (DTO.ChiTietPhieuNhapDTO ct : chiTietList) {
+            tableCT.addCell(createCell(String.valueOf(ct.getMaPN()), fontNormal, Element.ALIGN_CENTER));
+            tableCT.addCell(createCell(String.valueOf(ct.getMaThucAn()), fontNormal, Element.ALIGN_CENTER));
+            tableCT.addCell(createCell(String.valueOf(ct.getSoLuong()), fontNormal, Element.ALIGN_CENTER));
+            tableCT.addCell(createCell(currencyVN.format(ct.getDonGia()), fontNormal, Element.ALIGN_RIGHT));
+            tableCT.addCell(createCell(currencyVN.format(ct.getThanhTien()), fontNormal, Element.ALIGN_RIGHT));
+        }
+
+        document.add(tableCT);
+
+        // Tổng tiền
+        Paragraph total = new Paragraph("Tổng tiền: " + currencyVN.format(tongTien), fontBold);
+        total.setAlignment(Element.ALIGN_RIGHT);
+        document.add(total);
+
+        // Footer
+        Paragraph footer = new Paragraph("Cảm ơn quý khách!", fontNormal);
+        footer.setSpacingBefore(20);
+        footer.setAlignment(Element.ALIGN_CENTER);
+        document.add(footer);
+
+        document.close();
+
+        JOptionPane.showMessageDialog(this, "Xuất file PDF thành công tại:\n" + filePath, "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+    } catch (Exception ex) {
+        ex.printStackTrace();
+        System.out.println("Working Directory = " + System.getProperty("user.dir"));
+        JOptionPane.showMessageDialog(this, "Lỗi khi in hóa đơn: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+// Dùng lại hàm hỗ trợ giống hóa đơn sử dụng máy
+private PdfPCell createCell(String text, Font font, int align) {
+    PdfPCell cell = new PdfPCell(new Phrase(text, font));
+    cell.setPadding(8);
+    cell.setHorizontalAlignment(align);
+    cell.setBorderColor(BaseColor.LIGHT_GRAY);
+    return cell;
+}
+
 }

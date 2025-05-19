@@ -37,6 +37,8 @@ public class ThongKePanel extends JPanel {
 
         cboNam = new JComboBox<>();
         cboNam.setPreferredSize(new Dimension(100, 30));
+        cboNam.addActionListener(e -> updateChart()); // thêm dòng này
+        cboNam.setPreferredSize(new Dimension(100, 30));
 
         cboKieuThongKe = new JComboBox<>(new String[] { "Theo quý", "Theo năm (5 năm gần nhất)" });
         cboKieuThongKe.setPreferredSize(new Dimension(200, 30));
