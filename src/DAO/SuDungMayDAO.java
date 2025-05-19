@@ -22,7 +22,7 @@ public class SuDungMayDAO {
 public ArrayList<SuDungMayDTO> selectAll() {
     ArrayList<SuDungMayDTO> ds = new ArrayList<>();
     try (Connection conn = db.getConnection()){
-        String sql = "SELECT * from sudungmay";
+        String sql = "SELECT * from sudungmay where thoigianketthuc is not null";
         PreparedStatement stmt = conn.prepareStatement(sql);
         ResultSet rs = stmt.executeQuery();
 
