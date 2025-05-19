@@ -18,6 +18,26 @@ public class KhachHangBUS {
             listkh = khDAO.selectAll();
         return listkh;
     }
+    
+    public boolean checkLogin(String sdt, String matkhau) {
+        for (KhachHangDTO kh : listkh) {
+            if (kh.getSoDienThoai().equals(sdt) && kh.getMatKhau().equals(matkhau)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean deleteKhachHang(int ma) {
+        for (KhachHangDTO kh : listkh) {
+            if (kh.getMaKhachHang() == ma) {
+            kh.setTrangThai(0); // cập nhật trạng thái về 0
+            boolean result = khDAO.update(kh) != 0;
+            return result;
+            }
+        }
+        return false;
+    }
 
     public Boolean add(KhachHangDTO a) {
         boolean result = khDAO.insert(a) != 0;

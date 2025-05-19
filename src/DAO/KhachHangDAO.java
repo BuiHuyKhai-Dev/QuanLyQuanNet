@@ -10,14 +10,17 @@ public class KhachHangDAO {
     public int insert(KhachHangDTO a) {
         int result = 0;
         try {
-            Connection con = (Connection) DBConnect.getConnection();
-            String sql = "INSERT INTO khachhang(TenKH, SoDienThoai, Email, SoDuTaiKhoan, created_at) VALUES (?, ?, ?, ?, ?)";
+            Connection con = DBConnect.getConnection();
+            String sql = "INSERT INTO khachhang(HoKH, TenKH, SoDienThoai, Email, SoDuTaiKhoan, MatKhau, TrangThai, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement pst = con.prepareStatement(sql);
-            pst.setString(1, a.getTenKhachHang());
-            pst.setString(2, a.getSoDienThoai());
-            pst.setString(3, a.getEmail());
-            pst.setDouble(4, a.getSoDuTaiKhoan());
-            pst.setTimestamp(5, java.sql.Timestamp.valueOf(a.getThoiGianTao()));
+            pst.setString(1, a.getHoKhachHang());
+            pst.setString(2, a.getTenKhachHang());
+            pst.setString(3, a.getSoDienThoai());
+            pst.setString(4, a.getEmail());
+            pst.setDouble(5, a.getSoDuTaiKhoan());
+            pst.setString(6, a.getMatKhau());
+            pst.setInt(7, a.getTrangThai());
+            pst.setTimestamp(8, java.sql.Timestamp.valueOf(a.getThoiGianTao()));
             result = pst.executeUpdate();
             DBConnect.closeConnection(con);
         } catch (Exception e) {
@@ -29,16 +32,19 @@ public class KhachHangDAO {
     public int update(KhachHangDTO a){
         int result=0;
         try{
-             Connection con= (Connection) DBConnect.getConnection();
-             String sql= "Update khachhang set TenKH = ? , SoDienThoai = ? , Email = ? , SoDuTaiKhoan = ? where MaKH = ?";
-             PreparedStatement pst=(PreparedStatement) con.prepareStatement(sql);
-             pst.setString(1, a.getTenKhachHang());
-             pst.setString(2, a.getSoDienThoai());
-             pst.setString(3, a.getEmail());
-             pst.setDouble(4, a.getSoDuTaiKhoan());
-             pst.setInt(5, a.getMaKhachHang());
-             result=pst.executeUpdate();
-             DBConnect.closeConnection(con);
+            Connection con = DBConnect.getConnection();
+            String sql = "UPDATE khachhang SET HoKH = ?, TenKH = ?, SoDienThoai = ?, Email = ?, SoDuTaiKhoan = ?, MatKhau = ?, TrangThai = ? WHERE MaKH = ?";
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setString(1, a.getHoKhachHang());
+            pst.setString(2, a.getTenKhachHang());
+            pst.setString(3, a.getSoDienThoai());
+            pst.setString(4, a.getEmail());
+            pst.setDouble(5, a.getSoDuTaiKhoan());
+            pst.setString(6, a.getMatKhau());
+            pst.setInt(7, a.getTrangThai());
+            pst.setInt(8, a.getMaKhachHang());
+            result = pst.executeUpdate();
+            DBConnect.closeConnection(con);
         }catch(Exception e){
             Logger.getLogger(KhachHangDAO.class.getName()).log(Level.SEVERE, null, e);
         }
@@ -63,17 +69,20 @@ public class KhachHangDAO {
     public ArrayList<KhachHangDTO> selectAll(){
         ArrayList<KhachHangDTO> list = new ArrayList<>();
         try {
-            Connection con = (Connection) DBConnect.getConnection();
-            String sql = "Select * From khachhang";
-            PreparedStatement pst = (PreparedStatement) con.prepareStatement(sql);
+            Connection con = DBConnect.getConnection();
+            String sql = "SELECT * FROM khachhang";
+            PreparedStatement pst = con.prepareStatement(sql);
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
                 KhachHangDTO kh = new KhachHangDTO();
                 kh.setMaKhachHang(rs.getInt("MaKH"));
+                kh.setHoKhachHang(rs.getString("HoKH"));
                 kh.setTenKhachHang(rs.getString("TenKH"));
                 kh.setSoDienThoai(rs.getString("SoDienThoai"));
                 kh.setEmail(rs.getString("Email"));
                 kh.setSoDuTaiKhoan(rs.getDouble("SoDuTaiKhoan"));
+                kh.setMatKhau(rs.getString("MatKhau"));
+                kh.setTrangThai(rs.getInt("TrangThai"));
                 kh.setThoiGianTao(rs.getString("created_at"));
                 list.add(kh);
             }
@@ -82,22 +91,25 @@ public class KhachHangDAO {
             Logger.getLogger(KhachHangDAO.class.getName()).log(Level.SEVERE, null, e);
         }
         return list;
-    };
+    }
     
     public KhachHangDTO selectById(String MaKH){
         KhachHangDTO kh = new KhachHangDTO();
         try {
-            Connection con = (Connection) DBConnect.getConnection();
-            String sql = "Select * From khachhang Where MaKH = ?";
-            PreparedStatement pst = (PreparedStatement) con.prepareStatement(sql);
+            Connection con = DBConnect.getConnection();
+            String sql = "SELECT * FROM khachhang WHERE MaKH = ?";
+            PreparedStatement pst = con.prepareStatement(sql);
             pst.setInt(1, Integer.parseInt(MaKH));
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
                 kh.setMaKhachHang(rs.getInt("MaKH"));
+                kh.setHoKhachHang(rs.getString("HoKH"));
                 kh.setTenKhachHang(rs.getString("TenKH"));
                 kh.setSoDienThoai(rs.getString("SoDienThoai"));
                 kh.setEmail(rs.getString("Email"));
                 kh.setSoDuTaiKhoan(rs.getDouble("SoDuTaiKhoan"));
+                kh.setMatKhau(rs.getString("MatKhau"));
+                kh.setTrangThai(rs.getInt("TrangThai"));
                 kh.setThoiGianTao(rs.getString("created_at"));
             }
             DBConnect.closeConnection(con);
@@ -181,29 +193,30 @@ public class KhachHangDAO {
     return thanhCong;
 }
     public ArrayList<KhachHangDTO> getAllKhachHang() {
-        ArrayList<KhachHangDTO> ds = new ArrayList<>();
-        String sql = "SELECT * FROM khachhang";
-
-        try (Connection conn = DBConnect.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
+        ArrayList<KhachHangDTO> list = new ArrayList<>();
+        try {
+            Connection con = DBConnect.getConnection();
+            String sql = "SELECT * FROM khachhang";
+            PreparedStatement pst = con.prepareStatement(sql);
+            ResultSet rs = pst.executeQuery();
             while (rs.next()) {
                 KhachHangDTO kh = new KhachHangDTO();
                 kh.setMaKhachHang(rs.getInt("MaKH"));
+                kh.setHoKhachHang(rs.getString("HoKH"));
                 kh.setTenKhachHang(rs.getString("TenKH"));
                 kh.setSoDienThoai(rs.getString("SoDienThoai"));
                 kh.setEmail(rs.getString("Email"));
                 kh.setSoDuTaiKhoan(rs.getDouble("SoDuTaiKhoan"));
+                kh.setMatKhau(rs.getString("MatKhau"));
+                kh.setTrangThai(rs.getInt("TrangThai"));
                 kh.setThoiGianTao(rs.getString("created_at"));
-                ds.add(kh);
+                list.add(kh);
             }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+            DBConnect.closeConnection(con);
+        } catch (Exception e) {
+            Logger.getLogger(KhachHangDAO.class.getName()).log(Level.SEVERE, null, e);
         }
-
-        return ds;
+        return list;
     }
     public static KhachHangDTO timTheoMaKH(String maKH) {
         String sql = "SELECT * FROM khachhang WHERE makh = ?";
@@ -214,11 +227,14 @@ public class KhachHangDAO {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                     kh.setMaKhachHang(rs.getInt("MaKH"));
-                    kh.setTenKhachHang(rs.getString("TenKH"));
-                    kh.setSoDienThoai(rs.getString("SoDienThoai"));
-                    kh.setEmail(rs.getString("Email"));
-                    kh.setSoDuTaiKhoan(rs.getDouble("SoDuTaiKhoan"));
-                    kh.setThoiGianTao(rs.getString("created_at"));
+                kh.setHoKhachHang(rs.getString("HoKH"));
+                kh.setTenKhachHang(rs.getString("TenKH"));
+                kh.setSoDienThoai(rs.getString("SoDienThoai"));
+                kh.setEmail(rs.getString("Email"));
+                kh.setSoDuTaiKhoan(rs.getDouble("SoDuTaiKhoan"));
+                kh.setMatKhau(rs.getString("MatKhau"));
+                kh.setTrangThai(rs.getInt("TrangThai"));
+                kh.setThoiGianTao(rs.getString("created_at"));
                 return kh;
             }
         } catch (Exception e) {
