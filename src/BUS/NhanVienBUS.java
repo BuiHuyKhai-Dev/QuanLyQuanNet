@@ -58,11 +58,12 @@ public class NhanVienBUS {
 
     public Boolean deleteById(String ma) {
         NhanVienDTO toDelete = getNhanVienById(ma);
-        boolean result = nvDAO.delete(ma) != 0;
-        if (result && toDelete != null) {
-            listnv.remove(toDelete);
+        if (toDelete != null) {
+            toDelete.setTrangThai(0); // cập nhật trạng thái về 0
+            boolean result = nvDAO.update(toDelete) != 0;
+            return result;
         }
-        return result;
+        return false;
     }
 
     public ArrayList<NhanVienDTO> search(String text) {

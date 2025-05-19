@@ -2,6 +2,7 @@ package DTO;
 
 public class NhanVienDTO {
     private String maNV;
+    private String hoNV;
     private String tenNV;
     private int gioiTinh;
     private String ngaySinh;
@@ -9,13 +10,15 @@ public class NhanVienDTO {
     private String email;
     private String diaChi;
     private double luong;
+    private int trangThai;
     private String thoiGianTao;
     // Constructor mặc định
     public NhanVienDTO() {}
 
     // Constructor đầy đủ tham số
-    public NhanVienDTO(String maNV, String tenNV, int gioiTinh, String ngaySinh, String soDT, String email, String diaChi, double luong, String thoiGianTao) {
+    public NhanVienDTO(String maNV, String hoNV, String tenNV, int gioiTinh, String ngaySinh, String soDT, String email, String diaChi, double luong, int trangThai, String thoiGianTao) {
         this.maNV = maNV;
+        this.hoNV = hoNV;
         this.tenNV = tenNV;
         this.gioiTinh = gioiTinh;
         this.ngaySinh = ngaySinh;
@@ -23,7 +26,25 @@ public class NhanVienDTO {
         this.email = email;
         this.diaChi = diaChi;
         this.luong = luong;
+        this.trangThai = trangThai;
         this.thoiGianTao = thoiGianTao;
+    }
+
+    // Getter và Setter cho các thuộc tính
+    public String getHoNV() {
+        return hoNV;
+    }
+
+    public void setHoNV(String hoNV) {
+        this.hoNV = hoNV;
+    }
+
+    public int getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(int trangThai) {
+        this.trangThai = trangThai;
     }
 
     public String getThoiGianTao() {

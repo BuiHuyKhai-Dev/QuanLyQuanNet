@@ -14,17 +14,27 @@ public class NhaCungCapDTO {
     private String diaChi;
     private String soDienThoai;
     private String email;
+    private int trangThai;
     private String thoiGianTao;
 
     public NhaCungCapDTO(){};
 
-    public NhaCungCapDTO(int maNhaCungCap, String tenNhaCungCap, String diaChi, String soDienThoai, String email, String thoiGianTao) {
+    public NhaCungCapDTO(int maNhaCungCap, String tenNhaCungCap, String diaChi, String soDienThoai, String email, int trangThai, String thoiGianTao) {
         this.maNhaCungCap = maNhaCungCap;
         this.tenNhaCungCap = tenNhaCungCap;
         this.diaChi = diaChi;
         this.soDienThoai = soDienThoai;
         this.email = email;
+        this.trangThai = trangThai;
         this.thoiGianTao = thoiGianTao;
+    }
+
+    public int getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(int trangThai) {
+        this.trangThai = trangThai;
     }
 
     public int getMaNhaCungCap() {

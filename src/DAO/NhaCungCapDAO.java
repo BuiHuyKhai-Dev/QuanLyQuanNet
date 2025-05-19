@@ -21,14 +21,15 @@ public class NhaCungCapDAO {
         int result = 0;
         try {
             Connection con = (Connection) DBConnect.getConnection();
-            String sql = "INSERT INTO nhacungcap(MaNCC, TenNCC, DiaChi, SoDienThoai, Email, created_at) VALUES (?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO nhacungcap(MaNCC, TenNCC, DiaChi, SoDienThoai, Email, TrangThai, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement pst = con.prepareStatement(sql);
             pst.setInt(1, a.getMaNhaCungCap());
             pst.setString(2, a.getTenNhaCungCap());
             pst.setString(3, a.getDiaChi());
             pst.setString(4, a.getSoDienThoai());
             pst.setString(5, a.getEmail());
-            pst.setTimestamp(6, java.sql.Timestamp.valueOf(a.getThoiGianTao()));
+            pst.setInt(6, a.getTrangThai());
+            pst.setTimestamp(7, java.sql.Timestamp.valueOf(a.getThoiGianTao()));
             result = pst.executeUpdate();
             DBConnect.closeConnection(con);
         } catch (Exception e) {
@@ -41,13 +42,14 @@ public class NhaCungCapDAO {
         int result = 0;
         try {
             Connection con = (Connection) DBConnect.getConnection();
-            String sql = "UPDATE nhacungcap SET TenNCC = ?, DiaChi = ?, SoDienThoai = ?, Email = ? WHERE MaNCC = ?";
+            String sql = "UPDATE nhacungcap SET TenNCC = ?, DiaChi = ?, SoDienThoai = ?, Email = ?, TrangThai = ? WHERE MaNCC = ?";
             PreparedStatement pst = con.prepareStatement(sql);
             pst.setString(1, a.getTenNhaCungCap());
             pst.setString(2, a.getDiaChi());
             pst.setString(3, a.getSoDienThoai());
             pst.setString(4, a.getEmail());
-            pst.setInt(5, a.getMaNhaCungCap());
+            pst.setInt(5, a.getTrangThai());
+            pst.setInt(6, a.getMaNhaCungCap());
             result = pst.executeUpdate();
             DBConnect.closeConnection(con);
         } catch (Exception e) {
@@ -86,6 +88,7 @@ public class NhaCungCapDAO {
                 ncc.setDiaChi(rs.getString("DiaChi"));
                 ncc.setSoDienThoai(rs.getString("SoDienThoai"));
                 ncc.setEmail(rs.getString("Email"));
+                ncc.setTrangThai(rs.getInt("TrangThai"));
                 ncc.setThoiGianTao(rs.getTimestamp("created_at").toLocalDateTime().toString());
             }
             DBConnect.closeConnection(con);
@@ -109,6 +112,7 @@ public class NhaCungCapDAO {
                 ncc.setDiaChi(rs.getString("DiaChi"));
                 ncc.setSoDienThoai(rs.getString("SoDienThoai"));
                 ncc.setEmail(rs.getString("Email"));
+                ncc.setTrangThai(rs.getInt("TrangThai"));
                 ncc.setThoiGianTao(rs.getTimestamp("created_at").toLocalDateTime().toString());
                 list.add(ncc);
             }

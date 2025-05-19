@@ -13,17 +13,19 @@ public class NhanVienDAO {
         int result = 0;
         try {
             Connection con = (Connection) DBConnect.getConnection();
-            String sql = "INSERT INTO nhanvien(MaNV, HoTen, GioiTinh, NgaySinh, SoDienThoai, Email, DiaChi, LuongCoBan, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO nhanvien(MaNV, HoNV, TenNV, GioiTinh, NgaySinh, SoDienThoai, Email, DiaChi, LuongCoBan, TrangThai, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement pst = con.prepareStatement(sql);
             pst.setString(1, a.getMaNV());
-            pst.setString(2, a.getTenNV());
-            pst.setInt(3, a.getGioiTinh());
-            pst.setString(4, a.getNgaySinh());
-            pst.setString(5, a.getSoDT());
-            pst.setString(6, a.getEmail());
-            pst.setString(7, a.getDiaChi());
-            pst.setDouble(8, a.getLuong());
-            pst.setTimestamp(9, java.sql.Timestamp.valueOf(a.getThoiGianTao()));
+            pst.setString(2, a.getHoNV());
+            pst.setString(3, a.getTenNV());
+            pst.setInt(4, a.getGioiTinh());
+            pst.setString(5, a.getNgaySinh());
+            pst.setString(6, a.getSoDT());
+            pst.setString(7, a.getEmail());
+            pst.setString(8, a.getDiaChi());
+            pst.setDouble(9, a.getLuong());
+            pst.setInt(10, a.getTrangThai());
+            pst.setTimestamp(11, java.sql.Timestamp.valueOf(a.getThoiGianTao()));
             result = pst.executeUpdate();
             DBConnect.closeConnection(con);
         } catch (Exception e) {
@@ -36,16 +38,18 @@ public class NhanVienDAO {
         int result = 0;
         try {
             Connection con = (Connection) DBConnect.getConnection();
-            String sql = "UPDATE nhanvien SET HoTen = ?, GioiTinh = ?, NgaySinh = ?, SoDienThoai = ?, Email = ?, DiaChi = ?, LuongCoBan = ? WHERE MaNV = ?";
+            String sql = "UPDATE nhanvien SET HoNV = ?, TenNV = ?, GioiTinh = ?, NgaySinh = ?, SoDienThoai = ?, Email = ?, DiaChi = ?, LuongCoBan = ?, TrangThai = ? WHERE MaNV = ?";
             PreparedStatement pst = con.prepareStatement(sql);
-            pst.setString(1, a.getTenNV());
-            pst.setInt(2, a.getGioiTinh());
-            pst.setString(3, a.getNgaySinh());
-            pst.setString(4, a.getSoDT());
-            pst.setString(5, a.getEmail());
-            pst.setString(6, a.getDiaChi());
-            pst.setDouble(7, a.getLuong());
-            pst.setString(8, a.getMaNV());
+            pst.setString(1, a.getHoNV());
+            pst.setString(2, a.getTenNV());
+            pst.setInt(3, a.getGioiTinh());
+            pst.setString(4, a.getNgaySinh());
+            pst.setString(5, a.getSoDT());
+            pst.setString(6, a.getEmail());
+            pst.setString(7, a.getDiaChi());
+            pst.setDouble(8, a.getLuong());
+            pst.setInt(9, a.getTrangThai());
+            pst.setString(10, a.getMaNV());
             result = pst.executeUpdate();
             DBConnect.closeConnection(con);
         } catch (Exception e) {
@@ -79,13 +83,15 @@ public class NhanVienDAO {
             while (rs.next()) {
                 NhanVienDTO nv = new NhanVienDTO();
                 nv.setMaNV(rs.getString("MaNV"));
-                nv.setTenNV(rs.getString("HoTen"));
+                nv.setHoNV(rs.getString("HoNV"));
+                nv.setTenNV(rs.getString("TenNV"));
                 nv.setGioiTinh(rs.getInt("GioiTinh"));
                 nv.setNgaySinh(rs.getString("NgaySinh"));
                 nv.setSoDT(rs.getString("SoDienThoai"));
                 nv.setEmail(rs.getString("Email"));
                 nv.setDiaChi(rs.getString("DiaChi"));
                 nv.setLuong(rs.getDouble("LuongCoBan"));
+                nv.setTrangThai(rs.getInt("TrangThai"));
                 nv.setThoiGianTao(rs.getString("created_at"));
                 list.add(nv);
             }
@@ -106,13 +112,15 @@ public class NhanVienDAO {
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
                 nv.setMaNV(rs.getString("MaNV"));
-                nv.setTenNV(rs.getString("HoTen"));
+                nv.setHoNV(rs.getString("HoNV"));
+                nv.setTenNV(rs.getString("TenNV"));
                 nv.setGioiTinh(rs.getInt("GioiTinh"));
                 nv.setNgaySinh(rs.getString("NgaySinh"));
                 nv.setSoDT(rs.getString("SoDienThoai"));
                 nv.setEmail(rs.getString("Email"));
                 nv.setDiaChi(rs.getString("DiaChi"));
                 nv.setLuong(rs.getDouble("LuongCoBan"));
+                nv.setTrangThai(rs.getInt("TrangThai"));
                 nv.setThoiGianTao(rs.getString("created_at"));
             }
             DBConnect.closeConnection(con);

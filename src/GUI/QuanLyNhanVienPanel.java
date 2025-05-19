@@ -17,6 +17,7 @@ public class QuanLyNhanVienPanel extends JPanel {
     private DefaultTableModel tableModel;
     private JTable employeeTable;
     private NhanVienBUS nhanVienBUS = new NhanVienBUS();
+    private JComboBox<String> sortComboBox;
 
 
     public QuanLyNhanVienPanel() {
@@ -36,9 +37,8 @@ public class QuanLyNhanVienPanel extends JPanel {
         leftPanel.add(btnEdit);
         leftPanel.add(btnDetail);
 
-        // ComboBox sắp xếp và ô tìm kiếm phía phải
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JComboBox<String> sortComboBox = new JComboBox<>(new String[]{"Tất cả","Sắp xếp theo tên", "Sắp xếp theo lương"});
+        sortComboBox = new JComboBox<>(new String[]{"Tất cả","Sắp xếp theo tên", "Sắp xếp theo lương","Nhân viên đã xóa"});
         JTextField searchField = new JTextField(15);
         JButton btnSearch = new JButton("Tìm kiếm");
         JLabel lblFromDate = new JLabel("Từ:");
@@ -65,7 +65,7 @@ public class QuanLyNhanVienPanel extends JPanel {
         add(topPanel, BorderLayout.NORTH);
 
         // Bảng dữ liệu phía dưới
-        String[] columnNames = {"Mã nhân viên", "Tên nhân viên", "Giới tính", "Ngày sinh", "Số điện thoại", "Email", "Địa chỉ", "Lương cơ bản", "Thời gian tạo"};
+        String[] columnNames = {"Mã nhân viên", "Họ", "Tên", "Giới tính", "Ngày sinh", "Số điện thoại", "Email", "Địa chỉ", "Lương cơ bản", "Thời gian tạo"};
         tableModel = new DefaultTableModel(columnNames, 0);
         employeeTable = new JTable(tableModel);
 
@@ -127,8 +127,13 @@ public class QuanLyNhanVienPanel extends JPanel {
                     } else {
                         gioiTing = "Nữ";
                     }
+                    if (nv.getTrangThai() == 0) {
+                        continue; // Bỏ qua nhân viên đã xóa
+                    }
+                    else{
                     tableModel.addRow(new Object[]{
                         nv.getMaNV(),
+                        nv.getHoNV(),
                         nv.getTenNV(),
                         gioiTing,
                         nv.getNgaySinh(),
@@ -138,8 +143,11 @@ public class QuanLyNhanVienPanel extends JPanel {
                         nv.getLuong(),
                         nv.getThoiGianTao()
                     });
+                    
                 }
-            } else {
+                } 
+            }
+            else {
                 ArrayList<NhanVienDTO> searchResults = nhanVienBUS.searchName(searchText);
                 tableModel.setRowCount(0); // Xóa dữ liệu cũ
                 for (NhanVienDTO nv : searchResults) {
@@ -149,8 +157,13 @@ public class QuanLyNhanVienPanel extends JPanel {
                     } else {
                         gioiTing = "Nữ";
                     }
+                    if (nv.getTrangThai() == 0) {
+                        continue; // Bỏ qua nhân viên đã xóa
+                    }
+                    else{
                     tableModel.addRow(new Object[]{
                         nv.getMaNV(),
+                        nv.getHoNV(),
                         nv.getTenNV(),
                         gioiTing,
                         nv.getNgaySinh(),
@@ -160,15 +173,16 @@ public class QuanLyNhanVienPanel extends JPanel {
                         nv.getLuong(),
                         nv.getThoiGianTao()
                     });
+                    }
                 }
-            }
+                }
         });
         sortComboBox.addActionListener(e -> {
             String selectedItem = (String) sortComboBox.getSelectedItem();
             if (selectedItem.equals("Sắp xếp theo tên")) {
                 // Sắp xếp theo tên
                 tableModel.setRowCount(0);
-                ArrayList<NhanVienDTO> sortedList = nhanVienBUS.sortName();
+                ArrayList<NhanVienDTO> sortedList = new NhanVienBUS().sortName();
                 for (NhanVienDTO nv : sortedList) {
                     String gioiTing;
                     if (nv.getGioiTinh() == 1) {
@@ -176,8 +190,13 @@ public class QuanLyNhanVienPanel extends JPanel {
                     } else {
                         gioiTing = "Nữ";
                     }
+                    if (nv.getTrangThai() == 0) {
+                        continue; // Bỏ qua nhân viên đã xóa
+                    }
+                    else{
                     tableModel.addRow(new Object[]{
                         nv.getMaNV(),
+                        nv.getHoNV(),
                         nv.getTenNV(),
                         gioiTing,
                         nv.getNgaySinh(),
@@ -187,11 +206,12 @@ public class QuanLyNhanVienPanel extends JPanel {
                         nv.getLuong(),
                         nv.getThoiGianTao()
                     });
+                    }
                 }
             } else if (selectedItem.equals("Sắp xếp theo lương")) {
                 // Sắp xếp theo lương
                 tableModel.setRowCount(0);
-                ArrayList<NhanVienDTO> sortedList = nhanVienBUS.sortSalary();
+                ArrayList<NhanVienDTO> sortedList = new NhanVienBUS().sortSalary();
                 for (NhanVienDTO nv : sortedList) {
                     String gioiTing;
                     if (nv.getGioiTinh() == 1) {
@@ -199,8 +219,13 @@ public class QuanLyNhanVienPanel extends JPanel {
                     } else {
                         gioiTing = "Nữ";
                     }
+                    if (nv.getTrangThai() == 0) {
+                        continue; // Bỏ qua nhân viên đã xóa
+                    }
+                    else{
                     tableModel.addRow(new Object[]{
                         nv.getMaNV(),
+                        nv.getHoNV(),
                         nv.getTenNV(),
                         gioiTing,
                         nv.getNgaySinh(),
@@ -210,11 +235,12 @@ public class QuanLyNhanVienPanel extends JPanel {
                         nv.getLuong(),
                         nv.getThoiGianTao()
                     });
+                    }
                 }
             }
         // Nếu chọn "Tất cả", tải lại dữ liệu
             else if (selectedItem.equals("Tất cả")) {
-                ArrayList<NhanVienDTO> allList = nhanVienBUS.sortByID();
+                ArrayList<NhanVienDTO> allList = new NhanVienBUS().sortByID();
                 tableModel.setRowCount(0);
                 for (NhanVienDTO nv : allList) {
                     String gioiTing;
@@ -223,8 +249,13 @@ public class QuanLyNhanVienPanel extends JPanel {
                     } else {
                         gioiTing = "Nữ";
                     }
+                    if (nv.getTrangThai() == 0) {
+                        continue; // Bỏ qua nhân viên đã xóa
+                    }
+                    else{
                     tableModel.addRow(new Object[]{
                         nv.getMaNV(),
+                        nv.getHoNV(),
                         nv.getTenNV(),
                         gioiTing,
                         nv.getNgaySinh(),
@@ -234,6 +265,39 @@ public class QuanLyNhanVienPanel extends JPanel {
                         nv.getLuong(),
                         nv.getThoiGianTao()
                     });
+                    }
+                }
+            }
+
+            else if (selectedItem.equals("Nhân viên đã xóa")) {
+                // Lọc nhân viên đã xóa
+                tableModel.setRowCount(0);
+                ArrayList<NhanVienDTO> deletedList = new NhanVienBUS().getNhanVienAll();
+                for (NhanVienDTO nv : deletedList) {
+                    String gioiTing;
+                    if (nv.getGioiTinh() == 1) {
+                        gioiTing = "Nam";
+                    } else {
+                        gioiTing = "Nữ";
+                    }
+                    // Kiểm tra trạng thái nhân viên
+                    if (nv.getTrangThai() == 1) {
+                        continue; // Bỏ qua nhân viên chưa xóa
+                    }
+                    else {
+                        tableModel.addRow(new Object[]{
+                            nv.getMaNV(),
+                            nv.getHoNV(),
+                            nv.getTenNV(),
+                            gioiTing,
+                            nv.getNgaySinh(),
+                            nv.getSoDT(),
+                            nv.getEmail(),
+                            nv.getDiaChi(),
+                            nv.getLuong(),
+                            nv.getThoiGianTao()
+                        });
+                    }
                 }
             }
         });
@@ -247,12 +311,13 @@ public class QuanLyNhanVienPanel extends JPanel {
             }
 
             // Lọc dữ liệu theo khoảng thời gian
-            ArrayList<NhanVienDTO> filteredList = nhanVienBUS.filterByDate(fromDate, toDate);
+            ArrayList<NhanVienDTO> filteredList = new NhanVienBUS().filterByDate(fromDate, toDate);
             tableModel.setRowCount(0); // Xóa dữ liệu cũ
             for (NhanVienDTO nv : filteredList) {
                 String gioiTinh = nv.getGioiTinh() == 1 ? "Nam" : "Nữ";
                 tableModel.addRow(new Object[]{
                     nv.getMaNV(),
+                    nv.getHoNV(),
                     nv.getTenNV(),
                     gioiTinh,
                     nv.getNgaySinh(),
@@ -271,7 +336,7 @@ public class QuanLyNhanVienPanel extends JPanel {
         tableModel.setRowCount(0);
 
         // Lấy danh sách nhân viên từ NhanVienBUS
-        List<NhanVienDTO> danhSachNhanVien = nhanVienBUS.getNhanVienAll();
+        List<NhanVienDTO> danhSachNhanVien = new NhanVienBUS().getNhanVienAll();
 
         // Đổ dữ liệu vào bảng
         for (NhanVienDTO nv : danhSachNhanVien) {
@@ -281,24 +346,35 @@ public class QuanLyNhanVienPanel extends JPanel {
             } else {
                 gioiTing = "Nữ";
             }
-            tableModel.addRow(new Object[]{
-                nv.getMaNV(),
-                nv.getTenNV(),
-                gioiTing,
-                nv.getNgaySinh(),
-                nv.getSoDT(),
-                nv.getEmail(),
-                nv.getDiaChi(),
-                nv.getLuong(),
-                nv.getThoiGianTao()
-            });
+            // Kiểm tra trạng thái nhân viên
+            if (nv.getTrangThai() == 0) {
+                continue; // Bỏ qua nhân viên chưa xóa
+            }
+            else {
+                tableModel.addRow(new Object[]{
+                    nv.getMaNV(),
+                    nv.getHoNV(),
+                    nv.getTenNV(),
+                    gioiTing,
+                    nv.getNgaySinh(),
+                    nv.getSoDT(),
+                    nv.getEmail(),
+                    nv.getDiaChi(),
+                    nv.getLuong(),
+                    nv.getThoiGianTao()
+                });
+            }
         }
     }
 
     private void showAddDialog() {
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Thêm nhân viên", true);
-        dialog.setSize(500, 400);
-        dialog.setLayout(new GridLayout(9, 2, 9, 9));
+        dialog.setSize(500, 450);
+        dialog.setLayout(new GridLayout(9, 2, 9, 9)); // 11 dòng, 2 cột
+
+        dialog.add(new JLabel("Họ:"));
+        JTextField txtLastName = new JTextField();
+        dialog.add(txtLastName);
 
         dialog.add(new JLabel("Tên:"));
         JTextField txtFirstName = new JTextField();
@@ -328,8 +404,10 @@ public class QuanLyNhanVienPanel extends JPanel {
         JTextField txtSalary = new JTextField();
         dialog.add(txtSalary);
 
+
         JButton btnConfirm = new JButton("Xác nhận");
         btnConfirm.addActionListener(e -> {
+            String lastName = txtLastName.getText();
             String firstName = txtFirstName.getText();
             String gender = (String) genderComboBox.getSelectedItem();
             String birthDate = txtBirthDate.getText();
@@ -337,14 +415,14 @@ public class QuanLyNhanVienPanel extends JPanel {
             String email = txtEmail.getText();
             String address = txtAddress.getText();
             String salary = txtSalary.getText();
+            int trangThai = 1;
 
-            // Lấy thời gian hiện tại
             String createdTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-            // Thêm dữ liệu vào cơ sở dữ liệu
             String maNV = String.valueOf(nhanVienBUS.getLastID());
             NhanVienDTO nv = new NhanVienDTO();
             nv.setMaNV(maNV);
+            nv.setHoNV(lastName);
             nv.setTenNV(firstName);
             nv.setGioiTinh(gender.equals("Nam") ? 1 : 2);
             nv.setNgaySinh(birthDate);
@@ -353,17 +431,15 @@ public class QuanLyNhanVienPanel extends JPanel {
             nv.setDiaChi(address);
             nv.setLuong(Double.parseDouble(salary));
             nv.setThoiGianTao(createdTime);
+            nv.setTrangThai(trangThai);
             if (nhanVienBUS.add(nv)) {
                 JOptionPane.showMessageDialog(this, "Thêm nhân viên thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this, "Thêm nhân viên thất bại!", "Thông báo", JOptionPane.ERROR_MESSAGE);
             }
 
-            
             dialog.dispose();
-
-             // Thêm dữ liệu vào bảng
-            tableModel.addRow(new Object[]{nhanVienBUS.getLastID(), firstName, gender, birthDate, phone, email, address, salary, createdTime});
+            loadEmployeeData();
         });
         dialog.add(btnConfirm);
 
@@ -373,9 +449,6 @@ public class QuanLyNhanVienPanel extends JPanel {
 
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
-
-        
-
     }
 
     private void showDeleteDialog() {
@@ -407,57 +480,69 @@ public class QuanLyNhanVienPanel extends JPanel {
         }
 
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Sửa nhân viên", true);
-        dialog.setSize(500, 400);
-        dialog.setLayout(new BorderLayout(10, 10)); // Sử dụng BorderLayout
+        dialog.setSize(500, 450);
+        dialog.setLayout(new BorderLayout(10, 10));
 
-        // Panel chứa các trường nhập liệu
-        JPanel inputPanel = new JPanel(new GridLayout(8, 2, 10, 10)); // 8 dòng dữ liệu
+        JPanel inputPanel = new JPanel(new GridLayout(10, 2, 10, 10)); // 10 dòng dữ liệu
+
+        inputPanel.add(new JLabel("Họ:"));
+        JTextField txtLastName = new JTextField(tableModel.getValueAt(selectedRow, 1).toString());
+        inputPanel.add(txtLastName);
+
         inputPanel.add(new JLabel("Tên:"));
-        JTextField txtFirstName = new JTextField(tableModel.getValueAt(selectedRow, 1).toString());
+        JTextField txtFirstName = new JTextField(tableModel.getValueAt(selectedRow, 2).toString());
         inputPanel.add(txtFirstName);
 
         inputPanel.add(new JLabel("Giới tính:"));
         JComboBox<String> genderComboBox = new JComboBox<>(new String[]{"Nam", "Nữ"});
-        genderComboBox.setSelectedItem(tableModel.getValueAt(selectedRow, 2).toString());
+        genderComboBox.setSelectedItem(tableModel.getValueAt(selectedRow, 3).toString());
         inputPanel.add(genderComboBox);
 
         inputPanel.add(new JLabel("Ngày sinh:"));
-        JTextField txtBirthDate = new JTextField(tableModel.getValueAt(selectedRow, 3).toString());
+        JTextField txtBirthDate = new JTextField(tableModel.getValueAt(selectedRow, 4).toString());
         inputPanel.add(txtBirthDate);
 
         inputPanel.add(new JLabel("Số điện thoại:"));
-        JTextField txtPhone = new JTextField(tableModel.getValueAt(selectedRow, 4).toString());
+        JTextField txtPhone = new JTextField(tableModel.getValueAt(selectedRow, 5).toString());
         inputPanel.add(txtPhone);
 
         inputPanel.add(new JLabel("Email:"));
-        JTextField txtEmail = new JTextField(tableModel.getValueAt(selectedRow, 5).toString());
+        JTextField txtEmail = new JTextField(tableModel.getValueAt(selectedRow, 6).toString());
         inputPanel.add(txtEmail);
 
         inputPanel.add(new JLabel("Địa chỉ:"));
-        JTextField txtAddress = new JTextField(tableModel.getValueAt(selectedRow, 6).toString());
+        JTextField txtAddress = new JTextField(tableModel.getValueAt(selectedRow, 7).toString());
         inputPanel.add(txtAddress);
 
         inputPanel.add(new JLabel("Lương cơ bản:"));
-        JTextField txtSalary = new JTextField(tableModel.getValueAt(selectedRow, 7).toString());
+        JTextField txtSalary = new JTextField(tableModel.getValueAt(selectedRow, 8).toString());
         inputPanel.add(txtSalary);
+
+        inputPanel.add(new JLabel("Trạng thái (1: hoạt động, 0: đã xóa):"));
+        // Lấy trạng thái từ BUS để luôn đúng nhất
+        String maNV = tableModel.getValueAt(selectedRow, 0).toString();
+        NhanVienDTO nvDTO = new NhanVienBUS().getNhanVienById(maNV);
+        JComboBox<String> statusComboBox = new JComboBox<>(new String[]{"1", "0"});
+        statusComboBox.setSelectedItem(nvDTO != null ? String.valueOf(nvDTO.getTrangThai()) : "1");
+        inputPanel.add(statusComboBox);
 
         dialog.add(inputPanel, BorderLayout.CENTER);
 
-        // Panel chứa nút "Xác nhận" và "Đóng"
-        JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 10, 10)); // 1 dòng, 2 cột
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 2, 10, 10));
         JButton btnConfirm = new JButton("Xác nhận");
         btnConfirm.addActionListener(e -> {
-            tableModel.setValueAt(txtFirstName.getText(), selectedRow, 1);
-            tableModel.setValueAt(genderComboBox.getSelectedItem(), selectedRow, 2);
-            tableModel.setValueAt(txtBirthDate.getText(), selectedRow, 3);
-            tableModel.setValueAt(txtPhone.getText(), selectedRow, 4);
-            tableModel.setValueAt(txtEmail.getText(), selectedRow, 5);
-            tableModel.setValueAt(txtAddress.getText(), selectedRow, 6);
-            tableModel.setValueAt(txtSalary.getText(), selectedRow, 7);
+            tableModel.setValueAt(txtLastName.getText(), selectedRow, 1);
+            tableModel.setValueAt(txtFirstName.getText(), selectedRow, 2);
+            tableModel.setValueAt(genderComboBox.getSelectedItem(), selectedRow, 3);
+            tableModel.setValueAt(txtBirthDate.getText(), selectedRow, 4);
+            tableModel.setValueAt(txtPhone.getText(), selectedRow, 5);
+            tableModel.setValueAt(txtEmail.getText(), selectedRow, 6);
+            tableModel.setValueAt(txtAddress.getText(), selectedRow, 7);
+            tableModel.setValueAt(txtSalary.getText(), selectedRow, 8);
 
-            // Cập nhật dữ liệu vào cơ sở dữ liệu
             NhanVienDTO nv = new NhanVienDTO();
             nv.setMaNV(tableModel.getValueAt(selectedRow, 0).toString());
+            nv.setHoNV(txtLastName.getText());
             nv.setTenNV(txtFirstName.getText());
             nv.setGioiTinh(genderComboBox.getSelectedItem().toString().equals("Nam") ? 1 : 2);
             nv.setNgaySinh(txtBirthDate.getText());
@@ -465,13 +550,16 @@ public class QuanLyNhanVienPanel extends JPanel {
             nv.setEmail(txtEmail.getText());
             nv.setDiaChi(txtAddress.getText());
             nv.setLuong(Double.parseDouble(txtSalary.getText()));
-            nv.setThoiGianTao(tableModel.getValueAt(selectedRow, 8).toString());
+            nv.setThoiGianTao(tableModel.getValueAt(selectedRow, 9).toString());
+            nv.setTrangThai(Integer.parseInt((String) statusComboBox.getSelectedItem()));
             if (nhanVienBUS.updateNhanVien_DB(nv)) {
                 JOptionPane.showMessageDialog(this, "Cập nhật nhân viên thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this, "Cập nhật nhân viên thất bại!", "Thông báo", JOptionPane.ERROR_MESSAGE);
             }
             dialog.dispose();
+            loadEmployeeData();
+            sortComboBox.setSelectedItem("Tất cả");
         });
         buttonPanel.add(btnConfirm);
 
@@ -479,7 +567,7 @@ public class QuanLyNhanVienPanel extends JPanel {
         btnClose.addActionListener(e -> dialog.dispose());
         buttonPanel.add(btnClose);
 
-        dialog.add(buttonPanel, BorderLayout.SOUTH); // Đặt panel nút ở phía dưới
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
 
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
@@ -494,49 +582,53 @@ public class QuanLyNhanVienPanel extends JPanel {
 
         JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Chi tiết nhân viên", true);
         dialog.setSize(500, 400);
-        dialog.setLayout(new GridLayout(9, 2, 9, 9));
+        dialog.setLayout(new GridLayout(10, 2, 9, 9));
+
+        dialog.add(new JLabel("Họ:"));
+        JTextField txtLastName = new JTextField(tableModel.getValueAt(selectedRow, 1).toString());
+        txtLastName.setEditable(false);
+        dialog.add(txtLastName);
 
         dialog.add(new JLabel("Tên:"));
-        JTextField txtFirstName = new JTextField(tableModel.getValueAt(selectedRow, 1).toString());
+        JTextField txtFirstName = new JTextField(tableModel.getValueAt(selectedRow, 2).toString());
         txtFirstName.setEditable(false);
         dialog.add(txtFirstName);
 
         dialog.add(new JLabel("Giới tính:"));
-        JTextField txtGender = new JTextField(tableModel.getValueAt(selectedRow, 2).toString());
+        JTextField txtGender = new JTextField(tableModel.getValueAt(selectedRow, 3).toString());
         txtGender.setEditable(false);
         dialog.add(txtGender);
 
         dialog.add(new JLabel("Ngày sinh:"));
-        JTextField txtBirthDate = new JTextField(tableModel.getValueAt(selectedRow, 3).toString());
+        JTextField txtBirthDate = new JTextField(tableModel.getValueAt(selectedRow, 4).toString());
         txtBirthDate.setEditable(false);
         dialog.add(txtBirthDate);
 
         dialog.add(new JLabel("Số điện thoại:"));
-        JTextField txtPhone = new JTextField(tableModel.getValueAt(selectedRow, 4).toString());
+        JTextField txtPhone = new JTextField(tableModel.getValueAt(selectedRow, 5).toString());
         txtPhone.setEditable(false);
         dialog.add(txtPhone);
 
         dialog.add(new JLabel("Email:"));
-        JTextField txtEmail = new JTextField(tableModel.getValueAt(selectedRow, 5).toString());
+        JTextField txtEmail = new JTextField(tableModel.getValueAt(selectedRow, 6).toString());
         txtEmail.setEditable(false);
         dialog.add(txtEmail);
 
         dialog.add(new JLabel("Địa chỉ:"));
-        JTextField txtAddress = new JTextField(tableModel.getValueAt(selectedRow, 6).toString());
+        JTextField txtAddress = new JTextField(tableModel.getValueAt(selectedRow, 7).toString());
         txtAddress.setEditable(false);
         dialog.add(txtAddress);
 
         dialog.add(new JLabel("Lương cơ bản:"));
-        JTextField txtSalary = new JTextField(tableModel.getValueAt(selectedRow, 7).toString());
+        JTextField txtSalary = new JTextField(tableModel.getValueAt(selectedRow, 8).toString());
         txtSalary.setEditable(false);
         dialog.add(txtSalary);
 
         dialog.add(new JLabel("Thời gian tạo:"));
-        JTextField txtCreatedTime = new JTextField(tableModel.getValueAt(selectedRow, 8).toString());
+        JTextField txtCreatedTime = new JTextField(tableModel.getValueAt(selectedRow, 9).toString());
         txtCreatedTime.setEditable(false);
         dialog.add(txtCreatedTime);
 
-        // Nút đóng chiếm toàn bộ chiều ngang
         JButton btnClose = new JButton("Đóng");
         btnClose.addActionListener(e -> dialog.dispose());
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));

@@ -57,11 +57,12 @@ public class NhaCungCapBUS {
 
     public Boolean deleteById(int ma) {
         NhaCungCapDTO toDelete = getNhaCungCapById((ma));
-        boolean result = nccDAO.delete(ma) != 0;
-        if (result && toDelete != null) {
-            listncc.remove(toDelete);
+        if (toDelete != null) {
+            toDelete.setTrangThai(0); // cập nhật trạng thái về 0
+            boolean result = nccDAO.update(toDelete) != 0;
+            return result;
         }
-        return result;
+        return false;
     }
 
     public int getLastID() {
