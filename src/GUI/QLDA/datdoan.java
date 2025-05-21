@@ -4,6 +4,7 @@ import BUS.HoaDonThucAnBUS;
 import BUS.KhachHangBUS;
 import BUS.NhanVienBUS;
 import BUS.ThucAnBUS;
+import DAO.KhachHangDAO;
 import DTO.KhachHangDTO;
 import DTO.NhanVienDTO;
 import java.awt.*;
@@ -118,6 +119,23 @@ public class datdoan extends JPanel {
 
         Timestamp now = new Timestamp(System.currentTimeMillis());
 
+        // Kiểm tra số dư tài khoản trước
+        KhachHangDAO khDAO = new KhachHangDAO(); // DAO chứa hàm laySoDuTaiKhoan và capNhatSoDu
+        double soDu = khDAO.laySoDuTaiKhoan(maKH);
+
+        if (soDu < totalPrice) {
+            JOptionPane.showMessageDialog(this, "❌ Số dư tài khoản không đủ để thanh toán!", "Thiếu tiền", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Trừ tiền từ tài khoản
+        boolean truTienOK = khDAO.capNhatSoDu(maKH, soDu - totalPrice);
+        if (!truTienOK) {
+            JOptionPane.showMessageDialog(this, "❌ Lỗi khi trừ tiền trong tài khoản khách hàng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Thêm hóa đơn
         boolean success = hoaDonBUS.themHoaDon(maKH, maMay, now, totalPrice, 1, maNV);
 
         if (success) {
@@ -135,7 +153,7 @@ public class datdoan extends JPanel {
                 int soLuongTon = khoBUS.getSoLuong(maMon);
                 if (soLuongTon < soLuong) {
                     JOptionPane.showMessageDialog(this, "❌ Món '" + tenMon + "' chỉ còn " + soLuongTon + " trong kho. Không thể đặt số lượng " + soLuong + ".", "Hết hàng", JOptionPane.WARNING_MESSAGE);
-                    return; // Ngừng xử lý nếu có một món không đủ hàng
+                    return;
                 }
 
                 // Trừ số lượng trong kho
@@ -159,7 +177,10 @@ public class datdoan extends JPanel {
             orderTableModel.setRowCount(0);
             totalPrice = 0;
             lblTotalPrice.setText("Thành tiền: 0 VND");
+
         } else {
+            // Nếu thêm hóa đơn thất bại thì hoàn lại tiền
+            khDAO.capNhatSoDu(maKH, soDu); 
             JOptionPane.showMessageDialog(this, "❌ Không thể đặt đơn. Kiểm tra thông tin!", "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
 
@@ -167,6 +188,7 @@ public class datdoan extends JPanel {
         JOptionPane.showMessageDialog(this, "⚠️ Vui lòng nhập đúng định dạng!", "Lỗi", JOptionPane.ERROR_MESSAGE);
     }
 });
+
 
 
 
