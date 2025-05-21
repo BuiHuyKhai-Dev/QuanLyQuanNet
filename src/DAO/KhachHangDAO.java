@@ -242,4 +242,29 @@ public class KhachHangDAO {
         }
         return null;
     }
+
+    public KhachHangDTO timTheoEmail(String email) {
+        String sql = "SELECT * FROM khachhang WHERE Email = ?";
+        KhachHangDTO kh = new KhachHangDTO();
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                kh.setMaKhachHang(rs.getInt("MaKH"));
+                kh.setHoKhachHang(rs.getString("HoKH"));
+                kh.setTenKhachHang(rs.getString("TenKH"));
+                kh.setSoDienThoai(rs.getString("SoDienThoai"));
+                kh.setEmail(rs.getString("Email"));
+                kh.setSoDuTaiKhoan(rs.getDouble("SoDuTaiKhoan"));
+                kh.setMatKhau(rs.getString("MatKhau"));
+                kh.setTrangThai(rs.getInt("TrangThai"));
+                kh.setThoiGianTao(rs.getString("created_at"));
+                return kh;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
