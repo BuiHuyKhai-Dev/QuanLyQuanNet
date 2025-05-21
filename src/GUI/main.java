@@ -17,6 +17,11 @@ public class main {
         // Khởi tạo giao diện chính
         DangNhap dn = new DangNhap();
         dn.setVisible(true);
+        TaiKhoanBUS taiKhoanBus = new TaiKhoanBUS();
+        KhachHangBUS khachHangBus = new KhachHangBUS();
+        for(KhachHangDTO khachHang : khachHangBus.getKhachHangAll()){
+            taiKhoanBus.insertKhach(khachHang.getEmail(), khachHang.getMatKhau());
+        }
         // // Giả sử bạn có một lớp TàiKhoảnBus để xử lý logic liên quan đến tài khoản
         // TaiKhoanBUS taiKhoanBus = new TaiKhoanBUS();
         // ArrayList<TaiKhoanDTO> danhSachTaiKhoan = taiKhoanBus.getAll();
