@@ -38,6 +38,7 @@ public class WorkFrame extends JFrame {
                     btnQuanLyKho.setVisible(false); // Ẩn nút Quản lý kho
                     btnPhieuNhap.setVisible(false); // Ẩn nút Phiếu nhập
                     btnPhanQuyen.setVisible(false);
+                    btnTaiKhoan.setVisible(false); // Ẩn nút Tài khoản
                     this.setVisible(true);
                     this.nutDangHoatDong = btnTrangChu; // Ban đầu nút trang chủ được chọn
                     this.btnTrangChu.setBackground(new Color(100, 149, 237)); // Màu xanh cho nút đang hoạt động
@@ -49,6 +50,7 @@ public class WorkFrame extends JFrame {
                     btnPhanQuyen.setVisible(false);
                     btnQuanLyMay.setVisible(false);
                     btnDatDoAn.setVisible(false);
+                    btnTaiKhoan.setVisible(false); // Ẩn nút Tài khoản
                     this.setVisible(true);
                     this.nutDangHoatDong = btnTrangChu; // Ban đầu nút trang chủ được chọn
                     this.btnTrangChu.setBackground(new Color(100, 149, 237)); // Màu xanh cho nút đang hoạt động
@@ -63,6 +65,9 @@ public class WorkFrame extends JFrame {
                     btnPhieuNhap.setVisible(false); // Ẩn nút Phiếu nhập
                     btnQuanLyKho.setVisible(false); // Ẩn nút Quản lý kho
                     btnPhanQuyen.setVisible(false);
+                    btnTaiKhoan.setVisible(false); // Ẩn nút Tài khoản
+
+
                     this.setVisible(true);
                     this.nutDangHoatDong = btnTrangChu; // Ban đầu nút đặt đồ ăn được chọn
                     this.btnDatDoAn.setBackground(new Color(100, 149, 237)); // Màu xanh cho nút đang hoạt động

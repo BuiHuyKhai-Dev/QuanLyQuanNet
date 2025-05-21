@@ -3,6 +3,7 @@ package GUI;
 import BUS.NhaCungCapBUS;
 import BUS.NhanVienBUS;
 import BUS.PhieuNhapBUS;
+import DAO.PhieuNhapDAO;
 import DTO.PhieuNhapDTO;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
@@ -37,7 +38,6 @@ public class PhieuNhapPanel extends JPanel {
         JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JButton btnAdd = new JButton("Thêm");
         JButton btnDelete = new JButton("Xóa");
-        JButton btnEdit = new JButton("Sửa");
         JButton btnDetail = new JButton("Chi tiết");
         JButton btnRefresh = new JButton("Làm mới");
         JButton btnPrintPDF = new JButton("In PDF");
@@ -46,7 +46,6 @@ public class PhieuNhapPanel extends JPanel {
 
         leftPanel.add(btnAdd);
         leftPanel.add(btnDelete);
-        leftPanel.add(btnEdit);
         leftPanel.add(btnDetail);
         leftPanel.add(btnPrintPDF);
         leftPanel.add(btnRefresh);
@@ -123,7 +122,6 @@ public class PhieuNhapPanel extends JPanel {
             dialog.setVisible(true);
         });
         btnDelete.addActionListener(e -> deleteSelectedRow());
-        btnEdit.addActionListener(e -> showEditDialog());
         btnDetail.addActionListener(e -> showDetailDialog());
         btnSearch.addActionListener(e -> searchByKeyword(searchField.getText()));
         btnFilter.addActionListener(e -> filterByDate(fromDateChooser, toDateChooser));
@@ -138,53 +136,22 @@ public class PhieuNhapPanel extends JPanel {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn một dòng để xóa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        tableModel.removeRow(selectedRow);
-    }
-
-    private void showEditDialog() {
-        int selectedRow = table.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một dòng để sửa!", "Thông báo", JOptionPane.WARNING_MESSAGE);
+        String maPhieuNhap = (tableModel.getValueAt(selectedRow, 0).toString());
+        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa phiếu nhập #" + maPhieuNhap + " không?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
             return;
         }
-
-        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Sửa phiếu nhập", true);
-        dialog.setSize(400, 300);
-        dialog.setLayout(new GridLayout(5, 2, 10, 10));
-
-        dialog.add(new JLabel("Nhà cung cấp:"));
-        JTextField txtSupplier = new JTextField((String) tableModel.getValueAt(selectedRow, 1));
-        dialog.add(txtSupplier);
-
-        dialog.add(new JLabel("Nhân viên nhập:"));
-        JTextField txtEmployee = new JTextField((String) tableModel.getValueAt(selectedRow, 2));
-        dialog.add(txtEmployee);
-
-        dialog.add(new JLabel("Tổng tiền:"));
-        JTextField txtTotal = new JTextField((String) tableModel.getValueAt(selectedRow, 3));
-        dialog.add(txtTotal);
-
-        dialog.add(new JLabel("Ngày nhập:"));
-        JDateChooser dateChooser = new JDateChooser();
-        dateChooser.setDateFormatString("yyyy-MM-dd");
-        dialog.add(dateChooser);
-
-        JButton btnConfirm = new JButton("Xác nhận");
-        btnConfirm.addActionListener(e -> {
-            tableModel.setValueAt(txtSupplier.getText(), selectedRow, 1);
-            tableModel.setValueAt(txtEmployee.getText(), selectedRow, 2);
-            tableModel.setValueAt(txtTotal.getText(), selectedRow, 3);
-            tableModel.setValueAt(new SimpleDateFormat("yyyy-MM-dd").format(dateChooser.getDate()), selectedRow, 4);
-            dialog.dispose();
-        });
-        dialog.add(btnConfirm);
-
-        JButton btnCancel = new JButton("Hủy");
-        btnCancel.addActionListener(e -> dialog.dispose());
-        dialog.add(btnCancel);
-
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);
+        else{
+        tableModel.removeRow(selectedRow);
+        PhieuNhapDAO phieuNhapDAO = new PhieuNhapDAO();
+        // Confirm deletion
+        // Xóa phiếu nhập
+        if (phieuNhapDAO.delete(maPhieuNhap) == 1) {
+            JOptionPane.showMessageDialog(this, "Xóa phiếu nhập thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this, "Xóa phiếu nhập thất bại!", "Thông báo", JOptionPane.ERROR_MESSAGE);
+        }
+        }
     }
 
     private void showDetailDialog() {

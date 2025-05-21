@@ -157,12 +157,19 @@ public class PhanQuyenPanel extends JPanel {
             return;
         }
         int id = Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString());
-        if(pqDAO.delete(id) != 0){
-            tableModel.removeRow(selectedRow);
-            JOptionPane.showMessageDialog(this, "Xóa thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+        // Confirm deletion
+        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xóa dòng này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            return; // Nếu không xác nhận thì thoát
         }
         else{
-            JOptionPane.showMessageDialog(this, "Xóa không thành công!", "Thông báo", JOptionPane.ERROR_MESSAGE);
+            if(pqDAO.delete(id) != 0){
+                tableModel.removeRow(selectedRow);
+                JOptionPane.showMessageDialog(this, "Xóa thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+            }
+            else{
+                JOptionPane.showMessageDialog(this, "Xóa không thành công!", "Thông báo", JOptionPane.ERROR_MESSAGE);
+            }
         }
         // Cập nhật lại danh sách quyền trong cơ sở dữ liệu nếu cần
     }
@@ -179,23 +186,29 @@ public class PhanQuyenPanel extends JPanel {
         dialog.setLayout(new GridLayout(3, 2, 10, 10));
 
         dialog.add(new JLabel("Mã nhóm quyền:"));
-        JTextField txtId = new JTextField((String) tableModel.getValueAt(selectedRow, 0));
+        JTextField txtId = new JTextField(tableModel.getValueAt(selectedRow, 0).toString());
         txtId.setEditable(false); // Không cho phép sửa mã nhóm quyền
         dialog.add(txtId);
 
         dialog.add(new JLabel("Tên nhóm quyền:"));
-        JTextField txtName = new JTextField((String) tableModel.getValueAt(selectedRow, 1));
+        JTextField txtName = new JTextField(tableModel.getValueAt(selectedRow, 1).toString());
         dialog.add(txtName);
 
         JButton btnConfirm = new JButton("Xác nhận");
         btnConfirm.addActionListener(e -> {
+            //Confirm 
+            int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn sửa dòng này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+            if (confirm != JOptionPane.YES_OPTION) {
+                return; // Nếu không xác nhận thì thoát
+            }
+            else{
             tableModel.setValueAt(txtName.getText(), selectedRow, 1);
             dialog.dispose();
             int id = Integer.parseInt(txtId.getText());
             String name = txtName.getText();
             pqDAO.update(new PhanQuyenDTO(id, name));
             JOptionPane.showMessageDialog(this, "Sửa thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-
+            }
         });
         dialog.add(btnConfirm);
 
@@ -219,12 +232,12 @@ public class PhanQuyenPanel extends JPanel {
         dialog.setLayout(new GridLayout(2, 2, 10, 10));
 
         dialog.add(new JLabel("Mã nhóm quyền:"));
-        JTextField txtId = new JTextField((String) tableModel.getValueAt(selectedRow, 0));
+        JTextField txtId = new JTextField(tableModel.getValueAt(selectedRow, 0).toString());
         txtId.setEditable(false);
         dialog.add(txtId);
 
         dialog.add(new JLabel("Tên nhóm quyền:"));
-        JTextField txtName = new JTextField((String) tableModel.getValueAt(selectedRow, 1));
+        JTextField txtName = new JTextField(tableModel.getValueAt(selectedRow, 1).toString());
         txtName.setEditable(false);
         dialog.add(txtName);
 
