@@ -1,6 +1,7 @@
 package GUI;
 
 import BUS.KhachHangBUS;
+import BUS.TaiKhoanBUS;
 import DTO.KhachHangDTO;
 import com.toedter.calendar.JDateChooser;
 import java.awt.*;
@@ -307,6 +308,8 @@ public class QuanLyKhachHangPanel extends JPanel {
             if (khachHangBUS.add(newCustomer)) {
                 JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 loadCustomerData();
+                TaiKhoanBUS tkBUS = new TaiKhoanBUS();
+                tkBUS.insertKhach(email, matKhau);
                 dialog.dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Thêm khách hàng thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);
@@ -458,6 +461,7 @@ public class QuanLyKhachHangPanel extends JPanel {
         if (confirm == JOptionPane.YES_OPTION) {
             if (khachHangBUS.deleteKhachHang(maKhachHang)) {
                 JOptionPane.showMessageDialog(this, "Xóa khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+                
                 loadCustomerData();
             } else {
                 JOptionPane.showMessageDialog(this, "Xóa khách hàng thất bại!", "Lỗi", JOptionPane.ERROR_MESSAGE);

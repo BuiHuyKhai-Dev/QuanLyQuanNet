@@ -72,6 +72,28 @@ public class TaiKhoanDAO {
         return result;
     }
     
+    public TaiKhoanDTO selectByEmail(String email) {
+        TaiKhoanDTO tk = null;
+        try {
+            Connection con = (Connection) DBConnect.getConnection();
+            String sql = "Select * From taikhoan WHERE tendangnhap = ?";
+            PreparedStatement pst = (PreparedStatement) con.prepareStatement(sql);
+            pst.setString(1, email);
+            ResultSet rs = (ResultSet) pst.executeQuery();
+            if(rs.next()){
+                String tenDangNhap = rs.getString("tendangnhap");
+                String mk = rs.getString("matkhau");   
+                int nhomQuyen = rs.getInt("manhomquyen");   
+                int trangthai = rs.getInt("trangthai");
+                tk = new TaiKhoanDTO(tenDangNhap, mk, nhomQuyen, trangthai);
+            }
+            DBConnect.closeConnection(con);
+        } catch (Exception e) {
+            Logger.getLogger(NhanVienDAO.class.getName()).log(Level.SEVERE, null, e);
+        }
+        return tk;
+    }
+
     public TaiKhoanDTO kiemTraDangNhap(String username, String matkhau){
         TaiKhoanDTO tk = null;
         try {

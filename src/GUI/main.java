@@ -4,6 +4,10 @@
  */
 package GUI;
 
+import BUS.KhachHangBUS;
+import BUS.TaiKhoanBUS;
+import DTO.KhachHangDTO;
+
 /**
  *
  * @author Minnie

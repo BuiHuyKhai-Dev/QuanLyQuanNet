@@ -35,7 +35,7 @@ public class TaiKhoanPanel extends JPanel {
 
         // ComboBox sắp xếp và ô tìm kiếm phía phải
         JPanel rightPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JComboBox<String> sortComboBox = new JComboBox<>(new String[]{"Tất cả", "Sắp xếp theo tên đăng nhập", "Sắp xếp theo trạng thái"});
+        JComboBox<String> sortComboBox = new JComboBox<>(new String[]{"Tất cả", "Sắp xếp theo tên đăng nhập", "Sắp xếp theo trạng thái","Tài khoản bị khóa"});
         JTextField searchField = new JTextField(15);
         JButton btnSearch = new JButton("Tìm kiếm");
         JLabel lblFromDate = new JLabel("Từ:");
@@ -100,26 +100,43 @@ public class TaiKhoanPanel extends JPanel {
                     tableModel.setRowCount(0);
                     List<TaiKhoanDTO> list = taiKhoanBUS.sortByUsername();
                     for (TaiKhoanDTO tk : list) {
-                        tableModel.addRow(new Object[]{
-                            tk.getTenDangNhap(),
-                            tk.getMatKhau(),
-                            tk.getMaNhomQuyen(),
-                            tk.getTrangThai()
-                        });
+                        if (tk.getTrangThai() == 1) {
+                            tableModel.addRow(new Object[]{
+                                tk.getTenDangNhap(),
+                                tk.getMatKhau(),
+                                tk.getMaNhomQuyen(),
+                                tk.getTrangThai()
+                            });
+                        }
                     }
                 } else if (selectedItem.equals("Sắp xếp theo trạng thái")) {
                     tableModel.setRowCount(0);
                     List<TaiKhoanDTO> list = taiKhoanBUS.sortByStatus();
                     for (TaiKhoanDTO tk : list) {
-                        tableModel.addRow(new Object[]{
-                            tk.getTenDangNhap(),
-                            tk.getMatKhau(),
-                            tk.getMaNhomQuyen(),
-                            tk.getTrangThai()
-                        });
+                        if (tk.getTrangThai() == 1) {
+                            tableModel.addRow(new Object[]{
+                                tk.getTenDangNhap(),
+                                tk.getMatKhau(),
+                                tk.getMaNhomQuyen(),
+                                tk.getTrangThai()
+                            });
+                        }
                     }
                 } else if (selectedItem.equals("Tất cả")) {
                     loadAccountData();
+                } else if (selectedItem.equals("Tài khoản bị khóa")) {
+                    tableModel.setRowCount(0);
+                    List<TaiKhoanDTO> list = taiKhoanBUS.getAll();
+                    for (TaiKhoanDTO tk : list) {
+                        if (tk.getTrangThai() == 0) {
+                            tableModel.addRow(new Object[]{
+                                tk.getTenDangNhap(),
+                                tk.getMatKhau(),
+                                tk.getMaNhomQuyen(),
+                                tk.getTrangThai()
+                            });
+                        }
+                    }
                 }
             }
         });
@@ -127,14 +144,16 @@ public class TaiKhoanPanel extends JPanel {
 
     private void loadAccountData() {
         tableModel.setRowCount(0);
-        List<TaiKhoanDTO> list = taiKhoanBUS.getAll();
+        List<TaiKhoanDTO> list = new TaiKhoanBUS().getAll();
         for (TaiKhoanDTO tk : list) {
-            tableModel.addRow(new Object[]{
-                tk.getTenDangNhap(),
-                tk.getMatKhau(),
-                tk.getMaNhomQuyen(),
-                tk.getTrangThai()
-            });
+            if (tk.getTrangThai() == 1) {
+                tableModel.addRow(new Object[]{
+                    tk.getTenDangNhap(),
+                    tk.getMatKhau(),
+                    tk.getMaNhomQuyen(),
+                    tk.getTrangThai()
+                });
+            }
         }
     }
 
