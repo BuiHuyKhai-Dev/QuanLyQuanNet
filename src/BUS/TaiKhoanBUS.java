@@ -83,4 +83,22 @@ public class TaiKhoanBUS {
             }
             return false;
         }
+
+        public boolean insertNhanVien(String email, String matkhau) {
+            TaiKhoanDTO tk = new TaiKhoanDTO();
+            tk.setTenDangNhap(email);
+            tk.setMatKhau(matkhau);
+            tk.setMaNhomQuyen(2);
+            tk.setTrangThai(1);
+            return tkDAO.insert(tk) != 0;
+        }
+
+        public boolean deleteNhanVien(String email) {
+            TaiKhoanDTO tk = tkDAO.selectByEmail(email);
+            if (tk != null) {
+                tk.setTrangThai(0);
+                return tkDAO.update(tk) != 0;
+            }
+            return false;
+        }
 }

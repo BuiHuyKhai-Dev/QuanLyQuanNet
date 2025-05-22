@@ -231,19 +231,26 @@ public class PhanQuyenPanel extends JPanel {
         dialog.setSize(300, 200);
         dialog.setLayout(new GridLayout(2, 2, 10, 10));
 
-        dialog.add(new JLabel("Mã nhóm quyền:"));
+        // Mỗi dòng chỉ có 1 label và 1 textfield
+        JPanel panel = new JPanel(new GridLayout(2, 2, 10, 10));
+
+        panel.add(new JLabel("Mã nhóm quyền:"));
         JTextField txtId = new JTextField(tableModel.getValueAt(selectedRow, 0).toString());
         txtId.setEditable(false);
-        dialog.add(txtId);
+        panel.add(txtId);
 
-        dialog.add(new JLabel("Tên nhóm quyền:"));
+        panel.add(new JLabel("Tên nhóm quyền:"));
         JTextField txtName = new JTextField(tableModel.getValueAt(selectedRow, 1).toString());
         txtName.setEditable(false);
-        dialog.add(txtName);
+        panel.add(txtName);
+
+        dialog.add(panel);
 
         JButton btnClose = new JButton("Đóng");
         btnClose.addActionListener(e -> dialog.dispose());
-        dialog.add(btnClose);
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.add(btnClose);
+        dialog.add(buttonPanel, BorderLayout.SOUTH);
 
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);

@@ -4,9 +4,9 @@
  */
 package GUI;
 
-import BUS.KhachHangBUS;
+import BUS.NhanVienBUS;
 import BUS.TaiKhoanBUS;
-import DTO.KhachHangDTO;
+import DTO.NhanVienDTO;
 
 /**
  *
@@ -17,11 +17,18 @@ public class main {
         // Khởi tạo giao diện chính
         DangNhap dn = new DangNhap();
         dn.setVisible(true);
-        TaiKhoanBUS taiKhoanBus = new TaiKhoanBUS();
-        KhachHangBUS khachHangBus = new KhachHangBUS();
-        for(KhachHangDTO khachHang : khachHangBus.getKhachHangAll()){
-            taiKhoanBus.insertKhach(khachHang.getEmail(), khachHang.getMatKhau());
-        }
+//       TaiKhoanBUS taiKhoanBus = new TaiKhoanBUS();
+//        KhachHangBUS khachHangBus = new KhachHangBUS();
+//        for(KhachHangDTO khachHang : khachHangBus.getKhachHangAll()){
+//            taiKhoanBus.insertKhach(khachHang.getEmail(), khachHang.getMatKhau());
+//        }
+//        NhanVienBUS nhanVienBus = new NhanVienBUS();
+//        for(NhanVienDTO nhanVien : nhanVienBus.getNhanVienAll()){
+//            taiKhoanBus.insertNhanVien(nhanVien.getEmail(), "1");
+//        }
+
+
+        
         // // Giả sử bạn có một lớp TàiKhoảnBus để xử lý logic liên quan đến tài khoản
         // TaiKhoanBUS taiKhoanBus = new TaiKhoanBUS();
         // ArrayList<TaiKhoanDTO> danhSachTaiKhoan = taiKhoanBus.getAll();

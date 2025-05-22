@@ -66,6 +66,15 @@ public class NhanVienBUS {
         return false;
     }
 
+    public String getEmailByID(String ma) {
+        for (NhanVienDTO nv : listnv) {
+            if (nv.getMaNV().equals(ma)) {
+                return nv.getEmail();
+            }
+        }
+        return null;
+    }
+
     public ArrayList<NhanVienDTO> search(String text) {
         text = text.toLowerCase();
         ArrayList<NhanVienDTO> result = new java.util.ArrayList<>();

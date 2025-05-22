@@ -1,7 +1,9 @@
 package GUI;
 
 import BUS.NhanVienBUS;
+import BUS.TaiKhoanBUS;
 import DTO.NhanVienDTO;
+import DTO.TaiKhoanDTO;
 import com.toedter.calendar.JDateChooser;
 import java.awt.*;
 import java.time.LocalDateTime;
@@ -433,6 +435,14 @@ public class QuanLyNhanVienPanel extends JPanel {
             nv.setThoiGianTao(createdTime);
             nv.setTrangThai(trangThai);
             if (nhanVienBUS.add(nv)) {
+                TaiKhoanBUS taiKhoanBUS = new TaiKhoanBUS();
+                TaiKhoanDTO taiKhoanDTO = new TaiKhoanDTO();
+                taiKhoanDTO.setTenDangNhap(email);
+                taiKhoanDTO.setMatKhau("1");
+                taiKhoanDTO.setMaNhomQuyen(2); // Nhóm quyền nhân viên
+                taiKhoanDTO.setTrangThai(1); // Trạng thái hoạt động
+                taiKhoanBUS.add(taiKhoanDTO);
+
                 JOptionPane.showMessageDialog(this, "Thêm nhân viên thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(this, "Thêm nhân viên thất bại!", "Thông báo", JOptionPane.ERROR_MESSAGE);
@@ -464,6 +474,7 @@ public class QuanLyNhanVienPanel extends JPanel {
             int maKhachHang = Integer.parseInt(tableModel.getValueAt(selectedRow, 0).toString());
             NhanVienBUS nhanVienBUS = new NhanVienBUS();
             if (nhanVienBUS.deleteById(String.valueOf(maKhachHang))) {
+                new TaiKhoanBUS().deleteNhanVien(new NhanVienBUS().getEmailByID(String.valueOf(maKhachHang)));
                 JOptionPane.showMessageDialog(this, "Xóa nhân viên thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
                 tableModel.removeRow(selectedRow);
             } else {
