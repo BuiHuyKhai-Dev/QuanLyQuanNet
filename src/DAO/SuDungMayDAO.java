@@ -140,6 +140,25 @@ public ArrayList<SuDungMayDTO> selectAll() {
     }
     return false;
 }
+public int layMaMayDangSuDung(int maKH) {
+    String sql = "SELECT MaMay FROM SuDungMay WHERE MaKH = ? AND ThoiGianKetThuc IS NULL";
+    try (Connection conn = db.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setInt(1, maKH);
+        ResultSet rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            return rs.getInt("MaMay");
+        }
+
+    } catch (Exception e) {
+        e.printStackTrace();  // In lỗi để dễ debug
+    }
+
+    return -1; // Không có máy đang sử dụng hoặc lỗi
+}
+
 
     
     public void doiTrangThai(int maMay){

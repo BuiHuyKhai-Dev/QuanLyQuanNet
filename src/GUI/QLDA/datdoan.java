@@ -5,6 +5,7 @@ import BUS.KhachHangBUS;
 import BUS.NhanVienBUS;
 import BUS.ThucAnBUS;
 import DAO.KhachHangDAO;
+import DAO.SuDungMayDAO;
 import DTO.KhachHangDTO;
 import DTO.NhanVienDTO;
 import java.awt.*;
@@ -26,23 +27,44 @@ public class datdoan extends JPanel {
     JButton btnChonKH = new JButton("Chọn KH");
     private HoaDonThucAnBUS hoaDonBUS = new HoaDonThucAnBUS();
 
-    public datdoan() {
+    public datdoan(int quyen, int maKH1) {
         setLayout(new BorderLayout());
 
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
-        inputPanel.add(new JLabel("Mã Khách Hàng:"));
         
-        JPanel temp1= new JPanel();
-        temp1.add(txtMaKH);
-        temp1.add(btnChonKH);
-        btnChonKH.addActionListener(e -> showChonKhachHangDialog());
-        inputPanel.add(temp1);
-        txtMaKH.setPreferredSize(new Dimension(100, 25));
         
-        inputPanel.add(new JLabel("Mã Máy:"));
-        txtMaMay = new JTextField(10);
-        inputPanel.add(txtMaMay);
+        
+        if (quyen != 4){
+            inputPanel.add(new JLabel("Mã Khách Hàng:"));
+        
+            JPanel temp1= new JPanel();
+            temp1.add(txtMaKH);
+            temp1.add(btnChonKH);
+            btnChonKH.addActionListener(e -> showChonKhachHangDialog());
+            inputPanel.add(temp1);
+            txtMaKH.setPreferredSize(new Dimension(100, 25));
+            inputPanel.add(new JLabel("Mã Máy:"));
+            txtMaMay = new JTextField(10);
+            inputPanel.add(txtMaMay);
+        }
+        else {
+            txtMaKH.setText(String.valueOf(maKH1));
+            txtMaKH.setEditable(false);
+
+            // Gọi hàm lấy mã máy đang sử dụng
+            int maMayDangSuDung = new SuDungMayDAO().layMaMayDangSuDung(maKH1);
+            if (maMayDangSuDung != -1) {
+                txtMaMay = new JTextField(10);
+                txtMaMay.setText(String.valueOf(maMayDangSuDung));
+                txtMaMay.setEditable(false);
+                // inputPanel.add(new JLabel("Mã Máy:"));
+                // inputPanel.add(txtMaMay);
+            } else {
+                JOptionPane.showMessageDialog(null, "❌ Bạn chưa đăng ký sử dụng máy!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
 
         inputPanel.add(new JLabel("Mã Nhân Viên:"));
         
