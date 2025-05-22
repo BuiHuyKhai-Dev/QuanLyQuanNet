@@ -125,9 +125,6 @@ public class QuanLyKhachHangPanel extends JPanel {
         btnRefresh.addActionListener(e -> 
             {
                 loadCustomerData();
-                searchField.setText("");
-                fromDateChooser.setDate(null);
-                toDateChooser.setDate(null);
             }
         );
         btnSearch.addActionListener(e -> searchCustomer(searchField.getText()));

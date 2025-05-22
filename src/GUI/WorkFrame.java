@@ -1,12 +1,11 @@
 package GUI;
 
+import DAO.KhachHangDAO;
 import DTO.KhachHangDTO;
 import DTO.TaiKhoanDTO;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import javax.swing.*;
-
-import DAO.KhachHangDAO;
 
 public class WorkFrame extends JFrame {
     public CardLayout cardLayout = new CardLayout();
@@ -76,10 +75,16 @@ public class WorkFrame extends JFrame {
                     btnQuanLyKho.setVisible(false); // Ẩn nút Quản lý kho
                     btnPhanQuyen.setVisible(false);
                     btnTaiKhoan.setVisible(false); // Ẩn nút Tài khoản
+                    btnTrangChu.setVisible(false);
+                    
+                    btnDatDoAn.setVisible(true);
+                    btnDatDoAn.setText("Đặt đồ ăn");
+                    
+
 
 
                     this.setVisible(true);
-                    this.nutDangHoatDong = btnTrangChu; // Ban đầu nút đặt đồ ăn được chọn
+                    this.nutDangHoatDong = btnDatDoAn; // Ban đầu nút đặt đồ ăn được chọn
                     this.btnDatDoAn.setBackground(new Color(100, 149, 237)); // Màu xanh cho nút đang hoạt động
                 }
                 default -> {
