@@ -1,9 +1,14 @@
 package GUI;
 
 import BUS.TaiKhoanBUS;
+import DAO.KhachHangDAO;
+import DAO.SuDungMayDAO;
+import DTO.KhachHangDTO;
 import DTO.TaiKhoanDTO;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.SQLException;
+
 import javax.swing.*;
 
 public class DangNhap extends JFrame {
@@ -131,26 +136,59 @@ public class DangNhap extends JFrame {
     }
 
     private void xuLyDangNhap() {
-       String username = txtUsername.getText().trim();
-       String matkhau = new String(txtPassword.getPassword()).trim();
+    String username = txtUsername.getText().trim();
+    String matkhau = new String(txtPassword.getPassword()).trim();
 
-       if (username.isEmpty()) {
-           showErrorMessage("Vui lòng nhập tên tài khoản!");
-           return;
-       }
-       if (matkhau.isEmpty()) {
-           showErrorMessage("Vui lòng nhập mật khẩu!");
-           return;
-       }
-
-       TaiKhoanDTO taiKhoan = tkBUS.dangNhap(username, matkhau);
-       if (taiKhoan != null) {
-           new WorkFrame(taiKhoan).setVisible(true);
-           dispose();
-       } else {
-           showErrorMessage("Tài khoản hoặc mật khẩu không đúng!");
-       }        
+    if (username.isEmpty()) {
+        showErrorMessage("Vui lòng nhập tên tài khoản!");
+        return;
     }
+    if (matkhau.isEmpty()) {
+        showErrorMessage("Vui lòng nhập mật khẩu!");
+        return;
+    }
+
+    TaiKhoanDTO taiKhoan = tkBUS.dangNhap(username, matkhau);
+    if (taiKhoan != null) {
+        int nhomQuyen = taiKhoan.getMaNhomQuyen();
+
+        // Nếu là khách hàng (nhóm quyền = 4)
+        if (nhomQuyen == 4) {
+            try {
+                // Lấy thông tin khách hàng từ email
+                KhachHangDAO khDAO = new KhachHangDAO();
+                KhachHangDTO khach = khDAO.timTheoEmail(taiKhoan.getTenDangNhap());
+
+                if (khach == null) {
+                    showErrorMessage("❌ Không tìm thấy thông tin khách hàng!");
+                    return;
+                }
+
+                int maKH = khach.getMaKhachHang();
+
+                // Kiểm tra khách có đang sử dụng máy không
+                SuDungMayDAO sudungDAO = new SuDungMayDAO();
+                boolean dangSuDung = sudungDAO.khachHangDangSuDung(maKH);
+
+                if (!dangSuDung) {
+                    showErrorMessage("❌ Bạn chưa được cấp quyền sử dụng máy!");
+                    return;
+                }
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                showErrorMessage("❌ Lỗi khi kiểm tra quyền truy cập của khách!");
+                return;
+            }
+        }
+
+        // Cho vào hệ thống nếu qua các bước kiểm tra
+        new WorkFrame(taiKhoan).setVisible(true);
+        dispose();
+    } else {
+        showErrorMessage("Tài khoản hoặc mật khẩu không đúng!");
+    }
+}
 
     private void showErrorMessage(String message) {
         JOptionPane.showMessageDialog(this, message, "Lỗi đăng nhập", JOptionPane.ERROR_MESSAGE);

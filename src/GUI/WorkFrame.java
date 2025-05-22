@@ -1,9 +1,12 @@
 package GUI;
 
+import DTO.KhachHangDTO;
 import DTO.TaiKhoanDTO;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import javax.swing.*;
+
+import DAO.KhachHangDAO;
 
 public class WorkFrame extends JFrame {
     public CardLayout cardLayout = new CardLayout();
@@ -11,6 +14,8 @@ public class WorkFrame extends JFrame {
     private JButton btnTrangChu, btnQuanLyMay, btnDatDoAn, btnQuanLyKhachHang, btnQuanLyNhanVien, btnQuanLyNhaCungCap, btnThongKe;
     private JButton btnPhieuNhap, btnQuanLyKho, btnPhanQuyen, btnDangXuat, btnTaiKhoan; // Nút mới
     private JButton nutDangHoatDong; // Nút đang được chọn
+    private int maKH;
+    private int quyen;
 
     public WorkFrame() {
         this.init();
@@ -24,6 +29,8 @@ public class WorkFrame extends JFrame {
             JOptionPane.showMessageDialog(this, "Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên.");
             System.exit(0);
         } else {
+            
+            quyen= tk.getMaNhomQuyen();
             switch (tk.getMaNhomQuyen()) {
                 case 1 -> {
                     this.init();
@@ -56,6 +63,9 @@ public class WorkFrame extends JFrame {
                     this.btnTrangChu.setBackground(new Color(100, 149, 237)); // Màu xanh cho nút đang hoạt động
                 }
                 case 4,5 -> {
+                    KhachHangDAO khDAO = new KhachHangDAO();
+                    KhachHangDTO khach = khDAO.timTheoEmail(tk.getTenDangNhap());
+                    maKH = khach.getMaKhachHang();
                     this.init();
                     btnQuanLyMay.setVisible(false);
                     btnQuanLyKhachHang.setVisible(false);
@@ -182,7 +192,7 @@ public class WorkFrame extends JFrame {
         // Add panels to PanelCard
         PanelCard.add(new TrangChuPanel(), "Trang chủ");
         PanelCard.add(new QuanLyMayPanel(), "Quản lý máy");
-        PanelCard.add(new DatDoAnPanel(), "Đặt đồ ăn");
+        PanelCard.add(new DatDoAnPanel(quyen, maKH), "Đặt đồ ăn");
         PanelCard.add(new QuanLyKhachHangPanel(), "Quản lý khách hàng");
         PanelCard.add(new QuanLyNhanVienPanel(), "Quản lý nhân viên");
         PanelCard.add(new QuanLyNhaCungCapPanel(), "Quản lý nhà cung cấp");
